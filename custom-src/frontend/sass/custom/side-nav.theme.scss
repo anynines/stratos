@@ -1,0 +1,13 @@
+// Angular Material theme for sidenav
+
+$a9s-sidenav-theme: ( 
+  background: $a9s-navy,
+  background-top: $a9s-navy,
+  text: white,
+  active: transparentize(white, .75),
+  active-text: white,
+  hover: transparentize(white, .825),
+  hover-text: white
+);
+
+$stratos-nav-theme: app-generate-nav-theme($stratos-theme, $a9s-sidenav-theme);
