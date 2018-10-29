@@ -1,0 +1,11 @@
+// Import brand colors
+@import 'custom/a9s-colors';
+
+// Create Angular Material palettes off brand colors
+$a9s-theme-primary: mat-palette($a9s-primary);
+$a9s-theme-accent: mat-palette($a9s-accent);
+$a9s-theme-warn: mat-palette($a9s-error);
+$stratos-theme: mat-light-theme($a9s-theme-primary, $a9s-theme-accent, $a9s-theme-warn);
+
+// Import custom component styling
+@import 'custom/a9s';
