@@ -16,7 +16,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
 
@@ -48,7 +48,7 @@ type helmRepositoriesFile struct {
 }
 
 // ListHelmRepositories will list Helm Repositories configured locally
-func ListHelmRepositories() ([]*interfaces.CNSIRecord, error) {
+func ListHelmRepositories() ([]*api.CNSIRecord, error) {
 
 	cfg, err := readHelmRepoFile()
 	if err != nil {
@@ -57,11 +57,11 @@ func ListHelmRepositories() ([]*interfaces.CNSIRecord, error) {
 	}
 
 	// Add an endpoint for each cluster
-	var eps []*interfaces.CNSIRecord
+	var eps []*api.CNSIRecord
 	for _, repo := range cfg.Repositories {
 		apiEndpoint, err := url.Parse(repo.URL)
 		if err == nil {
-			eps = append(eps, &interfaces.CNSIRecord{
+			eps = append(eps, &api.CNSIRecord{
 				GUID:                   getEndpointGUID(repo.URL),
 				Name:                   repo.Name,
 				CNSIType:               "helm",
@@ -82,7 +82,7 @@ func ListHelmRepositories() ([]*interfaces.CNSIRecord, error) {
 	u, _ := url.Parse("https://artifacthub.io")
 
 	// Add Artifact Hub in
-	eps = append(eps, &interfaces.CNSIRecord{
+	eps = append(eps, &api.CNSIRecord{
 		GUID:                   getEndpointGUID("https://artifacthub.io"),
 		Name:                   "Artifact Hub",
 		CNSIType:               "helm",
@@ -102,7 +102,7 @@ func ListHelmRepositories() ([]*interfaces.CNSIRecord, error) {
 }
 
 // ListConnectedCloudFoundry will list Cloud Foundry endpoints configured locally (can be only one)
-func ListConnectedKubernetes() ([]*interfaces.ConnectedEndpoint, error) {
+func ListConnectedKubernetes() ([]*api.ConnectedEndpoint, error) {
 
 	cfg, err := readHelmRepoFile()
 	if err != nil {
@@ -111,11 +111,11 @@ func ListConnectedKubernetes() ([]*interfaces.ConnectedEndpoint, error) {
 	}
 
 	// Add an endpoint for each cluster
-	var eps []*interfaces.ConnectedEndpoint
+	var eps []*api.ConnectedEndpoint
 	for _, repo := range cfg.Repositories {
 		apiEndpoint, err := url.Parse(repo.URL)
 		if err == nil {
-			eps = append(eps, &interfaces.ConnectedEndpoint{
+			eps = append(eps, &api.ConnectedEndpoint{
 				GUID:                   getEndpointGUID(repo.URL),
 				Name:                   repo.Name,
 				CNSIType:               "helm",
