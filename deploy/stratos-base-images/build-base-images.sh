@@ -7,10 +7,9 @@ YELLOW="\033[93m"
 RESET="\033[0m"
 BOLD="\033[1m"
 
-BASE_IMAGE=opensuse/leap:15.2
+BASE_IMAGE=centos:7
 REGISTRY=docker.io
-ORGANIZATION=splatform
-TAG=leap15_2
+TAG=centos7
 PROG=$(basename ${BASH_SOURCE[0]})
 SQUASH_ARGS="--squash"
 NO_SQUASH="stratos-base"
