@@ -9,6 +9,7 @@ BOLD="\033[1m"
 
 BASE_IMAGE=centos:7
 REGISTRY=docker.io
+ORGANIZATION=internalservices
 TAG=centos7
 PROG=$(basename ${BASH_SOURCE[0]})
 SQUASH_ARGS="--squash"
