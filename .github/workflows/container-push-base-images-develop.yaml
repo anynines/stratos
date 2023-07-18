@@ -26,5 +26,5 @@ jobs:
           ref: "develop"
       - name: 'Build stratos base images'
         run: |
-          docker login -u anynines -p ${{secrets.PKG_ACCESS_TOKEN}}
+          docker login ghcr.io -u anynines -p ${{secrets.PKG_ACCESS_TOKEN}}
           ./deploy/stratos-base-images/build-base-images.sh -r ghcr.io -o anynines -p
