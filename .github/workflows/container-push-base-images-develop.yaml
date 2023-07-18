@@ -10,6 +10,8 @@ on:
 jobs:
   push-store-image:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
 
     steps:
       - name: 'Log into GHCR'
