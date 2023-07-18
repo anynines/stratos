@@ -28,4 +28,5 @@ jobs:
           password: ${{secrets.GITHUB_TOKEN}}
       - name: 'Build stratos base images'
         run: |
+          ls
           ./deploy/stratos-base-images/build-base-images.sh -r ghcr.io -o anynines -p
