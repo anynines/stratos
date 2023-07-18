@@ -17,8 +17,8 @@ jobs:
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
-          username: ${{github.actor}}
-          password: ${{secrets.GITHUB_TOKEN}}
+          username: anynines
+          password: ${{secrets.PKG_ACCCESS_TOKEN}}
       - name: 'Checkout current develop'
         uses: actions/checkout@v3
         with:
