@@ -26,6 +26,11 @@ jobs:
           registry: ghcr.io
           username: ${{github.actor}}
           password: ${{secrets.GITHUB_TOKEN}}
+      - name: Produce Some Output
+        run: echo $PWD > output.txt
+      - name: Echo output
+        if: always()
+        run: cat output.txt
       - name: 'Build stratos base images'
         run: |
           echo "::set-output name=pwd::$(echo $PWD)"
