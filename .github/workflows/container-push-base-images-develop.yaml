@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - develop
+      - feature/INT-2909-create-gh-actions-build-themed-stratos
   workflow_dispatch:
 
 jobs:
