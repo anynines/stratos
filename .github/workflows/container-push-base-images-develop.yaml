@@ -16,7 +16,9 @@ jobs:
           './stratos'
     steps:
       - name: 'Checkout current develop'
-        uses: actions/checkout@develop
+        uses: actions/checkout@v3
+        with:
+          ref: "develop"
       
       - name: 'Log into GHCR'
         uses: docker/login-action@v1
