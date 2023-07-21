@@ -26,4 +26,4 @@ jobs:
           ref: "develop"
       - name: 'Build stratos base images'
         run: |
-          ./deploy/stratos-base-images/build-base-images.sh -r ghcr.io -o anynines -p
+          ./deploy/stratos-base-images/build-base-images.sh -r ghcr.io -o anynines -p -s
