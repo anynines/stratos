@@ -18,13 +18,12 @@ jobs:
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
-          username: anynines
-          password: ${{secrets.PKG_ACCESS_TOKEN}}
+          username: bmo-at-a9s
+          password: ${{secrets.PAT_BMO_AT_A9S}}
       - name: 'Checkout current develop'
         uses: actions/checkout@v3
         with:
           ref: "develop"
       - name: 'Build stratos base images'
         run: |
-          docker login ghcr.io -u anynines -p ${{secrets.PKG_ACCESS_TOKEN}}
           ./deploy/stratos-base-images/build-base-images.sh -r ghcr.io -o anynines -p
