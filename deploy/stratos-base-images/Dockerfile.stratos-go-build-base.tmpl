@@ -3,9 +3,9 @@ FROM {{BASE_IMAGE}}
 RUN yum update -y && \
     yum install -y git gcc wget gzip xz unzip
     
-RUN wget https://storage.googleapis.com/golang/go1.13.4.linux-{{GO_ARCH}}.tar.gz && \
-    tar -xzf go1.13.4.linux-{{GO_ARCH}}.tar.gz -C /usr/local/ && \
-    rm go1.13.4.linux-{{GO_ARCH}}.tar.gz && \
+RUN wget https://storage.googleapis.com/golang/go1.20.7.linux-{{GO_ARCH}}.tar.gz && \
+    tar -xzf go1.20.7.linux-{{GO_ARCH}}.tar.gz -C /usr/local/ && \
+    rm go1.20.7.linux-{{GO_ARCH}}.tar.gz && \
     mkdir -p /home/stratos/go/bin && \
     mkdir -p /home/stratos/go/src
     
