@@ -183,36 +183,36 @@ func setupPortalProxy(db *sql.DB) *portalProxy {
 	return pp
 }
 
-func expectNoRows() sqlmock.Rows {
+func expectNoRows() *sqlmock.Rows {
 	return sqlmock.NewRows([]string{"COUNT(*)"}).AddRow("0")
 }
 
-func expectOneRow() sqlmock.Rows {
+func expectOneRow() *sqlmock.Rows {
 	return sqlmock.NewRows([]string{"COUNT(*)"}).AddRow("1")
 }
 
-func expectCFRow() sqlmock.Rows {
+func expectCFRow() *sqlmock.Rows {
 	return sqlmock.NewRows(rowFieldsForCNSI).
 		AddRow(mockCFGUID, "Some fancy CF Cluster", "cf", mockAPIEndpoint, mockAuthEndpoint, mockAuthEndpoint, mockDopplerEndpoint, true, mockClientId, cipherClientSecret, true, "", "", "")
 }
 
-func expectCERow() sqlmock.Rows {
+func expectCERow() *sqlmock.Rows {
 	return sqlmock.NewRows(rowFieldsForCNSI).
 		AddRow(mockCEGUID, "Some fancy HCE Cluster", "hce", mockAPIEndpoint, mockAuthEndpoint, mockAuthEndpoint, "", true, mockClientId, cipherClientSecret, true, "", "", "")
 }
 
-func expectCFAndCERows() sqlmock.Rows {
+func expectCFAndCERows() *sqlmock.Rows {
 	return sqlmock.NewRows(rowFieldsForCNSI).
 		AddRow(mockCFGUID, "Some fancy CF Cluster", "cf", mockAPIEndpoint, mockAuthEndpoint, mockAuthEndpoint, mockDopplerEndpoint, true, mockClientId, cipherClientSecret, false, "", "", "").
 		AddRow(mockCEGUID, "Some fancy HCE Cluster", "hce", mockAPIEndpoint, mockAuthEndpoint, mockAuthEndpoint, "", true, mockClientId, cipherClientSecret, false, "", "", "")
 }
 
-func expectTokenRow() sqlmock.Rows {
+func expectTokenRow() *sqlmock.Rows {
 	return sqlmock.NewRows([]string{"token_guid", "auth_token", "refresh_token", "token_expiry", "disconnected", "auth_type", "meta_data", "user_guid", "linked_token"}).
 		AddRow(mockTokenGUID, mockUAAToken, mockUAAToken, mockTokenExpiry, false, "OAuth2", "", mockUserGUID, nil)
 }
 
-func expectEncryptedTokenRow(mockEncryptionKey []byte) sqlmock.Rows {
+func expectEncryptedTokenRow(mockEncryptionKey []byte) *sqlmock.Rows {
 
 	encryptedUaaToken, _ := crypto.EncryptToken(mockEncryptionKey, mockUAAToken)
 	return sqlmock.NewRows([]string{"token_guid", "auth_token", "refresh_token", "token_expiry", "disconnected", "auth_type", "meta_data", "user_guid", "linked_token"}).
