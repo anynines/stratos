@@ -8,8 +8,8 @@ RESET="\033[0m"
 BOLD="\033[1m"
 
 BASE_IMAGE=centos:7
-REGISTRY=docker.io
-ORGANIZATION=internalservices
+REGISTRY=ghcr.io
+ORGANIZATION=anynines
 TAG=centos7
 ARCH=amd64
 PROG=$(basename ${BASH_SOURCE[0]})
