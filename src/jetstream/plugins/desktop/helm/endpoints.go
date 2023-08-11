@@ -34,6 +34,26 @@ func (d *EndpointStore) ListByUser(userGUID string) ([]*interfaces.ConnectedEndp
 	return merged, err
 }
 
+func (d *EndpointStore) ListByCreator(userGUID string, encriptionKey []byte) ([]*interfaces.CNSIRecord, error) {
+	local, list_err := ListHelmRepositories()
+	db, store_err := d.store.ListByCreator(userGUID, encriptionKey)
+
+	err := errors.Join(list_err, store_err)
+
+	merged := mergeEndpoints(db, local)
+	return merged, err
+}
+
+func (d *EndpointStore) ListByAPIEndpoint(endpoint string, encriptionKey []byte) ([]*interfaces.CNSIRecord, error) {
+	local, local_err := ListHelmRepositories()
+	db, db_err := d.store.ListByAPIEndpoint(endpoint, encriptionKey)
+
+	err := errors.Join(local_err, db_err)
+
+	merged := mergeEndpoints(db, local)
+	return merged, err
+}
+
 func (d *EndpointStore) Find(guid string, encryptionKey []byte) (interfaces.CNSIRecord, error) {
 	local, err := ListHelmRepositories()
 	if err == nil {
