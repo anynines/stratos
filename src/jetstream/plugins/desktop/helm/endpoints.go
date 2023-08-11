@@ -3,6 +3,7 @@ package helm
 import (
 	"crypto/sha1"
 	"encoding/base64"
+	"errors"
 
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces"
 	log "github.com/sirupsen/logrus"
@@ -14,16 +15,20 @@ type EndpointStore struct {
 }
 
 func (d *EndpointStore) List(encryptionKey []byte) ([]*interfaces.CNSIRecord, error) {
-	local, err := ListHelmRepositories()
-	db, err := d.store.List(encryptionKey)
+	local, local_err := ListHelmRepositories()
+	db, db_err := d.store.List(encryptionKey)
+
+	err := errors.Join(local_err, db_err)
 
 	merged := mergeEndpoints(db, local)
 	return merged, err
 }
 
 func (d *EndpointStore) ListByUser(userGUID string) ([]*interfaces.ConnectedEndpoint, error) {
-	local, err := ListConnectedKubernetes()
-	db, err := d.store.ListByUser(userGUID)
+	local, local_err := ListConnectedKubernetes()
+	db, db_err := d.store.ListByUser(userGUID)
+
+	err := errors.Join(local_err, db_err)
 
 	merged := mergeConnectedEndpoints(db, local)
 	return merged, err
