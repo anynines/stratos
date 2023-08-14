@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -143,7 +142,7 @@ func readHelmRepoFile() (*helmRepositoriesFile, error) {
 	helmFile := filepath.Join(cfgFolder, "repositories.yaml")
 
 	// Check we can unmarshall the request
-	data, err := ioutil.ReadFile(helmFile)
+	data, err := os.ReadFile(helmFile)
 	if err != nil {
 		return nil, fmt.Errorf("Can not read Kubeconfig file: %s", err)
 	}
@@ -224,7 +223,7 @@ func getAllCharts() ([]IndexFileMetadata, error) {
 func processIndexFile(path string, repo helmRepositoryInfo) ([]IndexFileMetadata, error) {
 
 	// Check we can unmarshall the request
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("Can not read repository index file: %s", err)
 	}
