@@ -38,14 +38,14 @@ type CFConfigFile struct {
 }
 
 type helmRepositoryInfo struct {
-	Name     string `yaml:name`
-	Insecure bool   `yaml:insecure_skip_tls_verify`
-	URL      string `yaml:url`
+	Name     string `yaml:"name"`
+	Insecure bool   `yaml:"insecure_skip_tls_verify"`
+	URL      string `yaml:"url"`
 }
 
 type helmRepositoriesFile struct {
-	APIVersion   string               `yaml:apiVersion`
-	Repositories []helmRepositoryInfo `yaml:repositories`
+	APIVersion   string               `yaml:"apiVersion"`
+	Repositories []helmRepositoryInfo `yaml:"repositories"`
 }
 
 // ListHelmRepositories will list Helm Repositories configured locally
