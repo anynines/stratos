@@ -1,6 +1,8 @@
 package helm
 
 import (
+	"errors"
+
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces"
 
 	log "github.com/sirupsen/logrus"
@@ -29,8 +31,8 @@ func Init(portalProxy interfaces.PortalProxy) error {
 	br.factory = br.portalProxy.SetStoreFactory(br)
 	log.Info("Helm desktop endpoints initialized")
 
-	eStore, _ := br.factory.EndpointStore()
-	tStore, _ := br.factory.TokenStore()
+	eStore, endpointStoreError := br.factory.EndpointStore()
+	tStore, tokenStoreError := br.factory.TokenStore()
 
 	// Use a custom endpoint store that can overlay local Kubernetes endpoints
 	br.endpointStore = EndpointStore{
@@ -44,7 +46,7 @@ func Init(portalProxy interfaces.PortalProxy) error {
 		store:       tStore,
 	}
 
-	return nil
+	return errors.Join(endpointStoreError, tokenStoreError)
 }
 
 // EndpointStore gets store for obtaining endpoint information
