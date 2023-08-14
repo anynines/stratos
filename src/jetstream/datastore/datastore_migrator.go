@@ -18,7 +18,7 @@ var (
 func ApplyMigrations(db *sql.DB) error {
 	current, err := goose.EnsureDBVersion(db)
 	if err != nil {
-		return fmt.Errorf("Failed to get database version: %s", err.Error())
+		return fmt.Errorf("failed to get database version: %s", err.Error())
 	}
 
 	log.Println("========================")
@@ -35,7 +35,7 @@ func ApplyMigrations(db *sql.DB) error {
 	}
 
 	if len(migrations) == 0 {
-		return fmt.Errorf("No Database Migrations found")
+		return fmt.Errorf("no Database Migrations found")
 	}
 
 	for {

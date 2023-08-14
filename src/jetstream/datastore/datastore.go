@@ -108,7 +108,7 @@ func NewDatabaseConnectionParametersFromConfig(dc DatabaseConfig) (DatabaseConfi
 			return dc, nil
 		}
 		// Invalid SSL mode
-		return dc, fmt.Errorf("Invalid SSL mode: %s", dc.SSLMode)
+		return dc, fmt.Errorf("invalid SSL mode: %s", dc.SSLMode)
 	} else if dc.DatabaseProvider == MYSQL {
 		// Map default of disabled to false for MySQL
 		if dc.SSLMode == "disable" {
@@ -118,9 +118,9 @@ func NewDatabaseConnectionParametersFromConfig(dc DatabaseConfig) (DatabaseConfi
 			return dc, nil
 		}
 		// Invalid SSL mode
-		return dc, fmt.Errorf("Invalid SSL mode: %s", dc.SSLMode)
+		return dc, fmt.Errorf("invalid SSL mode: %s", dc.SSLMode)
 	}
-	return dc, fmt.Errorf("Invalid provider %v", dc)
+	return dc, fmt.Errorf("invalid provider %v", dc)
 }
 
 func validateRequiredDatabaseParams(username, password, database, host string, port int) (err error) {
@@ -262,7 +262,7 @@ func Ping(db *sql.DB) error {
 	log.Debug("Ping database")
 	err := db.Ping()
 	if err != nil {
-		return fmt.Errorf("Unable to ping the database: %+v", err)
+		return fmt.Errorf("unable to ping the database: %+v", err)
 	}
 
 	return nil
@@ -273,7 +273,7 @@ func Ping(db *sql.DB) error {
 // SQLite uses ?
 func ModifySQLStatement(sql string, databaseProvider string) string {
 	if databaseProvider == SQLITE || databaseProvider == MYSQL {
-		sqlParamReplace := regexp.MustCompile("\\$[0-9]+")
+		sqlParamReplace := regexp.MustCompile(`\$[0-9]+`)
 		return sqlParamReplace.ReplaceAllString(sql, "?")
 	}
 
@@ -315,12 +315,12 @@ func WaitForMigrations(db *sql.DB) error {
 		}
 
 		// If our timeout boundary has been exceeded, bail out
-		if timeout.Sub(time.Now()) < 0 {
+		if time.Until(timeout) < 0 {
 			// If we timed out and the last request was a db error, show the error
 			if err != nil {
 				log.Error(err)
 			}
-			return fmt.Errorf("Timed out waiting for database schema to be initialized")
+			return fmt.Errorf("timed out waiting for database schema to be initialized")
 		}
 
 		time.Sleep(3 * time.Second)
