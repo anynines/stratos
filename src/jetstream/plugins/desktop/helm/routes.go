@@ -87,7 +87,7 @@ func getChart(c echo.Context) error {
 	data, ok := chartMap[id]
 
 	if !ok {
-		return errors.New("Can not find chart")
+		return errors.New("can not find chart")
 	}
 
 	// Find the latest version for the chart
@@ -175,7 +175,7 @@ func getChartAndVersion(c echo.Context) error {
 		}
 	}
 
-	return errors.New("Chart version not found")
+	return errors.New("chart version not found")
 }
 
 func getIcon(c echo.Context) error {
@@ -253,5 +253,5 @@ func getChartAndVersionFile(ec echo.Context) error {
 		}
 	}
 
-	return errors.New("File not found")
+	return errors.New("file not found")
 }

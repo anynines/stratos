@@ -144,14 +144,14 @@ func readHelmRepoFile() (*helmRepositoriesFile, error) {
 	// Check we can unmarshall the request
 	data, err := os.ReadFile(helmFile)
 	if err != nil {
-		return nil, fmt.Errorf("Can not read Kubeconfig file: %s", err)
+		return nil, fmt.Errorf("can not read Kubeconfig file: %s", err)
 	}
 
 	// Parse as yaml
 	var repos helmRepositoriesFile
 	err = yaml.Unmarshal(data, &repos)
 	if err != nil {
-		return nil, fmt.Errorf("Can not parse Helm Repositories file: %s", err)
+		return nil, fmt.Errorf("can not parse Helm Repositories file: %s", err)
 	}
 
 	return &repos, nil
@@ -225,14 +225,14 @@ func processIndexFile(path string, repo helmRepositoryInfo) ([]IndexFileMetadata
 	// Check we can unmarshall the request
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("Can not read repository index file: %s", err)
+		return nil, fmt.Errorf("can not read repository index file: %s", err)
 	}
 
 	// Parse as yaml
 	var repos IndexFile
 	err = yaml.Unmarshal(data, &repos)
 	if err != nil {
-		return nil, fmt.Errorf("Can not parse repository index file: %s", err)
+		return nil, fmt.Errorf("can not parse repository index file: %s", err)
 	}
 
 	var charts []IndexFileMetadata
@@ -429,7 +429,7 @@ func fileExists(filename string) bool {
 func getLocalChartFilePath(urls []string) (string, error) {
 
 	if len(urls) == 0 {
-		return "", errors.New("No chart download URLs")
+		return "", errors.New("no chart download URLs")
 	}
 
 	urlParts := strings.Split(urls[0], "/")
@@ -439,7 +439,7 @@ func getLocalChartFilePath(urls []string) (string, error) {
 
 	cacheFilder, err := getCacheFolder()
 	if err != nil {
-		return "", errors.New("Can not get cache folder")
+		return "", errors.New("can not get cache folder")
 	}
 
 	path := filepath.Join(cacheFilder, "repository", chartFile)
@@ -514,5 +514,5 @@ func getArchiveFile(c echo.Context, archivePath, filename string) error {
 		}
 	}
 
-	return errors.New("Can not find file in archive")
+	return errors.New("can not find file in archive")
 }
