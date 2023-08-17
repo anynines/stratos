@@ -10,8 +10,9 @@ import (
 
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api/config"
+	mock_api "github.com/cloudfoundry-incubator/stratos/src/jetstream/api/mock"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/apikeys"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/mock_interfaces"
+	mock_apikeys "github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/apikeys/mock"
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
@@ -58,8 +59,8 @@ func Test_apiKeyMiddleware(t *testing.T) {
 	log.SetLevel(log.PanicLevel)
 
 	ctrl := gomock.NewController(t)
-	mockAPIRepo := apikeys.NewMockRepository(ctrl)
-	mockStratosAuth := mock_interfaces.NewMockStratosAuth(ctrl)
+	mockAPIRepo := mock_apikeys.NewMockRepository(ctrl)
+	mockStratosAuth := mock_api.NewMockStratosAuth(ctrl)
 	pp := makeMockServer(mockAPIRepo, mockStratosAuth)
 	defer ctrl.Finish()
 	defer pp.DatabaseConnectionPool.Close()
@@ -384,7 +385,7 @@ func TestEndpointAdminMiddleware(t *testing.T) {
 	Convey("new request through endpointAdminMiddleware", t, func() {
 		// mock StratosAuthService
 		ctrl := gomock.NewController(t)
-		mockStratosAuth := mock_interfaces.NewMockStratosAuth(ctrl)
+		mockStratosAuth := mock_api.NewMockStratosAuth(ctrl)
 		defer ctrl.Finish()
 
 		// setup mock DB, PortalProxy and mock StratosAuthService
@@ -472,7 +473,7 @@ func TestEndpointUpdateDeleteMiddleware(t *testing.T) {
 	Convey("new request through endpointUpdateDeleteMiddleware", t, func() {
 		// mock StratosAuthService
 		ctrl := gomock.NewController(t)
-		mockStratosAuth := mock_interfaces.NewMockStratosAuth(ctrl)
+		mockStratosAuth := mock_api.NewMockStratosAuth(ctrl)
 		defer ctrl.Finish()
 
 		// setup mock DB, PortalProxy and mock StratosAuthService

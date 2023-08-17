@@ -20,8 +20,8 @@ import (
 
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api/config"
+	mock_api "github.com/cloudfoundry-incubator/stratos/src/jetstream/api/mock"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/crypto"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/mock_interfaces"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -584,7 +584,7 @@ func TestLoginToCNSIWithUserEndpointsEnabled(t *testing.T) {
 	Convey("Login to CNSI with UserEndpoints enabled", t, func() {
 		// mock StratosAuthService
 		ctrl := gomock.NewController(t)
-		mockStratosAuth := mock_interfaces.NewMockStratosAuth(ctrl)
+		mockStratosAuth := mock_api.NewMockStratosAuth(ctrl)
 		defer ctrl.Finish()
 
 		// setup mock DB, PortalProxy and mock StratosAuthService

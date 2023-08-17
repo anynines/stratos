@@ -8,8 +8,8 @@ import (
 
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api/config"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/apikeys"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/mock_interfaces"
+	mock_api "github.com/cloudfoundry-incubator/stratos/src/jetstream/api/mock"
+	mock_apikeys "github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/apikeys/mock"
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
@@ -26,8 +26,8 @@ func Test_addAPIKey(t *testing.T) {
 		userID := "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
 
 		ctrl := gomock.NewController(t)
-		mockAPIRepo := apikeys.NewMockRepository(ctrl)
-		mockStratosAuth := mock_interfaces.NewMockStratosAuth(ctrl)
+		mockAPIRepo := mock_apikeys.NewMockRepository(ctrl)
+		mockStratosAuth := mock_api.NewMockStratosAuth(ctrl)
 		pp := makeMockServer(mockAPIRepo, mockStratosAuth)
 		defer ctrl.Finish()
 		defer pp.DatabaseConnectionPool.Close()
@@ -227,8 +227,8 @@ func Test_listAPIKeys(t *testing.T) {
 	log.SetLevel(log.PanicLevel)
 
 	ctrl := gomock.NewController(t)
-	mockAPIRepo := apikeys.NewMockRepository(ctrl)
-	mockStratosAuth := mock_interfaces.NewMockStratosAuth(ctrl)
+	mockAPIRepo := mock_apikeys.NewMockRepository(ctrl)
+	mockStratosAuth := mock_api.NewMockStratosAuth(ctrl)
 	pp := makeMockServer(mockAPIRepo, mockStratosAuth)
 	defer ctrl.Finish()
 	defer pp.DatabaseConnectionPool.Close()
@@ -316,8 +316,8 @@ func Test_deleteAPIKeys(t *testing.T) {
 	log.SetLevel(log.PanicLevel)
 
 	ctrl := gomock.NewController(t)
-	mockAPIRepo := apikeys.NewMockRepository(ctrl)
-	mockStratosAuth := mock_interfaces.NewMockStratosAuth(ctrl)
+	mockAPIRepo := mock_apikeys.NewMockRepository(ctrl)
+	mockStratosAuth := mock_api.NewMockStratosAuth(ctrl)
 	pp := makeMockServer(mockAPIRepo, mockStratosAuth)
 	defer ctrl.Finish()
 	defer pp.DatabaseConnectionPool.Close()

@@ -9,7 +9,7 @@ import (
 
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api/config"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/mock_interfaces"
+	mock_api "github.com/cloudfoundry-incubator/stratos/src/jetstream/api/mock"
 	"github.com/golang/mock/gomock"
 	_ "github.com/satori/go.uuid"
 	. "github.com/smartystreets/goconvey/convey"
@@ -278,7 +278,7 @@ func TestRegisterWithUserEndpointsEnabled(t *testing.T) {
 
 		// mock StratosAuthService
 		ctrl := gomock.NewController(t)
-		mockStratosAuth := mock_interfaces.NewMockStratosAuth(ctrl)
+		mockStratosAuth := mock_api.NewMockStratosAuth(ctrl)
 		defer ctrl.Finish()
 
 		// setup mock DB, PortalProxy and mock StratosAuthService
@@ -600,7 +600,7 @@ func TestListCNSIsWithUserEndpointsEnabled(t *testing.T) {
 
 		// mock StratosAuthService
 		ctrl := gomock.NewController(t)
-		mockStratosAuth := mock_interfaces.NewMockStratosAuth(ctrl)
+		mockStratosAuth := mock_api.NewMockStratosAuth(ctrl)
 		defer ctrl.Finish()
 
 		// setup mock DB, PortalProxy and mock StratosAuthService
