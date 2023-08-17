@@ -1,4 +1,4 @@
-package interfaces
+package api
 
 import "github.com/labstack/echo/v4"
 
@@ -7,7 +7,7 @@ const (
 	DefaultAdminUserName = "admin"
 )
 
-//StratosAuth provides common access to Stratos login/logout functionality
+// StratosAuth provides common access to Stratos login/logout functionality
 type StratosAuth interface {
 	ShowConfig(config *ConsoleConfig)
 	Login(c echo.Context) error

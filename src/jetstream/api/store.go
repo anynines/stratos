@@ -1,4 +1,4 @@
-package interfaces
+package api
 
 // StoreFactory is used to obtain interfaces for accessing the store
 type StoreFactory interface {

@@ -8,6 +8,8 @@ replace github.com/cloudfoundry-incubator/stratos/src/jetstream/crypto => ./cryp
 
 replace github.com/cloudfoundry-incubator/stratos/src/jetstream/plugins => ./plugins
 
+replace github.com/cloudfoundry-incubator/stratos/src/jetstream/api => ./api
+
 replace github.com/cloudfoundry-incubator/stratos/src/jetstream/plugins/kubernetes => ./plugins/kubernetes
 
 replace github.com/cloudfoundry-incubator/stratos/src/jetstream/plugins/kubernetes/auth => ./plugins/kubernetes/auth
@@ -18,7 +20,9 @@ require (
 	github.com/antonlindstrom/pgstore v0.0.0-20220421113606-e3a6e3fed12a
 	github.com/cf-stratos/mysqlstore v0.0.0-20170822100912-304308519d13
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
+	github.com/cloudfoundry-incubator/stratos/src/jetstream/api v0.0.0-00010101000000-000000000000
 	github.com/cloudfoundry-incubator/stratos/src/jetstream/plugins/kubernetes/auth v0.0.0-00010101000000-000000000000
+	github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces v0.0.0-20191015083202-4c24d26ae1ec
 	github.com/cloudfoundry/noaa v2.1.0+incompatible
 	github.com/cloudfoundry/sonde-go v0.0.0-20230710164515-a0a43d1dbbf8
 	github.com/domodwyer/mailyak v3.1.1+incompatible
@@ -72,6 +76,7 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/jtolds/gls v4.20.0+incompatible // indirect
 	github.com/kylelemons/go-gypsy v1.0.0 // indirect
+	github.com/labstack/echo v3.3.10+incompatible // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
 	github.com/lib/pq v1.10.5 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
@@ -81,6 +86,7 @@ require (
 	github.com/mitchellh/mapstructure v1.1.2 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
+	github.com/nxadm/tail v1.4.8 // indirect
 	github.com/prometheus/client_golang v1.14.0 // indirect
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.37.0 // indirect
