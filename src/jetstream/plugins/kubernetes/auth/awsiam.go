@@ -17,7 +17,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sts"
-	"github.com/kubernetes-sigs/aws-iam-authenticator/pkg/token"
+	"sigs.k8s.io/aws-iam-authenticator/pkg/token"
 )
 
 // AWSIAMUserInfo is the user info needed to connect to AWS Kubernetes
@@ -119,7 +119,7 @@ func (c *AWSKubeAuth) GetUserFromToken(cnsiGUID string, cfTokenRecord *interface
 }
 
 func (c *AWSKubeAuth) getTokenIAM(info AWSIAMUserInfo) (string, error) {
-	generator, err := token.NewGenerator(false)
+	generator, err := token.NewGenerator(false, false)
 	if err != nil {
 		return "", fmt.Errorf("AWS IAM: Failed to create generator due to %+v", err)
 	}
