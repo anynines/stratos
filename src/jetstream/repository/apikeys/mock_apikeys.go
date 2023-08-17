@@ -5,9 +5,10 @@
 package apikeys
 
 import (
-	interfaces "github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces"
-	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
+
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
+	gomock "github.com/golang/mock/gomock"
 )
 
 // MockRepository is a mock of Repository interface
@@ -34,10 +35,10 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 }
 
 // AddAPIKey mocks base method
-func (m *MockRepository) AddAPIKey(userID, comment string) (*interfaces.APIKey, error) {
+func (m *MockRepository) AddAPIKey(userID, comment string) (*api.APIKey, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AddAPIKey", userID, comment)
-	ret0, _ := ret[0].(*interfaces.APIKey)
+	ret0, _ := ret[0].(*api.APIKey)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -49,10 +50,10 @@ func (mr *MockRepositoryMockRecorder) AddAPIKey(userID, comment interface{}) *go
 }
 
 // GetAPIKeyBySecret mocks base method
-func (m *MockRepository) GetAPIKeyBySecret(keySecret string) (*interfaces.APIKey, error) {
+func (m *MockRepository) GetAPIKeyBySecret(keySecret string) (*api.APIKey, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAPIKeyBySecret", keySecret)
-	ret0, _ := ret[0].(*interfaces.APIKey)
+	ret0, _ := ret[0].(*api.APIKey)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -64,10 +65,10 @@ func (mr *MockRepositoryMockRecorder) GetAPIKeyBySecret(keySecret interface{}) *
 }
 
 // ListAPIKeys mocks base method
-func (m *MockRepository) ListAPIKeys(userID string) ([]interfaces.APIKey, error) {
+func (m *MockRepository) ListAPIKeys(userID string) ([]api.APIKey, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListAPIKeys", userID)
-	ret0, _ := ret[0].([]interfaces.APIKey)
+	ret0, _ := ret[0].([]api.APIKey)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

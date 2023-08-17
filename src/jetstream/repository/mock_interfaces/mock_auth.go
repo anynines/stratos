@@ -5,10 +5,11 @@
 package mock_interfaces
 
 import (
-	interfaces "github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces"
+	reflect "reflect"
+
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
 	gomock "github.com/golang/mock/gomock"
 	echo "github.com/labstack/echo/v4"
-	reflect "reflect"
 )
 
 // MockStratosAuth is a mock of StratosAuth interface
@@ -78,10 +79,10 @@ func (mr *MockStratosAuthMockRecorder) GetUsername(userGUID interface{}) *gomock
 }
 
 // GetUser mocks base method
-func (m *MockStratosAuth) GetUser(userGUID string) (*interfaces.ConnectedUser, error) {
+func (m *MockStratosAuth) GetUser(userGUID string) (*api.ConnectedUser, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUser", userGUID)
-	ret0, _ := ret[0].(*interfaces.ConnectedUser)
+	ret0, _ := ret[0].(*api.ConnectedUser)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -119,7 +120,7 @@ func (mr *MockStratosAuthMockRecorder) BeforeVerifySession(c interface{}) *gomoc
 }
 
 // ShowConfig mocks base method
-func (m *MockStratosAuth) ShowConfig(config *interfaces.ConsoleConfig) {
+func (m *MockStratosAuth) ShowConfig(config *api.ConsoleConfig) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "ShowConfig", config)
 }
