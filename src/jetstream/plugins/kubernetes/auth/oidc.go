@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"time"
 
@@ -71,7 +71,7 @@ func (c *OIDCKubeAuth) FetchToken(cnsiRecord interfaces.CNSIRecord, ec echo.Cont
 
 	// Need to extract the parameters from the request body
 	defer req.Body.Close()
-	body, err := ioutil.ReadAll(req.Body)
+	body, err := io.ReadAll(req.Body)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -81,7 +81,7 @@ func (c *OIDCKubeAuth) FetchToken(cnsiRecord interfaces.CNSIRecord, ec echo.Cont
 	kubeConfigUser, err := kubeConfig.GetUserForCluster(cnsiRecord.APIEndpoint.String())
 
 	if err != nil {
-		return nil, nil, fmt.Errorf("Unable to find cluster in kubeconfig")
+		return nil, nil, fmt.Errorf("unable to find cluster in kubeconfig")
 	}
 
 	// We only support OIDC auth provider at the moment
@@ -127,26 +127,32 @@ func (c *OIDCKubeAuth) GetUserFromToken(cnsiGUID string, tokenRecord *interfaces
 func (c *OIDCKubeAuth) GetOIDCConfig(k *config.KubeConfigUser) (*KubeConfigAuthProviderOIDC, error) {
 
 	if k.User.AuthProvider.Name != "oidc" {
-		return nil, errors.New("User doesn't use OIDC")
+		return nil, errors.New("user doesn't use OIDC")
 	}
 
 	OIDCConfig := &KubeConfigAuthProviderOIDC{}
 	err := config.UnMarshalHelper(k.User.AuthProvider.Config, OIDCConfig)
 	if err != nil {
 		log.Info(err)
-		return nil, errors.New("Can not unmarshal OIDC Auth Provider configuration")
+		return nil, errors.New("can not unmarshal OIDC Auth Provider configuration")
 	}
 
 	token, err := jws.ParseJWT([]byte(OIDCConfig.IDToken))
 	if err != nil {
 		log.Info(err)
-		return nil, errors.New("Can not parse JWT Access token")
+		return nil, errors.New("can not parse JWT Access token")
 	}
 
-	expiry, ok := token.Claims().Expiration()
+	expiry_string, ok := token.Claims().Get("exp").(string)
 	if !ok {
-		return nil, errors.New("Can not get Access Token expiry time")
+		return nil, errors.New("can not get Access Token expiry time claim")
 	}
+
+	expiry, err := time.Parse(time.RFC3339, expiry_string)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("can not parse Access Token expiry time claim '%s': %s", expiry_string, err))
+	}
+
 	OIDCConfig.Expiry = expiry
 
 	return OIDCConfig, nil
