@@ -3,7 +3,7 @@ package cfapppush
 import (
 	"errors"
 
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
 
 	"code.cloudfoundry.org/cli/util/configv3"
 	log "github.com/sirupsen/logrus"
@@ -26,7 +26,7 @@ func (c *CFPushApp) setEndpointInfo(config *configv3.Config) error {
 		return err
 	}
 
-	if info, ok := endpointInfo.(interfaces.V2Info); ok {
+	if info, ok := endpointInfo.(api.V2Info); ok {
 		// Got the info we need - update the config with it
 		config.SetTargetInformation(apiEndpoint, info.APIVersion, info.AuthorizationEndpoint, info.MinCLIVersion, info.DopplerLoggingEndpoint, info.RoutingEndpoint, skipSSLValidation)
 		config.SetAccessToken("bearer " + c.config.AuthToken)

@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces/config"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api/config"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/mock_interfaces"
 	"github.com/golang/mock/gomock"
 	_ "github.com/satori/go.uuid"
@@ -84,7 +84,7 @@ func TestRegisterCFClusterWithMissingName(t *testing.T) {
 	}
 }
 
-func getCFPlugin(p *portalProxy, endpointType string) interfaces.EndpointPlugin {
+func getCFPlugin(p *portalProxy, endpointType string) api.EndpointPlugin {
 
 	for _, plugin := range p.Plugins {
 		endpointPlugin, err := plugin.GetEndpointPlugin()
@@ -388,7 +388,7 @@ func TestRegisterWithUserEndpointsEnabled(t *testing.T) {
 						dberr := mock.ExpectationsWereMet()
 
 						Convey("should fail ", func() {
-							So(err, ShouldResemble, interfaces.NewHTTPShadowError(
+							So(err, ShouldResemble, api.NewHTTPShadowError(
 								http.StatusBadRequest,
 								"Can not register same system endpoint multiple times",
 								"Can not register same system endpoint multiple times",
@@ -454,7 +454,7 @@ func TestRegisterWithUserEndpointsEnabled(t *testing.T) {
 						dberr := mock.ExpectationsWereMet()
 
 						Convey("there should be no error", func() {
-							So(err, ShouldResemble, interfaces.NewHTTPShadowError(
+							So(err, ShouldResemble, api.NewHTTPShadowError(
 								http.StatusBadRequest,
 								"Can not register same endpoint multiple times",
 								"Can not register same endpoint multiple times",
@@ -543,7 +543,7 @@ func TestRegisterWithUserEndpointsEnabled(t *testing.T) {
 						dberr := mock.ExpectationsWereMet()
 
 						Convey("should fail ", func() {
-							So(err, ShouldResemble, interfaces.NewHTTPShadowError(
+							So(err, ShouldResemble, api.NewHTTPShadowError(
 								http.StatusBadRequest,
 								"Can not register same endpoint multiple times",
 								"Can not register same endpoint multiple times",
@@ -575,7 +575,7 @@ func TestRegisterWithUserEndpointsEnabled(t *testing.T) {
 						dberr := mock.ExpectationsWereMet()
 
 						Convey("should fail ", func() {
-							So(err, ShouldResemble, interfaces.NewHTTPShadowError(
+							So(err, ShouldResemble, api.NewHTTPShadowError(
 								http.StatusBadRequest,
 								"Can not register same endpoint multiple times",
 								"Can not register same endpoint multiple times",

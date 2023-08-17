@@ -13,7 +13,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/crypto"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
 )
 
 const (
@@ -47,7 +47,7 @@ type SessionValueNotFound struct {
 type SessionInfoEnvelope struct {
 	Status string           `json:"status"`
 	Error  string           `json:"error"`
-	Data   *interfaces.Info `json:"data"`
+	Data   *api.Info `json:"data"`
 }
 
 func (e *SessionValueNotFound) Error() string {
@@ -250,7 +250,7 @@ func (p *portalProxy) verifySession(c echo.Context) error {
 
 	p.StratosAuthService.BeforeVerifySession(c)
 
-	collectErrors := func(p *portalProxy, c echo.Context) (*interfaces.Info, error) {
+	collectErrors := func(p *portalProxy, c echo.Context) (*api.Info, error) {
 		sessionExpireTime, err := p.GetSessionInt64Value(c, "exp")
 		if err != nil {
 			return nil, errors.New("Could not find session date")

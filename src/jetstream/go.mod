@@ -22,7 +22,6 @@ require (
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
 	github.com/cloudfoundry-incubator/stratos/src/jetstream/api v0.0.0-00010101000000-000000000000
 	github.com/cloudfoundry-incubator/stratos/src/jetstream/plugins/kubernetes/auth v0.0.0-00010101000000-000000000000
-	github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces v0.0.0-20191015083202-4c24d26ae1ec
 	github.com/cloudfoundry/noaa v2.1.0+incompatible
 	github.com/cloudfoundry/sonde-go v0.0.0-20230710164515-a0a43d1dbbf8
 	github.com/domodwyer/mailyak v3.1.1+incompatible
@@ -76,7 +75,6 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/jtolds/gls v4.20.0+incompatible // indirect
 	github.com/kylelemons/go-gypsy v1.0.0 // indirect
-	github.com/labstack/echo v3.3.10+incompatible // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
 	github.com/lib/pq v1.10.5 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect

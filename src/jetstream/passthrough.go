@@ -16,7 +16,7 @@ import (
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
 )
 
 // API Host Prefix to replace if the custom header is supplied
@@ -96,7 +96,7 @@ func getRequestParts(c echo.Context) (*http.Request, []byte, error) {
 	return req, body, nil
 }
 
-func buildJSONResponse(cnsiList []string, responses map[string]*interfaces.CNSIRequest) map[string]*json.RawMessage {
+func buildJSONResponse(cnsiList []string, responses map[string]*api.CNSIRequest) map[string]*json.RawMessage {
 	log.Debug("buildJSONResponse")
 	jsonResponse := make(map[string]*json.RawMessage)
 	for _, guid := range cnsiList {
@@ -157,9 +157,9 @@ func isValidJSON(data []byte) bool {
 	return err == nil
 }
 
-func (p *portalProxy) buildCNSIRequest(cnsiGUID string, userGUID string, method string, uri *url.URL, body []byte, header http.Header) (interfaces.CNSIRequest, error) {
+func (p *portalProxy) buildCNSIRequest(cnsiGUID string, userGUID string, method string, uri *url.URL, body []byte, header http.Header) (api.CNSIRequest, error) {
 	log.Debug("buildCNSIRequest")
-	cnsiRequest := interfaces.CNSIRequest{
+	cnsiRequest := api.CNSIRequest{
 		GUID:     cnsiGUID,
 		UserGUID: userGUID,
 
@@ -200,7 +200,7 @@ func (p *portalProxy) validateCNSIList(cnsiList []string) error {
 	return nil
 }
 
-func fwdCNSIStandardHeaders(cnsiRequest *interfaces.CNSIRequest, req *http.Request) {
+func fwdCNSIStandardHeaders(cnsiRequest *api.CNSIRequest, req *http.Request) {
 	log.Debug("fwdCNSIStandardHeaders")
 	for k, v := range cnsiRequest.Header {
 		switch {
@@ -230,7 +230,7 @@ func (p *portalProxy) proxy(c echo.Context) error {
 	return p.SendProxiedResponse(c, responses)
 }
 
-func (p *portalProxy) ProxyRequest(c echo.Context, uri *url.URL) (map[string]*interfaces.CNSIRequest, error) {
+func (p *portalProxy) ProxyRequest(c echo.Context, uri *url.URL) (map[string]*api.CNSIRequest, error) {
 	log.Debug("ProxyRequest")
 	cnsiList := strings.Split(c.Request().Header.Get("x-cap-cnsi-list"), ",")
 	shouldPassthrough := "true" == c.Request().Header.Get("x-cap-passthrough")
@@ -269,7 +269,7 @@ func (p *portalProxy) ProxyRequest(c echo.Context, uri *url.URL) (map[string]*in
 	}
 
 	// send the request to each CNSI
-	done := make(chan *interfaces.CNSIRequest)
+	done := make(chan *api.CNSIRequest)
 	for _, cnsi := range cnsiList {
 		cnsiRequest, buildErr := p.buildCNSIRequest(cnsi, portalUserGUID, req.Method, uri, body, header)
 		if buildErr != nil {
@@ -295,7 +295,7 @@ func (p *portalProxy) ProxyRequest(c echo.Context, uri *url.URL) (map[string]*in
 	}
 
 	// Wait for all responses
-	responses := make(map[string]*interfaces.CNSIRequest)
+	responses := make(map[string]*api.CNSIRequest)
 
 	if !longRunning {
 		for range cnsiList {
@@ -313,7 +313,7 @@ func (p *portalProxy) ProxyRequest(c echo.Context, uri *url.URL) (map[string]*in
 				for _, id := range cnsiList {
 					if _, ok := responses[id]; !ok {
 						// Did not get a response for the endpoint
-						responses[id] = &interfaces.CNSIRequest{
+						responses[id] = &api.CNSIRequest{
 							GUID:         id,
 							UserGUID:     portalUserGUID,
 							Method:       req.Method,
@@ -351,11 +351,11 @@ func makeLongRunningTimeoutError() []byte {
 }
 
 // TODO: This should be used by the function above
-func (p *portalProxy) DoProxyRequest(requests []interfaces.ProxyRequestInfo) (map[string]*interfaces.CNSIRequest, error) {
+func (p *portalProxy) DoProxyRequest(requests []api.ProxyRequestInfo) (map[string]*api.CNSIRequest, error) {
 	log.Debug("DoProxyRequest")
 
 	// send the request to each endpoint
-	done := make(chan *interfaces.CNSIRequest)
+	done := make(chan *api.CNSIRequest)
 	for _, requestInfo := range requests {
 		cnsiRequest, buildErr := p.buildCNSIRequest(requestInfo.EndpointGUID, requestInfo.UserGUID, requestInfo.Method, requestInfo.URI, requestInfo.Body, requestInfo.Headers)
 		cnsiRequest.ResponseGUID = requestInfo.ResultGUID
@@ -365,7 +365,7 @@ func (p *portalProxy) DoProxyRequest(requests []interfaces.ProxyRequestInfo) (ma
 		go p.doRequest(&cnsiRequest, done)
 	}
 
-	responses := make(map[string]*interfaces.CNSIRequest)
+	responses := make(map[string]*api.CNSIRequest)
 	for range requests {
 		res := <-done
 		responses[res.ResponseGUID] = res
@@ -375,15 +375,15 @@ func (p *portalProxy) DoProxyRequest(requests []interfaces.ProxyRequestInfo) (ma
 }
 
 // Convenience helper for a single request
-func (p *portalProxy) DoProxySingleRequest(cnsiGUID, userGUID, method, requestUrl string, headers http.Header, body []byte) (*interfaces.CNSIRequest, error) {
-	requests := make([]interfaces.ProxyRequestInfo, 0)
+func (p *portalProxy) DoProxySingleRequest(cnsiGUID, userGUID, method, requestUrl string, headers http.Header, body []byte) (*api.CNSIRequest, error) {
+	requests := make([]api.ProxyRequestInfo, 0)
 
 	proxyURL, err := url.Parse(requestUrl)
 	if err != nil {
 		return nil, err
 	}
 
-	req := interfaces.ProxyRequestInfo{}
+	req := api.ProxyRequestInfo{}
 	req.UserGUID = userGUID
 	req.ResultGUID = "REQ_" + cnsiGUID
 	req.EndpointGUID = cnsiGUID
@@ -409,13 +409,13 @@ func (p *portalProxy) DoProxySingleRequest(cnsiGUID, userGUID, method, requestUr
 }
 
 // Convenience helper for a single request using a token
-func (p *portalProxy) DoProxySingleRequestWithToken(cnsiGUID string, token *interfaces.TokenRecord, method, requestURL string, headers http.Header, body []byte) (*interfaces.CNSIRequest, error) {
+func (p *portalProxy) DoProxySingleRequestWithToken(cnsiGUID string, token *api.TokenRecord, method, requestURL string, headers http.Header, body []byte) (*api.CNSIRequest, error) {
 	proxyURL, err := url.Parse(requestURL)
 	if err != nil {
 		return nil, err
 	}
 
-	done := make(chan *interfaces.CNSIRequest)
+	done := make(chan *api.CNSIRequest)
 	cnsiRequest, buildErr := p.buildCNSIRequest(cnsiGUID, "", method, proxyURL, body, headers)
 	if buildErr != nil {
 		return nil, echo.NewHTTPError(http.StatusBadRequest, buildErr.Error())
@@ -426,7 +426,7 @@ func (p *portalProxy) DoProxySingleRequestWithToken(cnsiGUID string, token *inte
 	return res, nil
 }
 
-func (p *portalProxy) SendProxiedResponse(c echo.Context, responses map[string]*interfaces.CNSIRequest) error {
+func (p *portalProxy) SendProxiedResponse(c echo.Context, responses map[string]*api.CNSIRequest) error {
 	shouldPassthrough := "true" == c.Request().Header.Get("x-cap-passthrough")
 
 	var cnsiList []string
@@ -462,7 +462,7 @@ func (p *portalProxy) SendProxiedResponse(c echo.Context, responses map[string]*
 	return err
 }
 
-func (p *portalProxy) doRequest(cnsiRequest *interfaces.CNSIRequest, done chan<- *interfaces.CNSIRequest) {
+func (p *portalProxy) doRequest(cnsiRequest *api.CNSIRequest, done chan<- *api.CNSIRequest) {
 	log.Debugf("doRequest for URL: %s", cnsiRequest.URL.String())
 	var body io.Reader
 	var res *http.Response
@@ -484,7 +484,7 @@ func (p *portalProxy) doRequest(cnsiRequest *interfaces.CNSIRequest, done chan<-
 		return
 	}
 
-	var tokenRec interfaces.TokenRecord
+	var tokenRec api.TokenRecord
 	if cnsiRequest.Token != nil {
 		tokenRec = *cnsiRequest.Token
 	} else {
@@ -573,7 +573,7 @@ func (p *portalProxy) ProxySingleRequest(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	done := make(chan *interfaces.CNSIRequest)
+	done := make(chan *api.CNSIRequest)
 	cnsiRequest, buildErr := p.buildCNSIRequest(cnsi, portalUserGUID, req.Method, &uri, body, header)
 	if buildErr != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, buildErr.Error())
@@ -585,8 +585,8 @@ func (p *portalProxy) ProxySingleRequest(c echo.Context) error {
 	cnsiRequest.LongRunning = longRunning
 	if noToken {
 		// Fake a token record with no authentication
-		cnsiRequest.Token = &interfaces.TokenRecord{
-			AuthType: interfaces.AuthConnectTypeNone,
+		cnsiRequest.Token = &api.TokenRecord{
+			AuthType: api.AuthConnectTypeNone,
 		}
 	}
 

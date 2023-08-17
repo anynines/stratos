@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
 )
@@ -16,7 +16,7 @@ type Endpoint struct {
 	GUID     string                    `json:"guid"`
 	Name     string                    `json:"name"`
 	Version  string                    `json:"version"`
-	User     *interfaces.ConnectedUser `json:"user"`
+	User     *api.ConnectedUser `json:"user"`
 	CNSIType string                    `json:"type"`
 }
 
@@ -30,7 +30,7 @@ func (p *portalProxy) info(c echo.Context) error {
 	return c.JSON(http.StatusOK, s)
 }
 
-func (p *portalProxy) getInfo(c echo.Context) (*interfaces.Info, error) {
+func (p *portalProxy) getInfo(c echo.Context) (*api.Info, error) {
 	// get the version
 	versions, err := p.getVersionsData()
 	if err != nil {
@@ -49,10 +49,10 @@ func (p *portalProxy) getInfo(c echo.Context) (*interfaces.Info, error) {
 	}
 
 	// create initial info struct
-	s := &interfaces.Info{
+	s := &api.Info{
 		Versions:     versions,
 		User:         uaaUser,
-		Endpoints:    make(map[string]map[string]*interfaces.EndpointDetail),
+		Endpoints:    make(map[string]map[string]*api.EndpointDetail),
 		CloudFoundry: p.Config.CloudFoundryInfo,
 		PluginConfig: p.Config.PluginConfig,
 	}
@@ -78,7 +78,7 @@ func (p *portalProxy) getInfo(c echo.Context) (*interfaces.Info, error) {
 		}
 		// Empty Type can be used if a plugin just wants to implement UpdateMetadata
 		if len(endpointPlugin.GetType()) > 0 {
-			s.Endpoints[endpointPlugin.GetType()] = make(map[string]*interfaces.EndpointDetail)
+			s.Endpoints[endpointPlugin.GetType()] = make(map[string]*api.EndpointDetail)
 		}
 	}
 
@@ -86,7 +86,7 @@ func (p *portalProxy) getInfo(c echo.Context) (*interfaces.Info, error) {
 	cnsiList, _ := p.buildCNSIList(c)
 	for _, cnsi := range cnsiList {
 		// Extend the CNSI record
-		endpoint := &interfaces.EndpointDetail{
+		endpoint := &api.EndpointDetail{
 			CNSIRecord:        cnsi,
 			EndpointMetadata:  marshalEndpointMetadata(cnsi.Metadata),
 			Metadata:          make(map[string]string),
@@ -101,7 +101,7 @@ func (p *portalProxy) getInfo(c echo.Context) (*interfaces.Info, error) {
 		}
 
 		// set the creator preemptively as admin, if no id is found
-		endpoint.Creator = &interfaces.CreatorInfo{
+		endpoint.Creator = &api.CreatorInfo{
 			Name:   "System Endpoint",
 			Admin:  false,
 			System: true,

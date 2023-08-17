@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/plugins/kubernetes/config"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
 
 	"github.com/SermoDigital/jose/jws"
 	"github.com/labstack/echo/v4"
@@ -30,11 +30,11 @@ const authConnectTypeOIDC = "OIDC"
 
 // OIDCKubeAuth
 type OIDCKubeAuth struct {
-	portalProxy interfaces.PortalProxy
+	portalProxy api.PortalProxy
 }
 
 // InitOIDCKubeAuth
-func InitOIDCKubeAuth(portalProxy interfaces.PortalProxy) *OIDCKubeAuth {
+func InitOIDCKubeAuth(portalProxy api.PortalProxy) *OIDCKubeAuth {
 	return &OIDCKubeAuth{portalProxy: portalProxy}
 }
 
@@ -43,8 +43,8 @@ func (c *OIDCKubeAuth) GetName() string {
 	return authConnectTypeOIDC
 }
 
-func (c *OIDCKubeAuth) AddAuthInfo(info *clientcmdapi.AuthInfo, tokenRec interfaces.TokenRecord) error {
-	authInfo := &interfaces.OAuth2Metadata{}
+func (c *OIDCKubeAuth) AddAuthInfo(info *clientcmdapi.AuthInfo, tokenRec api.TokenRecord) error {
+	authInfo := &api.OAuth2Metadata{}
 	err := json.Unmarshal([]byte(tokenRec.Metadata), &authInfo)
 	if err != nil {
 		return err
@@ -64,7 +64,7 @@ func (c *OIDCKubeAuth) AddAuthInfo(info *clientcmdapi.AuthInfo, tokenRec interfa
 	return nil
 }
 
-func (c *OIDCKubeAuth) FetchToken(cnsiRecord interfaces.CNSIRecord, ec echo.Context) (*interfaces.TokenRecord, *interfaces.CNSIRecord, error) {
+func (c *OIDCKubeAuth) FetchToken(cnsiRecord api.CNSIRecord, ec echo.Context) (*api.TokenRecord, *api.CNSIRecord, error) {
 	log.Debug("FetchToken (OIDC)")
 
 	req := ec.Request()
@@ -92,7 +92,7 @@ func (c *OIDCKubeAuth) FetchToken(cnsiRecord interfaces.CNSIRecord, ec echo.Cont
 	return c.GetTokenFromKubeConfigUser(cnsiRecord, kubeConfigUser)
 }
 
-func (c *OIDCKubeAuth) GetTokenFromKubeConfigUser(cnsiRecord interfaces.CNSIRecord, kubeConfigUser *config.KubeConfigUser) (*interfaces.TokenRecord, *interfaces.CNSIRecord, error) {
+func (c *OIDCKubeAuth) GetTokenFromKubeConfigUser(cnsiRecord api.CNSIRecord, kubeConfigUser *config.KubeConfigUser) (*api.TokenRecord, *api.CNSIRecord, error) {
 
 	oidcConfig, err := c.GetOIDCConfig(kubeConfigUser)
 	if err != nil {
@@ -100,9 +100,9 @@ func (c *OIDCKubeAuth) GetTokenFromKubeConfigUser(cnsiRecord interfaces.CNSIReco
 		return nil, nil, errors.New("Can not unmarshal OIDC Auth Provider configuration")
 	}
 	tokenRecord := c.portalProxy.InitEndpointTokenRecord(oidcConfig.Expiry.Unix(), oidcConfig.IDToken, oidcConfig.RefreshToken, false)
-	tokenRecord.AuthType = interfaces.AuthTypeOIDC
+	tokenRecord.AuthType = api.AuthTypeOIDC
 
-	oauthMetadata := &interfaces.OAuth2Metadata{}
+	oauthMetadata := &api.OAuth2Metadata{}
 	oauthMetadata.ClientID = oidcConfig.ClientID
 	oauthMetadata.ClientSecret = oidcConfig.ClientSecret
 	oauthMetadata.IssuerURL = oidcConfig.IdpIssuerURL
@@ -119,7 +119,7 @@ func (c *OIDCKubeAuth) GetTokenFromKubeConfigUser(cnsiRecord interfaces.CNSIReco
 }
 
 // GetUserFromToken gets the username from the GKE Token
-func (c *OIDCKubeAuth) GetUserFromToken(cnsiGUID string, tokenRecord *interfaces.TokenRecord) (*interfaces.ConnectedUser, bool) {
+func (c *OIDCKubeAuth) GetUserFromToken(cnsiGUID string, tokenRecord *api.TokenRecord) (*api.ConnectedUser, bool) {
 	log.Debug("GetUserFromToken (OIDC)")
 	return c.portalProxy.GetCNSIUserFromOAuthToken(cnsiGUID, tokenRecord)
 }
@@ -158,17 +158,17 @@ func (c *OIDCKubeAuth) GetOIDCConfig(k *config.KubeConfigUser) (*KubeConfigAuthP
 	return OIDCConfig, nil
 }
 
-func (c *OIDCKubeAuth) DoFlowRequest(cnsiRequest *interfaces.CNSIRequest, req *http.Request) (*http.Response, error) {
+func (c *OIDCKubeAuth) DoFlowRequest(cnsiRequest *api.CNSIRequest, req *http.Request) (*http.Response, error) {
 	log.Debug("DoFlowRequest (OIDC)")
 	return c.portalProxy.DoOidcFlowRequest(cnsiRequest, req)
 }
 
-func (c *OIDCKubeAuth) RegisterJetstreamAuthType(portal interfaces.PortalProxy) {
+func (c *OIDCKubeAuth) RegisterJetstreamAuthType(portal api.PortalProxy) {
 	// No need to register OIDC, as its already built in
 	existing := c.portalProxy.HasAuthProvider(c.GetName())
 	if !existing {
 		// Register auth type with Jetstream
-		c.portalProxy.AddAuthProvider(c.GetName(), interfaces.AuthProvider{
+		c.portalProxy.AddAuthProvider(c.GetName(), api.AuthProvider{
 			Handler:  c.portalProxy.DoOidcFlowRequest,
 			UserInfo: nil,
 		})

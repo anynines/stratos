@@ -8,9 +8,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api/config"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/apikeys"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces/config"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/mock_interfaces"
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
@@ -19,7 +19,7 @@ import (
 	sqlmock "gopkg.in/DATA-DOG/go-sqlmock.v1"
 )
 
-func makeMockServer(apiKeysRepo apikeys.Repository, mockStratosAuth interfaces.StratosAuth) *portalProxy {
+func makeMockServer(apiKeysRepo apikeys.Repository, mockStratosAuth api.StratosAuth) *portalProxy {
 	db, _, dberr := sqlmock.New()
 	if dberr != nil {
 		log.Panicf("an error '%s' was not expected when opening a stub database connection", dberr)
@@ -153,7 +153,7 @@ func Test_apiKeyMiddleware(t *testing.T) {
 					ctx, rec := makeNewRequest()
 					ctx.Request().Header.Add("Authentication", "Bearer "+apiKeySecret)
 
-					apiKey := &interfaces.APIKey{
+					apiKey := &api.APIKey{
 						UserGUID: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
 						GUID:     "00000000-0000-0000-0000-000000000000",
 					}
@@ -189,7 +189,7 @@ func Test_apiKeyMiddleware(t *testing.T) {
 					ctx, rec := makeNewRequest()
 					ctx.Request().Header.Add("Authentication", "Bearer "+apiKeySecret)
 
-					apiKey := &interfaces.APIKey{
+					apiKey := &api.APIKey{
 						UserGUID: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
 						GUID:     "00000000-0000-0000-0000-000000000000",
 					}
@@ -232,12 +232,12 @@ func Test_apiKeyMiddleware(t *testing.T) {
 			ctx, rec := makeNewRequest()
 			ctx.Request().Header.Add("Authentication", "Bearer "+apiKeySecret)
 
-			apiKey := &interfaces.APIKey{
+			apiKey := &api.APIKey{
 				UserGUID: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
 				GUID:     "00000000-0000-0000-0000-000000000000",
 			}
 
-			connectedUser := &interfaces.ConnectedUser{
+			connectedUser := &api.ConnectedUser{
 				GUID:  apiKey.UserGUID,
 				Admin: false,
 			}
@@ -273,12 +273,12 @@ func Test_apiKeyMiddleware(t *testing.T) {
 			ctx, rec := makeNewRequest()
 			ctx.Request().Header.Add("Authentication", "Bearer "+apiKeySecret)
 
-			apiKey := &interfaces.APIKey{
+			apiKey := &api.APIKey{
 				UserGUID: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
 				GUID:     "00000000-0000-0000-0000-000000000000",
 			}
 
-			connectedUser := &interfaces.ConnectedUser{
+			connectedUser := &api.ConnectedUser{
 				GUID:  apiKey.UserGUID,
 				Admin: true,
 			}
@@ -319,7 +319,7 @@ func Test_apiKeyMiddleware(t *testing.T) {
 			ctx, rec := makeNewRequest()
 			ctx.Request().Header.Add("Authentication", "Bearer "+apiKeySecret)
 
-			apiKey := &interfaces.APIKey{
+			apiKey := &api.APIKey{
 				UserGUID: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
 				GUID:     "00000000-0000-0000-0000-000000000000",
 			}

@@ -11,7 +11,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
 )
 
 const (
@@ -26,7 +26,7 @@ type noAuth struct {
 	p                      *portalProxy
 }
 
-func (a *noAuth) ShowConfig(config *interfaces.ConsoleConfig) {
+func (a *noAuth) ShowConfig(config *api.ConsoleConfig) {
 	log.Info("... !!!!! No Authentication !!!!!")
 }
 
@@ -42,18 +42,18 @@ func (a *noAuth) Logout(c echo.Context) error {
 
 //GetUsername gets the user name for the specified local user
 func (a *noAuth) GetUsername(userid string) (string, error) {
-	return interfaces.DefaultAdminUserName, nil
+	return api.DefaultAdminUserName, nil
 }
 
 //GetUser gets the user guid for the specified local user
-func (a *noAuth) GetUser(userGUID string) (*interfaces.ConnectedUser, error) {
+func (a *noAuth) GetUser(userGUID string) (*api.ConnectedUser, error) {
 	var scopes []string
 	scopes = make([]string, 1)
 	scopes[0] = "stratos.noauth"
 
-	connectdUser := &interfaces.ConnectedUser{
+	connectdUser := &api.ConnectedUser{
 		GUID:   noAuthUserID,
-		Name:   interfaces.DefaultAdminUserName,
+		Name:   api.DefaultAdminUserName,
 		Admin:  true,
 		Scopes: scopes,
 	}
@@ -115,7 +115,7 @@ func (a *noAuth) generateLoginSuccessResponse(c echo.Context, userGUID string, u
 		return err
 	}
 
-	resp := &interfaces.LoginRes{
+	resp := &api.LoginRes{
 		Account:     username,
 		TokenExpiry: expiry,
 		APIEndpoint: nil,

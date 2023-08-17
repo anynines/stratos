@@ -15,9 +15,9 @@ import (
 	"crypto/sha1"
 	"encoding/base64"
 
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api/config"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/plugins/userfavorites/userfavoritesendpoints"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces/config"
 )
 
 const dbReferenceError = "Unable to establish a database reference: '%v'"
@@ -37,11 +37,11 @@ func isSSLRelatedError(err error) (bool, string) {
 	return false, ""
 }
 
-func (p *portalProxy) RegisterEndpoint(c echo.Context, fetchInfo interfaces.InfoFunc) error {
+func (p *portalProxy) RegisterEndpoint(c echo.Context, fetchInfo api.InfoFunc) error {
 	log.Debug("registerEndpoint")
 
-	params := new(interfaces.RegisterEndpointParams)
-	err := interfaces.BindOnce(params, c)
+	params := new(api.RegisterEndpointParams)
+	err := api.BindOnce(params, c)
 	if err != nil {
 		return err
 	}
@@ -76,7 +76,7 @@ func (p *portalProxy) RegisterEndpoint(c echo.Context, fetchInfo interfaces.Info
 
 	userID, err := p.GetSessionStringValue(c, "user_id")
 	if err != nil {
-		return interfaces.NewHTTPShadowError(
+		return api.NewHTTPShadowError(
 			http.StatusInternalServerError,
 			"Failed to get session user",
 			"Failed to get session user: %v", err)
@@ -91,11 +91,11 @@ func (p *portalProxy) RegisterEndpoint(c echo.Context, fetchInfo interfaces.Info
 	return nil
 }
 
-func (p *portalProxy) DoRegisterEndpoint(cnsiName string, apiEndpoint string, skipSSLValidation bool, clientId string, clientSecret string, userId string, ssoAllowed bool, subType string, createSystemEndpoint bool, fetchInfo interfaces.InfoFunc) (interfaces.CNSIRecord, error) {
+func (p *portalProxy) DoRegisterEndpoint(cnsiName string, apiEndpoint string, skipSSLValidation bool, clientId string, clientSecret string, userId string, ssoAllowed bool, subType string, createSystemEndpoint bool, fetchInfo api.InfoFunc) (api.CNSIRecord, error) {
 	log.Debug("DoRegisterEndpoint")
 
 	if len(cnsiName) == 0 || len(apiEndpoint) == 0 {
-		return interfaces.CNSIRecord{}, interfaces.NewHTTPShadowError(
+		return api.CNSIRecord{}, api.NewHTTPShadowError(
 			http.StatusBadRequest,
 			"Needs CNSI Name and API Endpoint",
 			"CNSI Name or Endpoint were not provided when trying to register an CF Cluster")
@@ -106,7 +106,7 @@ func (p *portalProxy) DoRegisterEndpoint(cnsiName string, apiEndpoint string, sk
 	// Remove trailing slash, if there is one
 	apiEndpointURL, err := url.Parse(apiEndpoint)
 	if err != nil {
-		return interfaces.CNSIRecord{}, interfaces.NewHTTPShadowError(
+		return api.CNSIRecord{}, api.NewHTTPShadowError(
 			http.StatusBadRequest,
 			"Failed to get API Endpoint",
 			"Failed to get API Endpoint: %v", err)
@@ -118,7 +118,7 @@ func (p *portalProxy) DoRegisterEndpoint(cnsiName string, apiEndpoint string, sk
 	if p.GetConfig().UserEndpointsEnabled != config.UserEndpointsConfigEnum.Disabled && len(userId) != 0 {
 		currentCreator, err := p.StratosAuthService.GetUser(userId)
 		if err != nil {
-			return interfaces.CNSIRecord{}, interfaces.NewHTTPShadowError(
+			return api.CNSIRecord{}, api.NewHTTPShadowError(
 				http.StatusInternalServerError,
 				"Failed to get user information",
 				"Failed to get user information: %v", err)
@@ -131,7 +131,7 @@ func (p *portalProxy) DoRegisterEndpoint(cnsiName string, apiEndpoint string, sk
 		ok := p.adminCNSIRecordExists(apiEndpoint)
 		if ok {
 			// a record with the same api endpoint was found
-			return interfaces.CNSIRecord{}, interfaces.NewHTTPShadowError(
+			return api.CNSIRecord{}, api.NewHTTPShadowError(
 				http.StatusBadRequest,
 				"Can not register same endpoint multiple times",
 				"Can not register same endpoint multiple times",
@@ -141,7 +141,7 @@ func (p *portalProxy) DoRegisterEndpoint(cnsiName string, apiEndpoint string, sk
 		// get all endpoints determined by the APIEndpoint
 		duplicateEndpoints, err := p.listCNSIByAPIEndpoint(apiEndpoint)
 		if err != nil {
-			return interfaces.CNSIRecord{}, interfaces.NewHTTPShadowError(
+			return api.CNSIRecord{}, api.NewHTTPShadowError(
 				http.StatusBadRequest,
 				"Failed to check other endpoints",
 				"Failed to check other endpoints: %v",
@@ -151,7 +151,7 @@ func (p *portalProxy) DoRegisterEndpoint(cnsiName string, apiEndpoint string, sk
 		for _, duplicate := range duplicateEndpoints {
 			// cant create same system endpoint
 			if len(duplicate.Creator) == 0 && isAdmin && createSystemEndpoint {
-				return interfaces.CNSIRecord{}, interfaces.NewHTTPShadowError(
+				return api.CNSIRecord{}, api.NewHTTPShadowError(
 					http.StatusBadRequest,
 					"Can not register same system endpoint multiple times",
 					"Can not register same system endpoint multiple times",
@@ -160,7 +160,7 @@ func (p *portalProxy) DoRegisterEndpoint(cnsiName string, apiEndpoint string, sk
 
 			// cant create same user endpoint
 			if duplicate.Creator == userId {
-				return interfaces.CNSIRecord{}, interfaces.NewHTTPShadowError(
+				return api.CNSIRecord{}, api.NewHTTPShadowError(
 					http.StatusBadRequest,
 					"Can not register same endpoint multiple times",
 					"Can not register same endpoint multiple times",
@@ -182,13 +182,13 @@ func (p *portalProxy) DoRegisterEndpoint(cnsiName string, apiEndpoint string, sk
 	newCNSI, _, err := fetchInfo(apiEndpoint, skipSSLValidation)
 	if err != nil {
 		if ok, detail := isSSLRelatedError(err); ok {
-			return interfaces.CNSIRecord{}, interfaces.NewHTTPShadowError(
+			return api.CNSIRecord{}, api.NewHTTPShadowError(
 				http.StatusForbidden,
 				"SSL error - "+detail,
 				"There is a problem with the server Certificate - %s",
 				detail)
 		}
-		return interfaces.CNSIRecord{}, interfaces.NewHTTPShadowError(
+		return api.CNSIRecord{}, api.NewHTTPShadowError(
 			http.StatusBadRequest,
 			"Failed to validate endpoint",
 			"Failed to validate endpoint: %v",
@@ -214,8 +214,8 @@ func (p *portalProxy) DoRegisterEndpoint(cnsiName string, apiEndpoint string, sk
 
 	// Notify plugins if they support the notification interface
 	for _, plugin := range p.Plugins {
-		if notifier, ok := plugin.(interfaces.EndpointNotificationPlugin); ok {
-			notifier.OnEndpointNotification(interfaces.EndpointRegisterAction, &newCNSI)
+		if notifier, ok := plugin.(api.EndpointNotificationPlugin); ok {
+			notifier.OnEndpointNotification(api.EndpointRegisterAction, &newCNSI)
 		}
 	}
 
@@ -230,8 +230,8 @@ func (p *portalProxy) DoRegisterEndpoint(cnsiName string, apiEndpoint string, sk
 // @Produce	json
 // @Param id path string true "Endpoint GUID"
 // @Success 200
-// @Failure 400 {object} interfaces.ErrorResponseBody "Error response"
-// @Failure 401 {object} interfaces.ErrorResponseBody "Error response"
+// @Failure 400 {object} api.ErrorResponseBody "Error response"
+// @Failure 401 {object} api.ErrorResponseBody "Error response"
 // @Security ApiKeyAuth
 // @Router /endpoints/{id} [delete]
 // TODO (wchrisjohnson) We need do this as a TRANSACTION, vs a set of single calls
@@ -240,7 +240,7 @@ func (p *portalProxy) unregisterCluster(c echo.Context) error {
 	log.WithField("cnsiGUID", cnsiGUID).Debug("unregisterCluster")
 
 	if len(cnsiGUID) == 0 {
-		return interfaces.NewHTTPShadowError(
+		return api.NewHTTPShadowError(
 			http.StatusBadRequest,
 			"Missing target endpoint",
 			"Need CNSI GUID passed as form param")
@@ -263,7 +263,7 @@ func (p *portalProxy) doUnregisterCluster(cnsiGUID string) error {
 	return nil
 }
 
-func (p *portalProxy) buildCNSIList(c echo.Context) ([]*interfaces.CNSIRecord, error) {
+func (p *portalProxy) buildCNSIList(c echo.Context) ([]*api.CNSIRecord, error) {
 	log.Debug("buildCNSIList")
 
 	if p.GetConfig().UserEndpointsEnabled != config.UserEndpointsConfigEnum.Disabled {
@@ -288,7 +288,7 @@ func (p *portalProxy) buildCNSIList(c echo.Context) ([]*interfaces.CNSIRecord, e
 				return unfilteredList, err
 			}
 
-			filteredList := []*interfaces.CNSIRecord{}
+			filteredList := []*api.CNSIRecord{}
 
 			for _, endpoint := range unfilteredList {
 				duplicateSystemEndpoint := false
@@ -316,9 +316,9 @@ func (p *portalProxy) buildCNSIList(c echo.Context) ([]*interfaces.CNSIRecord, e
 	return p.ListAdminEndpoints("")
 }
 
-func (p *portalProxy) ListEndpoints() ([]*interfaces.CNSIRecord, error) {
+func (p *portalProxy) ListEndpoints() ([]*api.CNSIRecord, error) {
 	log.Debug("ListEndpoints")
-	var cnsiList []*interfaces.CNSIRecord
+	var cnsiList []*api.CNSIRecord
 	var err error
 
 	cnsiRepo, err := p.GetStoreFactory().EndpointStore()
@@ -335,10 +335,10 @@ func (p *portalProxy) ListEndpoints() ([]*interfaces.CNSIRecord, error) {
 }
 
 // ListAdminEndpoints - return a CNSI list with endpoints created by the current user and all admins
-func (p *portalProxy) ListAdminEndpoints(userID string) ([]*interfaces.CNSIRecord, error) {
+func (p *portalProxy) ListAdminEndpoints(userID string) ([]*api.CNSIRecord, error) {
 	log.Debug("ListAdminEndpoints")
 	// Initialise cnsiList to ensure empty struct (marshals to null) is not returned
-	cnsiList := []*interfaces.CNSIRecord{}
+	cnsiList := []*api.CNSIRecord{}
 	var userList []string
 	var err error
 
@@ -364,11 +364,11 @@ func (p *portalProxy) ListAdminEndpoints(userID string) ([]*interfaces.CNSIRecor
 }
 
 // listCNSIByAPIEndpoint - receives a URL as string
-func (p *portalProxy) listCNSIByAPIEndpoint(apiEndpoint string) ([]*interfaces.CNSIRecord, error) {
+func (p *portalProxy) listCNSIByAPIEndpoint(apiEndpoint string) ([]*api.CNSIRecord, error) {
 	log.Debug("listCNSIByAPIEndpoint")
 
 	var err error
-	cnsiList := []*interfaces.CNSIRecord{}
+	cnsiList := []*api.CNSIRecord{}
 
 	cnsiRepo, err := p.GetStoreFactory().EndpointStore()
 	if err != nil {
@@ -393,16 +393,16 @@ func (p *portalProxy) listCNSIByAPIEndpoint(apiEndpoint string) ([]*interfaces.C
 // @Description
 // @Accept	x-www-form-urlencoded
 // @Produce	json
-// @Success 200 {array}  interfaces.CNSIRecord "List of endpoints"
-// @Failure 400 {object} interfaces.ErrorResponseBody "Error response"
-// @Failure 401 {object} interfaces.ErrorResponseBody "Error response"
+// @Success 200 {array}  api.CNSIRecord "List of endpoints"
+// @Failure 400 {object} api.ErrorResponseBody "Error response"
+// @Failure 401 {object} api.ErrorResponseBody "Error response"
 // @Security ApiKeyAuth
 // @Router /endpoints [get]
 func (p *portalProxy) listCNSIs(c echo.Context) error {
 	log.Debug("listCNSIs")
 	cnsiList, err := p.buildCNSIList(c)
 	if err != nil {
-		return interfaces.NewHTTPShadowError(
+		return api.NewHTTPShadowError(
 			http.StatusBadRequest,
 			"Failed to retrieve list of CNSIs",
 			"Failed to retrieve list of CNSIs: %v", err,
@@ -423,7 +423,7 @@ func (p *portalProxy) listRegisteredCNSIs(c echo.Context) error {
 	log.Debug("listRegisteredCNSIs")
 	userGUIDIntf, err := p.GetSessionValue(c, "user_id")
 	if err != nil {
-		return interfaces.NewHTTPShadowError(
+		return api.NewHTTPShadowError(
 			http.StatusBadRequest,
 			"User session could not be found",
 			"User session could not be found: %v", err,
@@ -437,11 +437,11 @@ func (p *portalProxy) listRegisteredCNSIs(c echo.Context) error {
 	}
 
 	var jsonString []byte
-	var clusterList []*interfaces.ConnectedEndpoint
+	var clusterList []*api.ConnectedEndpoint
 
 	clusterList, err = cnsiRepo.ListByUser(userGUID)
 	if err != nil {
-		return interfaces.NewHTTPShadowError(
+		return api.NewHTTPShadowError(
 			http.StatusBadRequest,
 			"Failed to retrieve list of clusters",
 			"Failed to retrieve list of clusters: %v", err,
@@ -458,11 +458,11 @@ func (p *portalProxy) listRegisteredCNSIs(c echo.Context) error {
 	return nil
 }
 
-func marshalCNSIlist(cnsiList []*interfaces.CNSIRecord) ([]byte, error) {
+func marshalCNSIlist(cnsiList []*api.CNSIRecord) ([]byte, error) {
 	log.Debug("marshalCNSIlist")
 	jsonString, err := json.Marshal(cnsiList)
 	if err != nil {
-		return nil, interfaces.NewHTTPShadowError(
+		return nil, api.NewHTTPShadowError(
 			http.StatusBadRequest,
 			"Failed to retrieve list of CNSIs",
 			"Failed to retrieve list of CNSIs: %v", err,
@@ -471,11 +471,11 @@ func marshalCNSIlist(cnsiList []*interfaces.CNSIRecord) ([]byte, error) {
 	return jsonString, nil
 }
 
-func marshalClusterList(clusterList []*interfaces.ConnectedEndpoint) ([]byte, error) {
+func marshalClusterList(clusterList []*api.ConnectedEndpoint) ([]byte, error) {
 	log.Debug("marshalClusterList")
 	jsonString, err := json.Marshal(clusterList)
 	if err != nil {
-		return nil, interfaces.NewHTTPShadowError(
+		return nil, api.NewHTTPShadowError(
 			http.StatusBadRequest,
 			"Failed to retrieve list of clusters",
 			"Failed to retrieve list of clusters: %v", err,
@@ -503,16 +503,16 @@ func (p *portalProxy) UpdateEndpointMetadata(guid string, metadata string) error
 	return nil
 }
 
-func (p *portalProxy) GetCNSIRecord(guid string) (interfaces.CNSIRecord, error) {
+func (p *portalProxy) GetCNSIRecord(guid string) (api.CNSIRecord, error) {
 	log.Debug("GetCNSIRecord")
 	cnsiRepo, err := p.GetStoreFactory().EndpointStore()
 	if err != nil {
-		return interfaces.CNSIRecord{}, err
+		return api.CNSIRecord{}, err
 	}
 
 	rec, err := cnsiRepo.Find(guid, p.Config.EncryptionKeyInBytes)
 	if err != nil {
-		return interfaces.CNSIRecord{}, err
+		return api.CNSIRecord{}, err
 	}
 
 	// Ensure that trailing slash is removed from the API Endpoint
@@ -521,13 +521,13 @@ func (p *portalProxy) GetCNSIRecord(guid string) (interfaces.CNSIRecord, error) 
 	return rec, nil
 }
 
-func (p *portalProxy) GetAdminCNSIRecordByEndpoint(endpoint string) (interfaces.CNSIRecord, error) {
+func (p *portalProxy) GetAdminCNSIRecordByEndpoint(endpoint string) (api.CNSIRecord, error) {
 	log.Debug("GetAdminCNSIRecordByEndpoint")
-	var rec *interfaces.CNSIRecord
+	var rec *api.CNSIRecord
 
 	endpointList, err := p.listCNSIByAPIEndpoint(endpoint)
 	if err != nil {
-		return interfaces.CNSIRecord{}, err
+		return api.CNSIRecord{}, err
 	}
 
 	// search for endpoint created by an admin
@@ -538,7 +538,7 @@ func (p *portalProxy) GetAdminCNSIRecordByEndpoint(endpoint string) (interfaces.
 	}
 
 	if rec == nil {
-		return interfaces.CNSIRecord{}, fmt.Errorf("Can not find admin CNSIRecord by given endpoint")
+		return api.CNSIRecord{}, fmt.Errorf("Can not find admin CNSIRecord by given endpoint")
 	}
 
 	// Ensure that trailing slash is removed from the API Endpoint
@@ -554,7 +554,7 @@ func (p *portalProxy) adminCNSIRecordExists(apiEndpoint string) bool {
 	return err == nil
 }
 
-func (p *portalProxy) setCNSIRecord(guid string, c interfaces.CNSIRecord) error {
+func (p *portalProxy) setCNSIRecord(guid string, c api.CNSIRecord) error {
 	log.Debug("setCNSIRecord")
 	cnsiRepo, err := p.GetStoreFactory().EndpointStore()
 	if err != nil {
@@ -594,8 +594,8 @@ func (p *portalProxy) unsetCNSIRecord(guid string) error {
 	if lookupErr == nil {
 		// Notify plugins if they support the notification interface
 		for _, plugin := range p.Plugins {
-			if notifier, ok := plugin.(interfaces.EndpointNotificationPlugin); ok {
-				notifier.OnEndpointNotification(interfaces.EndpointUnregisterAction, &endpoint)
+			if notifier, ok := plugin.(api.EndpointNotificationPlugin); ok {
+				notifier.OnEndpointNotification(api.EndpointUnregisterAction, &endpoint)
 			}
 		}
 	}
@@ -603,7 +603,7 @@ func (p *portalProxy) unsetCNSIRecord(guid string) error {
 	return nil
 }
 
-func (p *portalProxy) SaveEndpointToken(cnsiGUID string, userGUID string, tokenRecord interfaces.TokenRecord) error {
+func (p *portalProxy) SaveEndpointToken(cnsiGUID string, userGUID string, tokenRecord api.TokenRecord) error {
 	log.Debug("SaveEndpointToken")
 	tokenRepo, err := p.GetStoreFactory().TokenStore()
 	if err != nil {
@@ -623,37 +623,37 @@ func (p *portalProxy) DeleteEndpointToken(cnsiGUID string, userGUID string) erro
 	return tokenRepo.DeleteCNSIToken(cnsiGUID, userGUID)
 }
 
-func (p *portalProxy) GetCNSITokenRecord(cnsiGUID string, userGUID string) (interfaces.TokenRecord, bool) {
+func (p *portalProxy) GetCNSITokenRecord(cnsiGUID string, userGUID string) (api.TokenRecord, bool) {
 	log.Debug("GetCNSITokenRecord")
 	tokenRepo, err := p.GetStoreFactory().TokenStore()
 	if err != nil {
-		return interfaces.TokenRecord{}, false
+		return api.TokenRecord{}, false
 	}
 
 	tr, err := tokenRepo.FindCNSIToken(cnsiGUID, userGUID, p.Config.EncryptionKeyInBytes)
 	if err != nil {
-		return interfaces.TokenRecord{}, false
+		return api.TokenRecord{}, false
 	}
 
 	return tr, true
 }
 
-func (p *portalProxy) GetCNSITokenRecordWithDisconnected(cnsiGUID string, userGUID string) (interfaces.TokenRecord, bool) {
+func (p *portalProxy) GetCNSITokenRecordWithDisconnected(cnsiGUID string, userGUID string) (api.TokenRecord, bool) {
 	log.Debug("GetCNSITokenRecordWithDisconnected")
 	tokenRepo, err := p.GetStoreFactory().TokenStore()
 	if err != nil {
-		return interfaces.TokenRecord{}, false
+		return api.TokenRecord{}, false
 	}
 
 	tr, err := tokenRepo.FindCNSITokenIncludeDisconnected(cnsiGUID, userGUID, p.Config.EncryptionKeyInBytes)
 	if err != nil {
-		return interfaces.TokenRecord{}, false
+		return api.TokenRecord{}, false
 	}
 
 	return tr, true
 }
 
-func (p *portalProxy) ListEndpointsByUser(userGUID string) ([]*interfaces.ConnectedEndpoint, error) {
+func (p *portalProxy) ListEndpointsByUser(userGUID string) ([]*api.ConnectedEndpoint, error) {
 	log.Debug("ListCEndpointsByUser")
 	cnsiRepo, err := p.GetStoreFactory().EndpointStore()
 	if err != nil {
@@ -671,7 +671,7 @@ func (p *portalProxy) ListEndpointsByUser(userGUID string) ([]*interfaces.Connec
 }
 
 // Uopdate the Access Token, Refresh Token and Token Expiry for a token
-func (p *portalProxy) updateTokenAuth(userGUID string, t interfaces.TokenRecord) error {
+func (p *portalProxy) updateTokenAuth(userGUID string, t api.TokenRecord) error {
 	log.Debug("updateTokenAuth")
 	tokenRepo, err := p.GetStoreFactory().TokenStore()
 	if err != nil {
@@ -689,7 +689,7 @@ func (p *portalProxy) updateTokenAuth(userGUID string, t interfaces.TokenRecord)
 	return nil
 }
 
-func (p *portalProxy) setCNSITokenRecord(cnsiGUID string, userGUID string, t interfaces.TokenRecord) error {
+func (p *portalProxy) setCNSITokenRecord(cnsiGUID string, userGUID string, t api.TokenRecord) error {
 	log.Debug("setCNSITokenRecord")
 	tokenRepo, err := p.GetStoreFactory().TokenStore()
 	if err != nil {
@@ -759,21 +759,21 @@ func (p *portalProxy) unsetCNSITokenRecords(cnsiGUID string) error {
 // @Param clientSecret formData string false "Client secret"
 // @Param allowSSO formData string false "Allow SSO" Enums(true, false)
 // @Success 200
-// @Failure 400 {object} interfaces.ErrorResponseBody "Error response"
-// @Failure 401 {object} interfaces.ErrorResponseBody "Error response"
+// @Failure 400 {object} api.ErrorResponseBody "Error response"
+// @Failure 401 {object} api.ErrorResponseBody "Error response"
 // @Security ApiKeyAuth
 // @Router /endpoints/{id} [post]
 func (p *portalProxy) updateEndpoint(ec echo.Context) error {
 	log.Debug("updateEndpoint")
 
-	params := new(interfaces.UpdateEndpointParams)
+	params := new(api.UpdateEndpointParams)
 	if err := ec.Bind(params); err != nil {
 		return err
 	}
 
 	// Check we have an ID
 	if len(params.ID) == 0 {
-		return interfaces.NewHTTPShadowError(
+		return api.NewHTTPShadowError(
 			http.StatusBadRequest,
 			"Missing target endpoint",
 			"Need Endpoint ID")
@@ -817,13 +817,13 @@ func (p *portalProxy) updateEndpoint(ec echo.Context) error {
 					_, _, err = plugin.Info(endpoint.APIEndpoint.String(), endpoint.SkipSSLValidation)
 					if err != nil {
 						if ok, detail := isSSLRelatedError(err); ok {
-							return interfaces.NewHTTPShadowError(
+							return api.NewHTTPShadowError(
 								http.StatusForbidden,
 								"SSL error - "+detail,
 								"There is a problem with the server Certificate - %s",
 								detail)
 						}
-						return interfaces.NewHTTPShadowError(
+						return api.NewHTTPShadowError(
 							http.StatusBadRequest,
 							fmt.Sprintf("Could not validate endpoint: %v", err),
 							"Could not validate endpoint: %v",
@@ -868,8 +868,8 @@ func (p *portalProxy) updateEndpoint(ec echo.Context) error {
 
 	// Notify plugins if they support the notification interface
 	for _, plugin := range p.Plugins {
-		if notifier, ok := plugin.(interfaces.EndpointNotificationPlugin); ok {
-			notifier.OnEndpointNotification(interfaces.EndpointUpdateAction, &endpoint)
+		if notifier, ok := plugin.(api.EndpointNotificationPlugin); ok {
+			notifier.OnEndpointNotification(api.EndpointUpdateAction, &endpoint)
 		}
 	}
 
