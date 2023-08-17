@@ -106,7 +106,7 @@ func TestPgSQLCNSIs(t *testing.T) {
 		Convey("if two records exist in the database", func() {
 
 			var (
-				mockCFAndCERows sqlmock.Rows
+				mockCFAndCERows *sqlmock.Rows
 			)
 
 			// general setup
@@ -234,7 +234,7 @@ func TestPgSQLCNSIs(t *testing.T) {
 
 			var (
 				mockTokenExpiry = time.Now().AddDate(0, 0, 1).Unix()
-				mockClusterList sqlmock.Rows
+				mockClusterList *sqlmock.Rows
 			)
 
 			// general setup
@@ -359,7 +359,7 @@ func TestPgSQLCNSIs(t *testing.T) {
 		Convey("if 2 records exist in the database", func() {
 
 			var (
-				mockClusterList sqlmock.Rows
+				mockClusterList *sqlmock.Rows
 			)
 
 			// general setup
@@ -483,7 +483,7 @@ func TestPgSQLCNSIs(t *testing.T) {
 		Convey("if 2 records exist in the database", func() {
 
 			var (
-				mockClusterList sqlmock.Rows
+				mockClusterList *sqlmock.Rows
 			)
 
 			// general setup
