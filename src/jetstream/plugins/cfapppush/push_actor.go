@@ -15,7 +15,7 @@ type cfV2Actor struct {
 	clientWebsocket *websocket.Conn
 }
 
-func (r cfV2Actor) sendAppID(application v2action.Application) {
+func (r *cfV2Actor) sendAppID(application v2action.Application) {
 	if !r.sent {
 		r.msgSender.SendEvent(r.clientWebsocket, APP_GUID_NOTIFY, application.GUID)
 		r.sent = true
