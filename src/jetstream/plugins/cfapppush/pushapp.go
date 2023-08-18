@@ -31,7 +31,7 @@ import (
 	"code.cloudfoundry.org/cli/command/v6/shared"
 	sharedV3 "code.cloudfoundry.org/cli/command/v6/shared"
 
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
 )
 
 // CFPushApp abstracts the push functionality form the CLI library
@@ -40,7 +40,7 @@ type CFPushApp struct {
 	flagContext flags.FlagContext
 	deps        commandregistry.Dependency
 	config      *CFPushAppConfig
-	portalProxy interfaces.PortalProxy
+	portalProxy api.PortalProxy
 }
 
 // CFPushAppConfig is the configuration used
@@ -116,7 +116,7 @@ func (p *PushError) Error() string {
 }
 
 // Constructor returns a CFPush based on the supplied config
-func Constructor(config *CFPushAppConfig, portalProxy interfaces.PortalProxy) CFPush {
+func Constructor(config *CFPushAppConfig, portalProxy api.PortalProxy) CFPush {
 
 	pushCmd := &v6.PushCommand{}
 	cfPush := &CFPushApp{

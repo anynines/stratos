@@ -18,10 +18,10 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api/config"
+	mock_api "github.com/cloudfoundry-incubator/stratos/src/jetstream/api/mock"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/crypto"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces/config"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/mock_interfaces"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -48,13 +48,13 @@ func TestLoginToUAA(t *testing.T) {
 			msBody(jsonMust(mockUAAResponse)))
 
 		defer mockUAA.Close()
-		pp.Config.ConsoleConfig = new(interfaces.ConsoleConfig)
+		pp.Config.ConsoleConfig = new(api.ConsoleConfig)
 		uaaURL, _ := url.Parse(mockUAA.URL)
 		pp.Config.ConsoleConfig.UAAEndpoint = uaaURL
 		pp.Config.ConsoleConfig.SkipSSLValidation = true
-		pp.Config.ConsoleConfig.AuthEndpointType = string(interfaces.Remote)
+		pp.Config.ConsoleConfig.AuthEndpointType = string(api.Remote)
 		//Init the auth service
-		err := pp.InitStratosAuthService(interfaces.AuthEndpointTypes[pp.Config.ConsoleConfig.AuthEndpointType])
+		err := pp.InitStratosAuthService(api.AuthEndpointTypes[pp.Config.ConsoleConfig.AuthEndpointType])
 		if err != nil {
 			log.Fatalf("Could not initialise auth service: %v", err)
 		}
@@ -103,9 +103,9 @@ func TestLocalLogin(t *testing.T) {
 		_, _, ctx, pp, db, mock := setupHTTPTest(req)
 		defer db.Close()
 
-		pp.Config.ConsoleConfig.AuthEndpointType = string(interfaces.Local)
+		pp.Config.ConsoleConfig.AuthEndpointType = string(api.Local)
 		//Init the auth service
-		err := pp.InitStratosAuthService(interfaces.AuthEndpointTypes[pp.Config.ConsoleConfig.AuthEndpointType])
+		err := pp.InitStratosAuthService(api.AuthEndpointTypes[pp.Config.ConsoleConfig.AuthEndpointType])
 		if err != nil {
 			log.Fatalf("Could not initialise auth service: %v", err)
 		}
@@ -161,9 +161,9 @@ func TestLocalLoginWithBadCredentials(t *testing.T) {
 		_, _, ctx, pp, db, mock := setupHTTPTest(req)
 		defer db.Close()
 
-		pp.Config.ConsoleConfig.AuthEndpointType = string(interfaces.Local)
+		pp.Config.ConsoleConfig.AuthEndpointType = string(api.Local)
 		//Init the auth service
-		err := pp.InitStratosAuthService(interfaces.AuthEndpointTypes[pp.Config.ConsoleConfig.AuthEndpointType])
+		err := pp.InitStratosAuthService(api.AuthEndpointTypes[pp.Config.ConsoleConfig.AuthEndpointType])
 		if err != nil {
 			log.Fatalf("Could not initialise auth service: %v", err)
 		}
@@ -217,11 +217,11 @@ func TestLocalLoginWithNoAdminScope(t *testing.T) {
 		mock.ExpectQuery(findPasswordHash).WithArgs(userGUID).WillReturnRows(rows)
 
 		//Configure the admin scope we expect the user to have
-		pp.Config.ConsoleConfig = new(interfaces.ConsoleConfig)
+		pp.Config.ConsoleConfig = new(api.ConsoleConfig)
 		pp.Config.ConsoleConfig.LocalUserScope = "stratos.admin"
-		pp.Config.ConsoleConfig.AuthEndpointType = string(interfaces.Local)
+		pp.Config.ConsoleConfig.AuthEndpointType = string(api.Local)
 		//Init the auth service
-		err := pp.InitStratosAuthService(interfaces.AuthEndpointTypes[pp.Config.ConsoleConfig.AuthEndpointType])
+		err := pp.InitStratosAuthService(api.AuthEndpointTypes[pp.Config.ConsoleConfig.AuthEndpointType])
 		if err != nil {
 			log.Fatalf("Could not initialise auth service: %v", err)
 		}
@@ -262,13 +262,13 @@ func TestLoginToUAAWithBadCreds(t *testing.T) {
 		)
 
 		defer mockUAA.Close()
-		pp.Config.ConsoleConfig = new(interfaces.ConsoleConfig)
+		pp.Config.ConsoleConfig = new(api.ConsoleConfig)
 		uaaURL, _ := url.Parse(mockUAA.URL)
 		pp.Config.ConsoleConfig.UAAEndpoint = uaaURL
 		pp.Config.ConsoleConfig.SkipSSLValidation = true
-		pp.Config.ConsoleConfig.AuthEndpointType = string(interfaces.Remote)
+		pp.Config.ConsoleConfig.AuthEndpointType = string(api.Remote)
 		//Init the auth service
-		err := pp.InitStratosAuthService(interfaces.AuthEndpointTypes[pp.Config.ConsoleConfig.AuthEndpointType])
+		err := pp.InitStratosAuthService(api.AuthEndpointTypes[pp.Config.ConsoleConfig.AuthEndpointType])
 		if err != nil {
 			log.Fatalf("Could not initialise auth service: %v", err)
 		}
@@ -278,7 +278,7 @@ func TestLoginToUAAWithBadCreds(t *testing.T) {
 			So(err, ShouldNotBeNil)
 		})
 
-		someErr := err.(interfaces.ErrHTTPShadow)
+		someErr := err.(api.ErrHTTPShadow)
 
 		Convey("HTTP status code should be 401", func() {
 			So(someErr.HTTPError.Code, ShouldEqual, http.StatusUnauthorized)
@@ -308,13 +308,13 @@ func TestLoginToUAAButCantSaveToken(t *testing.T) {
 			msBody(jsonMust(mockUAAResponse)))
 
 		defer mockUAA.Close()
-		pp.Config.ConsoleConfig = new(interfaces.ConsoleConfig)
+		pp.Config.ConsoleConfig = new(api.ConsoleConfig)
 		uaaURL, _ := url.Parse(mockUAA.URL)
 		pp.Config.ConsoleConfig.UAAEndpoint = uaaURL
 		pp.Config.ConsoleConfig.SkipSSLValidation = true
-		pp.Config.ConsoleConfig.AuthEndpointType = string(interfaces.Remote)
+		pp.Config.ConsoleConfig.AuthEndpointType = string(api.Remote)
 		//Init the auth service
-		err := pp.InitStratosAuthService(interfaces.AuthEndpointTypes[pp.Config.ConsoleConfig.AuthEndpointType])
+		err := pp.InitStratosAuthService(api.AuthEndpointTypes[pp.Config.ConsoleConfig.AuthEndpointType])
 		if err != nil {
 			log.Fatalf("Could not initialise auth service: %v", err)
 		}
@@ -365,7 +365,7 @@ func TestLoginToCNSI(t *testing.T) {
 		var mockURL *url.URL
 		mockURL, _ = url.Parse(mockUAA.URL)
 		stringCFType := "cf"
-		var mockCNSI = interfaces.CNSIRecord{
+		var mockCNSI = api.CNSIRecord{
 			GUID:                   mockCNSIGUID,
 			Name:                   "mockCF",
 			CNSIType:               "cf",
@@ -392,10 +392,10 @@ func TestLoginToCNSI(t *testing.T) {
 		}
 
 		//Init the auth service
-		err := pp.InitStratosAuthService(interfaces.AuthEndpointTypes[pp.Config.ConsoleConfig.AuthEndpointType])
+		err := pp.InitStratosAuthService(api.AuthEndpointTypes[pp.Config.ConsoleConfig.AuthEndpointType])
 		if err != nil {
 			log.Warnf("%v, defaulting to auth type: remote", err)
-			err = pp.InitStratosAuthService(interfaces.Remote)
+			err = pp.InitStratosAuthService(api.Remote)
 			if err != nil {
 				log.Fatalf("Could not initialise auth service: %v", err)
 			}
@@ -543,7 +543,7 @@ func TestLoginToCNSIWithBadUserIDinSession(t *testing.T) {
 		var mockURL *url.URL
 		mockURL, _ = url.Parse(mockUAA.URL)
 		stringCFType := "cf"
-		var mockCNSI = interfaces.CNSIRecord{
+		var mockCNSI = api.CNSIRecord{
 			GUID:                  mockCNSIGUID,
 			Name:                  "mockCF",
 			CNSIType:              "cf",
@@ -584,7 +584,7 @@ func TestLoginToCNSIWithUserEndpointsEnabled(t *testing.T) {
 	Convey("Login to CNSI with UserEndpoints enabled", t, func() {
 		// mock StratosAuthService
 		ctrl := gomock.NewController(t)
-		mockStratosAuth := mock_interfaces.NewMockStratosAuth(ctrl)
+		mockStratosAuth := mock_api.NewMockStratosAuth(ctrl)
 		defer ctrl.Finish()
 
 		// setup mock DB, PortalProxy and mock StratosAuthService
@@ -816,12 +816,12 @@ func TestLogout(t *testing.T) {
 		res, _, ctx, pp, db, _ := setupHTTPTest(req)
 		defer db.Close()
 
-		pp.Config.ConsoleConfig.AuthEndpointType = string(interfaces.Local)
+		pp.Config.ConsoleConfig.AuthEndpointType = string(api.Local)
 		//Init the auth service
-		err := pp.InitStratosAuthService(interfaces.AuthEndpointTypes[pp.Config.ConsoleConfig.AuthEndpointType])
+		err := pp.InitStratosAuthService(api.AuthEndpointTypes[pp.Config.ConsoleConfig.AuthEndpointType])
 		if err != nil {
 			log.Warnf("%v, defaulting to auth type: remote", err)
-			err = pp.InitStratosAuthService(interfaces.Remote)
+			err = pp.InitStratosAuthService(api.Remote)
 			if err != nil {
 				log.Fatalf("Could not initialise auth service: %v", err)
 			}
@@ -849,11 +849,11 @@ func TestSaveCNSITokenWithInvalidInput(t *testing.T) {
 		badCNSIID := ""
 		badAuthToken := ""
 		badRefreshToken := ""
-		badUserInfo := interfaces.JWTUserTokenInfo{
+		badUserInfo := api.JWTUserTokenInfo{
 			UserGUID:    "",
 			TokenExpiry: 0,
 		}
-		emptyTokenRecord := interfaces.TokenRecord{}
+		emptyTokenRecord := api.TokenRecord{}
 
 		req := setupMockReq("POST", "", map[string]string{})
 		_, _, _, pp, db, mock := setupHTTPTest(req)
@@ -887,7 +887,7 @@ func TestSetUAATokenRecord(t *testing.T) {
 	Convey("Test saving a UAA Token record with a DB exception", t, func() {
 
 		fakeKey := "fake-guid"
-		fakeTr := interfaces.TokenRecord{}
+		fakeTr := api.TokenRecord{}
 
 		req := setupMockReq("POST", "", map[string]string{})
 		_, _, _, pp, db, mock := setupHTTPTest(req)
@@ -984,7 +984,7 @@ func TestVerifySession(t *testing.T) {
 		res, _, ctx, pp, db, mock := setupHTTPTest(req)
 		defer db.Close()
 
-		if e := pp.InitStratosAuthService(interfaces.Remote); e != nil {
+		if e := pp.InitStratosAuthService(api.Remote); e != nil {
 			log.Fatalf("Could not initialise auth service: %v", e)
 		}
 
@@ -1055,7 +1055,7 @@ func TestVerifySessionNoDate(t *testing.T) {
 		defer db.Close()
 
 		//Init the auth service
-		err := pp.InitStratosAuthService(interfaces.Local)
+		err := pp.InitStratosAuthService(api.Local)
 		if err != nil {
 			log.Fatalf("Could not initialise auth service: %v", err)
 		}
@@ -1098,7 +1098,7 @@ func TestVerifySessionExpired(t *testing.T) {
 		res, _, ctx, pp, db, mock := setupHTTPTest(req)
 		defer db.Close()
 
-		if e := pp.InitStratosAuthService(interfaces.Remote); e != nil {
+		if e := pp.InitStratosAuthService(api.Remote); e != nil {
 			log.Fatalf("Could not initialise auth service: %v", e)
 		}
 

@@ -96,11 +96,11 @@ var urlType *url.URL
 // not attempt to look anything up. This is contrary to most serialization
 // libraries like JSON which require a "-" struct tag to bypass deserialization.
 //
-//   type A struct {
-//     Port   uint    `configName:"PORT"`
-//     Name   string  `configName:"SERVICE_NAME"`
-//     Struct *myType
-//   }
+//	type A struct {
+//	  Port   uint    `configName:"PORT"`
+//	  Name   string  `configName:"SERVICE_NAME"`
+//	  Struct *myType
+//	}
 //
 // The name will be given as defined to Getenv, and if that fails a lookup
 // it's name is then munged to conform to the /etc/secrets filename structure

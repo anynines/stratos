@@ -1,4 +1,4 @@
-package interfaces
+package api
 
 // EndpointRepository is an application of the repository pattern for storing CNSI Records
 type EndpointRepository interface {

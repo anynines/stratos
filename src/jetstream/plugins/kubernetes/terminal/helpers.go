@@ -13,7 +13,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/plugins/kubernetes/auth"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
 
 	"github.com/gorilla/websocket"
 	v1 "k8s.io/api/core/v1"
@@ -224,7 +224,7 @@ func (k *KubeTerminal) cleanupPodAndSecret(podData *PodCreationData) error {
 	return nil
 }
 
-func getHelmRepoSetupScript(portalProxy interfaces.PortalProxy) string {
+func getHelmRepoSetupScript(portalProxy api.PortalProxy) string {
 	str := ""
 
 	// Get all of the helm endpoints

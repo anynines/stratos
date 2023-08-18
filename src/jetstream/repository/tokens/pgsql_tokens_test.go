@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
 	. "github.com/smartystreets/goconvey/convey"
 	"gopkg.in/DATA-DOG/go-sqlmock.v1"
 )
@@ -28,13 +28,13 @@ const (
 
 var mockTokenExpiry = time.Now().AddDate(0, 0, 1).Unix()
 var mockEncryptionKey = make([]byte, 32)
-var tokenRecord = interfaces.TokenRecord{
+var tokenRecord = api.TokenRecord{
 	AuthToken:    mockUAAToken,
 	RefreshToken: mockUAAToken,
 	TokenExpiry:  mockTokenExpiry,
 }
 
-func initialiseRepo(t *testing.T) (*sql.DB, sqlmock.Sqlmock, interfaces.TokenRepository) {
+func initialiseRepo(t *testing.T) (*sql.DB, sqlmock.Sqlmock, api.TokenRepository) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when opening a stub database connection", err)
@@ -76,7 +76,7 @@ func TestSaveUAATokens(t *testing.T) {
 			})
 
 			Reset(func() {
-				tokenRecord = interfaces.TokenRecord{
+				tokenRecord = api.TokenRecord{
 					AuthToken:    mockUAAToken,
 					RefreshToken: mockUAAToken,
 					TokenExpiry:  mockTokenExpiry,
@@ -184,7 +184,7 @@ func TestSaveCNSITokens(t *testing.T) {
 			})
 
 			Reset(func() {
-				tokenRecord = interfaces.TokenRecord{
+				tokenRecord = api.TokenRecord{
 					AuthToken:    mockUAAToken,
 					RefreshToken: mockUAAToken,
 					TokenExpiry:  mockTokenExpiry,

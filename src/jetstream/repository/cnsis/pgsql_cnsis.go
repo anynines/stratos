@@ -8,7 +8,7 @@ import (
 
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/crypto"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/datastore"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -50,7 +50,7 @@ type PostgresCNSIRepository struct {
 }
 
 // NewPostgresCNSIRepository will create a new instance of the PostgresCNSIRepository
-func NewPostgresCNSIRepository(dcp *sql.DB) (interfaces.EndpointRepository, error) {
+func NewPostgresCNSIRepository(dcp *sql.DB) (api.EndpointRepository, error) {
 	return &PostgresCNSIRepository{db: dcp}, nil
 }
 
@@ -70,7 +70,7 @@ func InitRepositoryProvider(databaseProvider string) {
 }
 
 // List - Returns a list of CNSI Records
-func (p *PostgresCNSIRepository) List(encryptionKey []byte) ([]*interfaces.CNSIRecord, error) {
+func (p *PostgresCNSIRepository) List(encryptionKey []byte) ([]*api.CNSIRecord, error) {
 	log.Debug("List")
 	rows, err := p.db.Query(listCNSIs)
 	if err != nil {
@@ -78,8 +78,8 @@ func (p *PostgresCNSIRepository) List(encryptionKey []byte) ([]*interfaces.CNSIR
 	}
 	defer rows.Close()
 
-	var cnsiList []*interfaces.CNSIRecord
-	cnsiList = make([]*interfaces.CNSIRecord, 0)
+	var cnsiList []*api.CNSIRecord
+	cnsiList = make([]*api.CNSIRecord, 0)
 
 	for rows.Next() {
 		var (
@@ -90,7 +90,7 @@ func (p *PostgresCNSIRepository) List(encryptionKey []byte) ([]*interfaces.CNSIR
 			metadata               sql.NullString
 		)
 
-		cnsi := new(interfaces.CNSIRecord)
+		cnsi := new(api.CNSIRecord)
 
 		err := rows.Scan(&cnsi.GUID, &cnsi.Name, &pCNSIType, &pURL, &cnsi.AuthorizationEndpoint, &cnsi.TokenEndpoint, &cnsi.DopplerLoggingEndpoint, &cnsi.SkipSSLValidation, &cnsi.ClientId, &cipherTextClientSecret, &cnsi.SSOAllowed, &subType, &metadata, &cnsi.Creator)
 		if err != nil {
@@ -133,7 +133,7 @@ func (p *PostgresCNSIRepository) List(encryptionKey []byte) ([]*interfaces.CNSIR
 }
 
 // ListByUser - Returns a list of CNSIs registered by a user
-func (p *PostgresCNSIRepository) ListByUser(userGUID string) ([]*interfaces.ConnectedEndpoint, error) {
+func (p *PostgresCNSIRepository) ListByUser(userGUID string) ([]*api.ConnectedEndpoint, error) {
 	log.Debug("ListByUser")
 	rows, err := p.db.Query(listCNSIsByUser, "cnsi", userGUID)
 	if err != nil {
@@ -141,8 +141,8 @@ func (p *PostgresCNSIRepository) ListByUser(userGUID string) ([]*interfaces.Conn
 	}
 	defer rows.Close()
 
-	var clusterList []*interfaces.ConnectedEndpoint
-	clusterList = make([]*interfaces.ConnectedEndpoint, 0)
+	var clusterList []*api.ConnectedEndpoint
+	clusterList = make([]*api.ConnectedEndpoint, 0)
 
 	for rows.Next() {
 		var (
@@ -153,7 +153,7 @@ func (p *PostgresCNSIRepository) ListByUser(userGUID string) ([]*interfaces.Conn
 			metadata     sql.NullString
 		)
 
-		cluster := new(interfaces.ConnectedEndpoint)
+		cluster := new(api.ConnectedEndpoint)
 		err := rows.Scan(&cluster.GUID, &cluster.Name, &pCNSIType, &pURL, &cluster.DopplerLoggingEndpoint, &cluster.Account, &cluster.TokenExpiry, &cluster.SkipSSLValidation,
 			&disconnected, &cluster.TokenMetadata, &subType, &metadata, &cluster.Creator)
 		if err != nil {
@@ -187,27 +187,27 @@ func (p *PostgresCNSIRepository) ListByUser(userGUID string) ([]*interfaces.Conn
 }
 
 // ListByCreator - Returns a list of CNSIs created by a user
-func (p *PostgresCNSIRepository) ListByCreator(userGUID string, encryptionKey []byte) ([]*interfaces.CNSIRecord, error) {
+func (p *PostgresCNSIRepository) ListByCreator(userGUID string, encryptionKey []byte) ([]*api.CNSIRecord, error) {
 	log.Debug("ListByCreator")
 	return p.listBy(listCNSIsByCreator, userGUID, encryptionKey)
 }
 
 // ListByAPIEndpoint - Returns a a list of CNSIs with the same APIEndpoint
-func (p *PostgresCNSIRepository) ListByAPIEndpoint(endpoint string, encryptionKey []byte) ([]*interfaces.CNSIRecord, error) {
+func (p *PostgresCNSIRepository) ListByAPIEndpoint(endpoint string, encryptionKey []byte) ([]*api.CNSIRecord, error) {
 	log.Debug("listByAPIEndpoint")
 	return p.listBy(findCNSIByAPIEndpoint, endpoint, encryptionKey)
 }
 
 // listBy - Returns a list of CNSI Records found using the given query looking for match
-func (p *PostgresCNSIRepository) listBy(query string, match string, encryptionKey []byte) ([]*interfaces.CNSIRecord, error) {
+func (p *PostgresCNSIRepository) listBy(query string, match string, encryptionKey []byte) ([]*api.CNSIRecord, error) {
 	rows, err := p.db.Query(query, match)
 	if err != nil {
 		return nil, fmt.Errorf("Unable to retrieve CNSI records: %v", err)
 	}
 	defer rows.Close()
 
-	var cnsiList []*interfaces.CNSIRecord
-	cnsiList = make([]*interfaces.CNSIRecord, 0)
+	var cnsiList []*api.CNSIRecord
+	cnsiList = make([]*api.CNSIRecord, 0)
 
 	for rows.Next() {
 		var (
@@ -218,7 +218,7 @@ func (p *PostgresCNSIRepository) listBy(query string, match string, encryptionKe
 			metadata               sql.NullString
 		)
 
-		cnsi := new(interfaces.CNSIRecord)
+		cnsi := new(api.CNSIRecord)
 
 		err := rows.Scan(&cnsi.GUID, &cnsi.Name, &pCNSIType, &pURL, &cnsi.AuthorizationEndpoint, &cnsi.TokenEndpoint, &cnsi.DopplerLoggingEndpoint, &cnsi.SkipSSLValidation, &cnsi.ClientId, &cipherTextClientSecret, &cnsi.SSOAllowed, &subType, &metadata, &cnsi.Creator)
 		if err != nil {
@@ -261,19 +261,19 @@ func (p *PostgresCNSIRepository) listBy(query string, match string, encryptionKe
 }
 
 // Find - Returns a single CNSI Record
-func (p *PostgresCNSIRepository) Find(guid string, encryptionKey []byte) (interfaces.CNSIRecord, error) {
+func (p *PostgresCNSIRepository) Find(guid string, encryptionKey []byte) (api.CNSIRecord, error) {
 	log.Debug("Find")
 	return p.findBy(findCNSI, guid, encryptionKey)
 }
 
 // FindByAPIEndpoint - Returns a single CNSI Record
-func (p *PostgresCNSIRepository) FindByAPIEndpoint(endpoint string, encryptionKey []byte) (interfaces.CNSIRecord, error) {
+func (p *PostgresCNSIRepository) FindByAPIEndpoint(endpoint string, encryptionKey []byte) (api.CNSIRecord, error) {
 	log.Debug("FindByAPIEndpoint")
 	return p.findBy(findCNSIByAPIEndpoint, endpoint, encryptionKey)
 }
 
 // FindBy - Returns a single CNSI Record found using the given query looking for match
-func (p *PostgresCNSIRepository) findBy(query, match string, encryptionKey []byte) (interfaces.CNSIRecord, error) {
+func (p *PostgresCNSIRepository) findBy(query, match string, encryptionKey []byte) (api.CNSIRecord, error) {
 	var (
 		pCNSIType              string
 		pURL                   string
@@ -282,16 +282,16 @@ func (p *PostgresCNSIRepository) findBy(query, match string, encryptionKey []byt
 		metadata               sql.NullString
 	)
 
-	cnsi := new(interfaces.CNSIRecord)
+	cnsi := new(api.CNSIRecord)
 
 	err := p.db.QueryRow(query, match).Scan(&cnsi.GUID, &cnsi.Name, &pCNSIType, &pURL,
 		&cnsi.AuthorizationEndpoint, &cnsi.TokenEndpoint, &cnsi.DopplerLoggingEndpoint, &cnsi.SkipSSLValidation, &cnsi.ClientId, &cipherTextClientSecret, &cnsi.SSOAllowed, &subType, &metadata, &cnsi.Creator)
 
 	switch {
 	case err == sql.ErrNoRows:
-		return interfaces.CNSIRecord{}, errors.New("No match for that Endpoint")
+		return api.CNSIRecord{}, errors.New("No match for that Endpoint")
 	case err != nil:
-		return interfaces.CNSIRecord{}, fmt.Errorf("Error trying to Find CNSI record: %v", err)
+		return api.CNSIRecord{}, fmt.Errorf("Error trying to Find CNSI record: %v", err)
 	default:
 		// do nothing
 	}
@@ -307,13 +307,13 @@ func (p *PostgresCNSIRepository) findBy(query, match string, encryptionKey []byt
 	cnsi.CNSIType = pCNSIType
 
 	if cnsi.APIEndpoint, err = url.Parse(pURL); err != nil {
-		return interfaces.CNSIRecord{}, fmt.Errorf("Unable to parse API Endpoint: %v", err)
+		return api.CNSIRecord{}, fmt.Errorf("Unable to parse API Endpoint: %v", err)
 	}
 
 	if len(cipherTextClientSecret) > 0 {
 		plaintextClientSecret, err := crypto.DecryptToken(encryptionKey, cipherTextClientSecret)
 		if err != nil {
-			return interfaces.CNSIRecord{}, err
+			return api.CNSIRecord{}, err
 		}
 		cnsi.ClientSecret = plaintextClientSecret
 	} else {
@@ -325,7 +325,7 @@ func (p *PostgresCNSIRepository) findBy(query, match string, encryptionKey []byt
 }
 
 // Save will persist a CNSI Record to a datastore
-func (p *PostgresCNSIRepository) Save(guid string, cnsi interfaces.CNSIRecord, encryptionKey []byte) error {
+func (p *PostgresCNSIRepository) Save(guid string, cnsi api.CNSIRecord, encryptionKey []byte) error {
 	log.Debug("Save")
 	cipherTextClientSecret, err := crypto.EncryptToken(encryptionKey, cnsi.ClientSecret)
 	if err != nil {
@@ -351,7 +351,7 @@ func (p *PostgresCNSIRepository) Delete(guid string) error {
 }
 
 // Update - Update an endpoint's data
-func (p *PostgresCNSIRepository) Update(endpoint interfaces.CNSIRecord, encryptionKey []byte) error {
+func (p *PostgresCNSIRepository) Update(endpoint api.CNSIRecord, encryptionKey []byte) error {
 	log.Debug("Update endpoint")
 
 	if endpoint.GUID == "" {
@@ -431,7 +431,7 @@ func (p *PostgresCNSIRepository) UpdateMetadata(guid string, metadata string) er
 }
 
 // SaveOrUpdate - Creates or Updates CNSI Record
-func (p *PostgresCNSIRepository) SaveOrUpdate(endpoint interfaces.CNSIRecord, encryptionKey []byte) error {
+func (p *PostgresCNSIRepository) SaveOrUpdate(endpoint api.CNSIRecord, encryptionKey []byte) error {
 	log.Debug("Overwrite CNSI")
 
 	// Is there an existing token?

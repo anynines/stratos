@@ -39,14 +39,14 @@ import (
 	log "github.com/sirupsen/logrus"
 	echoSwagger "github.com/swaggo/echo-swagger"
 
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api/config"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/crypto"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/datastore"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/factory"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/apikeys"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/cnsis"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/console_config"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces/config"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/localusers"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/sessiondata"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/tokens"
@@ -148,7 +148,7 @@ func main() {
 	log.Info("Initialization started.")
 
 	// Load the portal configuration from env vars
-	var portalConfig interfaces.PortalConfig
+	var portalConfig api.PortalConfig
 	portalConfig, err := loadPortalConfig(portalConfig, envLookup)
 	if err != nil {
 		log.Fatal(err) // calls os.Exit(1) after logging
@@ -174,7 +174,7 @@ func main() {
 	log.Infof("Stratos Version: %s", portalConfig.ConsoleVersion)
 
 	// Initialize an empty config for the console - initially not setup
-	portalConfig.ConsoleConfig = new(interfaces.ConsoleConfig)
+	portalConfig.ConsoleConfig = new(api.ConsoleConfig)
 
 	// Initialize the HTTP client
 	initializeHTTPClients(portalConfig.HTTPClientTimeoutInSecs, portalConfig.HTTPClientTimeoutMutatingInSecs, portalConfig.HTTPConnectionTimeoutInSecs)
@@ -220,7 +220,7 @@ func main() {
 		log.Info("Session Store Secret detected okay")
 	}
 
-	for _, configPlugin := range interfaces.JetstreamConfigPlugins {
+	for _, configPlugin := range api.JetstreamConfigPlugins {
 		configPlugin(envLookup, &portalConfig)
 	}
 
@@ -321,7 +321,7 @@ func main() {
 
 		// Plugin cleanup
 		for _, plugin := range portalProxy.Plugins {
-			if pCleanup, ok := plugin.(interfaces.StratosPluginCleanup); ok {
+			if pCleanup, ok := plugin.(api.StratosPluginCleanup); ok {
 				pCleanup.Destroy()
 			}
 		}
@@ -338,10 +338,10 @@ func main() {
 	}
 
 	// Init auth service
-	err = portalProxy.InitStratosAuthService(interfaces.AuthEndpointTypes[portalProxy.Config.AuthEndpointType])
+	err = portalProxy.InitStratosAuthService(api.AuthEndpointTypes[portalProxy.Config.AuthEndpointType])
 	if err != nil {
 		log.Warnf("Defaulting to UAA authentication: %v", err)
-		err = portalProxy.InitStratosAuthService(interfaces.Remote)
+		err = portalProxy.InitStratosAuthService(api.Remote)
 		if err != nil {
 			log.Fatalf("Could not initialise auth service. %v", err)
 		}
@@ -350,7 +350,7 @@ func main() {
 	// Initialise Plugins
 	portalProxy.loadPlugins()
 
-	initedPlugins := make(map[string]interfaces.StratosPlugin)
+	initedPlugins := make(map[string]api.StratosPlugin)
 	portalProxy.PluginsStatus = make(map[string]bool)
 
 	// Initialise general plugins
@@ -397,7 +397,7 @@ func (portalProxy *portalProxy) GetDatabaseConnection() *sql.DB {
 }
 
 // GetSessionDataStore returns the store that can be used for extra session data
-func (portalProxy *portalProxy) GetSessionDataStore() interfaces.SessionDataStore {
+func (portalProxy *portalProxy) GetSessionDataStore() api.SessionDataStore {
 	return portalProxy.SessionDataStore
 }
 
@@ -444,7 +444,7 @@ func initialiseConsoleConfiguration(portalProxy *portalProxy) error {
 	return nil
 }
 
-func showStratosConfig(portalProxy *portalProxy, config *interfaces.ConsoleConfig) {
+func showStratosConfig(portalProxy *portalProxy, config *api.ConsoleConfig) {
 	log.Infof("Stratos is initialized with the following setup:")
 	log.Infof("... Auth Endpoint Type      : %s", config.AuthEndpointType)
 
@@ -463,7 +463,7 @@ func showSSOConfig(portalProxy *portalProxy) {
 	log.Infof("... SSO Redirect Allow-list : %s", portalProxy.Config.SSOAllowList)
 }
 
-func getEncryptionKey(pc interfaces.PortalConfig) ([]byte, error) {
+func getEncryptionKey(pc api.PortalConfig) ([]byte, error) {
 	log.Debug("getEncryptionKey")
 
 	// If it exists in "EncryptionKey" we must be in compose; use it.
@@ -526,7 +526,7 @@ func initConnPool(dc datastore.DatabaseConfig, env *env.VarSet) (*sql.DB, error)
 	return pool, nil
 }
 
-func initSessionStore(db *sql.DB, databaseProvider string, pc interfaces.PortalConfig, sessionExpiry int, env *env.VarSet) (HttpSessionStore, *sessions.Options, error) {
+func initSessionStore(db *sql.DB, databaseProvider string, pc api.PortalConfig, sessionExpiry int, env *env.VarSet) (HttpSessionStore, *sessions.Options, error) {
 	log.Debug("initSessionStore")
 
 	sessionsTable := "sessions"
@@ -578,7 +578,7 @@ func initSessionStore(db *sql.DB, databaseProvider string, pc interfaces.PortalC
 	return sessionStore, sessionStore.Options, err
 }
 
-func loadPortalConfig(pc interfaces.PortalConfig, env *env.VarSet) (interfaces.PortalConfig, error) {
+func loadPortalConfig(pc api.PortalConfig, env *env.VarSet) (api.PortalConfig, error) {
 	log.Debug("loadPortalConfig")
 
 	if err := config.Load(&pc, env.Lookup); err != nil {
@@ -597,9 +597,9 @@ func loadPortalConfig(pc interfaces.PortalConfig, env *env.VarSet) (interfaces.P
 
 	if len(pc.AuthEndpointType) == 0 {
 		//Default to "remote" if AUTH_ENDPOINT_TYPE is not set
-		pc.AuthEndpointType = string(interfaces.Remote)
+		pc.AuthEndpointType = string(api.Remote)
 	} else {
-		val, endpointTypeSupported := interfaces.AuthEndpointTypes[pc.AuthEndpointType]
+		val, endpointTypeSupported := api.AuthEndpointTypes[pc.AuthEndpointType]
 		if endpointTypeSupported {
 			pc.AuthEndpointType = string(val)
 		} else {
@@ -633,7 +633,7 @@ func loadDatabaseConfig(dc datastore.DatabaseConfig, env *env.VarSet) (datastore
 	return dc, nil
 }
 
-func detectTLSCert(pc interfaces.PortalConfig) (string, string, error) {
+func detectTLSCert(pc api.PortalConfig) (string, string, error) {
 	log.Debug("detectTLSCert")
 	certFilename := "pproxy.crt"
 	certKeyFilename := "pproxy.key"
@@ -671,7 +671,7 @@ func detectTLSCert(pc interfaces.PortalConfig) (string, string, error) {
 	return certFilename, certKeyFilename, nil
 }
 
-func newPortalProxy(pc interfaces.PortalConfig, dcp *sql.DB, ss HttpSessionStore, sessionStoreOptions *sessions.Options, env *env.VarSet) *portalProxy {
+func newPortalProxy(pc api.PortalConfig, dcp *sql.DB, ss HttpSessionStore, sessionStoreOptions *sessions.Options, env *env.VarSet) *portalProxy {
 	log.Debug("newPortalProxy")
 
 	// Generate cookie name - avoids issues if the cookie domain is changed
@@ -705,30 +705,30 @@ func newPortalProxy(pc interfaces.PortalConfig, dcp *sql.DB, ss HttpSessionStore
 		SessionStoreOptions:    sessionStoreOptions,
 		SessionCookieName:      cookieName,
 		EmptyCookieMatcher:     regexp.MustCompile(cookieName + "=(?:;[ ]*|$)"),
-		AuthProviders:          make(map[string]interfaces.AuthProvider),
+		AuthProviders:          make(map[string]api.AuthProvider),
 		env:                    env,
 	}
 
 	// Initialize built-in auth providers
 
 	// Basic Auth
-	pp.AddAuthProvider(interfaces.AuthTypeHttpBasic, interfaces.AuthProvider{
+	pp.AddAuthProvider(api.AuthTypeHttpBasic, api.AuthProvider{
 		Handler:  pp.doHttpBasicFlowRequest,
 		UserInfo: pp.GetCNSIUserFromBasicToken,
 	})
 
 	// No authentication
-	pp.AddAuthProvider(interfaces.AuthConnectTypeNone, interfaces.AuthProvider{
+	pp.AddAuthProvider(api.AuthConnectTypeNone, api.AuthProvider{
 		Handler:  pp.doNoAuthFlowRequest,
 		UserInfo: pp.getCNSIUserForNoAuth,
 	})
 
 	// Generic Bearer Auth (HTTP Authorization header with 'bearer' prefix)
-	pp.AddAuthProvider(interfaces.AuthTypeBearer, interfaces.AuthProvider{
+	pp.AddAuthProvider(api.AuthTypeBearer, api.AuthProvider{
 		Handler: pp.doBearerFlowRequest,
-		UserInfo: func(cnsiGUID string, cfTokenRecord *interfaces.TokenRecord) (*interfaces.ConnectedUser, bool) {
+		UserInfo: func(cnsiGUID string, cfTokenRecord *api.TokenRecord) (*api.ConnectedUser, bool) {
 			// don't fetch user info for the generic token auth
-			return &interfaces.ConnectedUser{
+			return &api.ConnectedUser{
 				Name: cfTokenRecord.RefreshToken,
 				GUID: cfTokenRecord.RefreshToken,
 			}, true
@@ -736,11 +736,11 @@ func newPortalProxy(pc interfaces.PortalConfig, dcp *sql.DB, ss HttpSessionStore
 	})
 
 	// Generic Token Auth (HTTP Authorization header with 'token' prefix)
-	pp.AddAuthProvider(interfaces.AuthTypeToken, interfaces.AuthProvider{
+	pp.AddAuthProvider(api.AuthTypeToken, api.AuthProvider{
 		Handler: pp.doTokenFlowRequest,
-		UserInfo: func(cnsiGUID string, cfTokenRecord *interfaces.TokenRecord) (*interfaces.ConnectedUser, bool) {
+		UserInfo: func(cnsiGUID string, cfTokenRecord *api.TokenRecord) (*api.ConnectedUser, bool) {
 			// don't fetch user info for the generic token auth
-			return &interfaces.ConnectedUser{
+			return &api.ConnectedUser{
 				Name: cfTokenRecord.RefreshToken,
 				GUID: cfTokenRecord.RefreshToken,
 			}, true
@@ -748,7 +748,7 @@ func newPortalProxy(pc interfaces.PortalConfig, dcp *sql.DB, ss HttpSessionStore
 	})
 
 	// OIDC
-	pp.AddAuthProvider(interfaces.AuthTypeOIDC, interfaces.AuthProvider{
+	pp.AddAuthProvider(api.AuthTypeOIDC, api.AuthProvider{
 		Handler: pp.DoOidcFlowRequest,
 	})
 
@@ -806,7 +806,7 @@ func echoShouldNotLog(ec echo.Context) bool {
 	return false
 }
 
-func start(config interfaces.PortalConfig, p *portalProxy, needSetupMiddleware bool, isUpgrade bool, envLookup *env.VarSet) error {
+func start(config api.PortalConfig, p *portalProxy, needSetupMiddleware bool, isUpgrade bool, envLookup *env.VarSet) error {
 	log.Debug("start")
 	e := echo.New()
 	e.HideBanner = true
@@ -883,7 +883,7 @@ func start(config interfaces.PortalConfig, p *portalProxy, needSetupMiddleware b
 	return nil
 }
 
-func (p *portalProxy) GetEndpointTypeSpec(typeName string) (interfaces.EndpointPlugin, error) {
+func (p *portalProxy) GetEndpointTypeSpec(typeName string) (api.EndpointPlugin, error) {
 
 	for _, plugin := range p.Plugins {
 		endpointPlugin, err := plugin.GetEndpointPlugin()
@@ -956,16 +956,16 @@ func (p *portalProxy) getHttpClient(skipSSLValidation bool, mutating bool) http.
 // @Param cnsi_client_id formData string false "Client ID"
 // @Param cnsi_client_secret formData string false "Client secret"
 // @Param sub_type formData string false "Endpoint subtype"
-// @Success 200 {object} interfaces.CNSIRecord "Endpoint object"
-// @Failure 400 {object} interfaces.ErrorResponseBody "Error response"
-// @Failure 401 {object} interfaces.ErrorResponseBody "Error response"
+// @Success 200 {object} api.CNSIRecord "Endpoint object"
+// @Failure 400 {object} api.ErrorResponseBody "Error response"
+// @Failure 401 {object} api.ErrorResponseBody "Error response"
 // @Security ApiKeyAuth
 // @Router /endpoints [post]
 func (p *portalProxy) pluginRegisterRouter(c echo.Context) error {
 	log.Debug("pluginRegisterRouter")
 
-	params := new(interfaces.RegisterEndpointParams)
-	err := interfaces.BindOnce(params, c)
+	params := new(api.RegisterEndpointParams)
+	err := api.BindOnce(params, c)
 	if err != nil {
 		return err
 	}
@@ -1153,8 +1153,8 @@ func (p *portalProxy) registerRoutes(e *echo.Echo, needSetupMiddleware bool) {
 	}
 }
 
-func (p *portalProxy) AddLoginHook(priority int, function interfaces.LoginHookFunc) error {
-	p.GetConfig().LoginHooks = append(p.GetConfig().LoginHooks, interfaces.LoginHook{
+func (p *portalProxy) AddLoginHook(priority int, function api.LoginHookFunc) error {
+	p.GetConfig().LoginHooks = append(p.GetConfig().LoginHooks, api.LoginHook{
 		Priority: priority,
 		Function: function,
 	})
@@ -1277,12 +1277,12 @@ func stopEchoWhenUpgraded(e *echo.Echo, env *env.VarSet) {
 }
 
 // GetStoreFactory gets the store factory
-func (portalProxy *portalProxy) GetStoreFactory() interfaces.StoreFactory {
+func (portalProxy *portalProxy) GetStoreFactory() api.StoreFactory {
 	return portalProxy.StoreFactory
 }
 
 // SetStoreFactory sets the store factory
-func (portalProxy *portalProxy) SetStoreFactory(f interfaces.StoreFactory) interfaces.StoreFactory {
+func (portalProxy *portalProxy) SetStoreFactory(f api.StoreFactory) api.StoreFactory {
 	old := portalProxy.StoreFactory
 	portalProxy.StoreFactory = f
 	return old

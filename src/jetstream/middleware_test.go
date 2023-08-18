@@ -8,10 +8,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api/config"
+	mock_api "github.com/cloudfoundry-incubator/stratos/src/jetstream/api/mock"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/apikeys"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces/config"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/mock_interfaces"
+	mock_apikeys "github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/apikeys/mock"
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
@@ -19,7 +20,7 @@ import (
 	sqlmock "gopkg.in/DATA-DOG/go-sqlmock.v1"
 )
 
-func makeMockServer(apiKeysRepo apikeys.Repository, mockStratosAuth interfaces.StratosAuth) *portalProxy {
+func makeMockServer(apiKeysRepo apikeys.Repository, mockStratosAuth api.StratosAuth) *portalProxy {
 	db, _, dberr := sqlmock.New()
 	if dberr != nil {
 		log.Panicf("an error '%s' was not expected when opening a stub database connection", dberr)
@@ -58,8 +59,8 @@ func Test_apiKeyMiddleware(t *testing.T) {
 	log.SetLevel(log.PanicLevel)
 
 	ctrl := gomock.NewController(t)
-	mockAPIRepo := apikeys.NewMockRepository(ctrl)
-	mockStratosAuth := mock_interfaces.NewMockStratosAuth(ctrl)
+	mockAPIRepo := mock_apikeys.NewMockRepository(ctrl)
+	mockStratosAuth := mock_api.NewMockStratosAuth(ctrl)
 	pp := makeMockServer(mockAPIRepo, mockStratosAuth)
 	defer ctrl.Finish()
 	defer pp.DatabaseConnectionPool.Close()
@@ -153,7 +154,7 @@ func Test_apiKeyMiddleware(t *testing.T) {
 					ctx, rec := makeNewRequest()
 					ctx.Request().Header.Add("Authentication", "Bearer "+apiKeySecret)
 
-					apiKey := &interfaces.APIKey{
+					apiKey := &api.APIKey{
 						UserGUID: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
 						GUID:     "00000000-0000-0000-0000-000000000000",
 					}
@@ -189,7 +190,7 @@ func Test_apiKeyMiddleware(t *testing.T) {
 					ctx, rec := makeNewRequest()
 					ctx.Request().Header.Add("Authentication", "Bearer "+apiKeySecret)
 
-					apiKey := &interfaces.APIKey{
+					apiKey := &api.APIKey{
 						UserGUID: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
 						GUID:     "00000000-0000-0000-0000-000000000000",
 					}
@@ -232,12 +233,12 @@ func Test_apiKeyMiddleware(t *testing.T) {
 			ctx, rec := makeNewRequest()
 			ctx.Request().Header.Add("Authentication", "Bearer "+apiKeySecret)
 
-			apiKey := &interfaces.APIKey{
+			apiKey := &api.APIKey{
 				UserGUID: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
 				GUID:     "00000000-0000-0000-0000-000000000000",
 			}
 
-			connectedUser := &interfaces.ConnectedUser{
+			connectedUser := &api.ConnectedUser{
 				GUID:  apiKey.UserGUID,
 				Admin: false,
 			}
@@ -273,12 +274,12 @@ func Test_apiKeyMiddleware(t *testing.T) {
 			ctx, rec := makeNewRequest()
 			ctx.Request().Header.Add("Authentication", "Bearer "+apiKeySecret)
 
-			apiKey := &interfaces.APIKey{
+			apiKey := &api.APIKey{
 				UserGUID: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
 				GUID:     "00000000-0000-0000-0000-000000000000",
 			}
 
-			connectedUser := &interfaces.ConnectedUser{
+			connectedUser := &api.ConnectedUser{
 				GUID:  apiKey.UserGUID,
 				Admin: true,
 			}
@@ -319,7 +320,7 @@ func Test_apiKeyMiddleware(t *testing.T) {
 			ctx, rec := makeNewRequest()
 			ctx.Request().Header.Add("Authentication", "Bearer "+apiKeySecret)
 
-			apiKey := &interfaces.APIKey{
+			apiKey := &api.APIKey{
 				UserGUID: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
 				GUID:     "00000000-0000-0000-0000-000000000000",
 			}
@@ -384,7 +385,7 @@ func TestEndpointAdminMiddleware(t *testing.T) {
 	Convey("new request through endpointAdminMiddleware", t, func() {
 		// mock StratosAuthService
 		ctrl := gomock.NewController(t)
-		mockStratosAuth := mock_interfaces.NewMockStratosAuth(ctrl)
+		mockStratosAuth := mock_api.NewMockStratosAuth(ctrl)
 		defer ctrl.Finish()
 
 		// setup mock DB, PortalProxy and mock StratosAuthService
@@ -472,7 +473,7 @@ func TestEndpointUpdateDeleteMiddleware(t *testing.T) {
 	Convey("new request through endpointUpdateDeleteMiddleware", t, func() {
 		// mock StratosAuthService
 		ctrl := gomock.NewController(t)
-		mockStratosAuth := mock_interfaces.NewMockStratosAuth(ctrl)
+		mockStratosAuth := mock_api.NewMockStratosAuth(ctrl)
 		defer ctrl.Finish()
 
 		// setup mock DB, PortalProxy and mock StratosAuthService

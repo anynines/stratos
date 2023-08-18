@@ -1,6 +1,6 @@
 module github.com/cloudfoundry-incubator/stratos/src/jetstream/plugins/kubernetes
 
-go 1.12
+go 1.20
 
 require (
 	github.com/Masterminds/semver v1.4.2 // indirect
@@ -24,15 +24,16 @@ require (
 	github.com/technosophos/moniker v0.0.0-20180509230615-a5dbd03a2245 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.0 // indirect
 	gopkg.in/yaml.v2 v2.2.4
-	helm.sh/helm/v3 v3.0.0
-	k8s.io/api v0.0.0-20191016110408-35e52d86657a
-	k8s.io/apimachinery v0.0.0-20191004115801-a2eda9f80ab8
-	k8s.io/client-go v0.0.0-20191016111102-bec269661e48
+	helm.sh/helm/v3 v3.12.3
+	k8s.io/api v0.23.17
+	k8s.io/apimachinery v0.23.17
+	k8s.io/client-go v0.23.17
 )
 
 replace (
+	github.com/cloudfoundry-incubator/stratos/src/jetstream => ../../../jetstream
+	github.com/cloudfoundry-incubator/stratos/src/jetstream/plugins/kubernetes/auth => ./auth
 	github.com/SermoDigital/jose => github.com/SermoDigital/jose v0.9.2-0.20180104203859-803625baeddc
-	github.com/cloudfoundry-incubator/stratos/src/jetstream => ../..
 	github.com/docker/docker => github.com/moby/moby v0.7.3-0.20190826074503-38ab9da00309
 	github.com/kubernetes-sigs/aws-iam-authenticator => github.com/kubernetes-sigs/aws-iam-authenticator v0.3.1-0.20190111160901-390d9087a4bc
 	github.com/russross/blackfriday v2.0.0+incompatible => github.com/russross/blackfriday v1.5.2

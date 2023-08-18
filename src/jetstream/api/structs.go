@@ -1,4 +1,4 @@
-package interfaces
+package api
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"reflect"
 
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/interfaces/config"
+	api "github.com/cloudfoundry-incubator/stratos/src/jetstream/api/config"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo/v4"
 )
@@ -39,7 +39,7 @@ type V2Info struct {
 
 type InfoFunc func(apiEndpoint string, skipSSLValidation bool) (CNSIRecord, interface{}, error)
 
-//TODO this could be moved back to cnsis subpackage, and extensions could import it?
+// TODO this could be moved back to cnsis subpackage, and extensions could import it?
 type CNSIRecord struct {
 	GUID                   string   `json:"guid"`
 	Name                   string   `json:"name"`
@@ -263,7 +263,7 @@ type Versions struct {
 	DatabaseVersion int64  `json:"database_version"`
 }
 
-//AuthEndpointType - Restrict the possible values of the configured
+// AuthEndpointType - Restrict the possible values of the configured
 type AuthEndpointType string
 
 const (
@@ -275,8 +275,8 @@ const (
 	AuthNone AuthEndpointType = "none"
 )
 
-//AuthEndpointTypes - Allows lookup of internal string representation by the
-//value of the AUTH_ENDPOINT_TYPE env variable
+// AuthEndpointTypes - Allows lookup of internal string representation by the
+// value of the AUTH_ENDPOINT_TYPE env variable
 var AuthEndpointTypes = map[string]AuthEndpointType{
 	"remote": Remote,
 	"local":  Local,
@@ -403,9 +403,9 @@ type PortalConfig struct {
 	DatabaseProviderName               string
 	EnableTechPreview                  bool `configName:"ENABLE_TECH_PREVIEW"`
 	CanMigrateDatabaseSchema           bool
-	APIKeysEnabled                     config.APIKeysConfigValue       `configName:"API_KEYS_ENABLED"`
-	HomeViewShowFavoritesOnly          bool                            `configName:"HOME_VIEW_SHOW_FAVORITES_ONLY"`
-	UserEndpointsEnabled               config.UserEndpointsConfigValue `configName:"USER_ENDPOINTS_ENABLED"`
+	APIKeysEnabled                     api.APIKeysConfigValue       `configName:"API_KEYS_ENABLED"`
+	HomeViewShowFavoritesOnly          bool                         `configName:"HOME_VIEW_SHOW_FAVORITES_ONLY"`
+	UserEndpointsEnabled               api.UserEndpointsConfigValue `configName:"USER_ENDPOINTS_ENABLED"`
 	// CanMigrateDatabaseSchema indicates if we can safely perform migrations
 	// This depends on the deployment mechanism and the database config
 	// e.g. if running in Cloud Foundry with a shared DB, then only the 0-index application instance
