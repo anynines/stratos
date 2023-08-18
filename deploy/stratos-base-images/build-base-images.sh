@@ -8,8 +8,8 @@ RESET="\033[0m"
 BOLD="\033[1m"
 
 BASE_IMAGE=centos:7
-REGISTRY=docker.io
-ORGANIZATION=internalservices
+REGISTRY=ghcr.io
+ORGANIZATION=anynines
 TAG=centos7
 ARCH=amd64
 PROG=$(basename ${BASH_SOURCE[0]})
@@ -24,11 +24,12 @@ GOSU_ARCH=amd64
 NGINX_ARCH=centos/7/x86_64
 
 function usage {
-    echo "usage: $PROG [-b BASE] [-r REGISTRY] [-o ORGANIZATION] [-t TAG] [-p] [h]"
+    echo "usage: $PROG [-b BASE] [-r REGISTRY] [-o ORGANIZATION] [-t TAG] [-s] [-p] [h]"
     echo "       -a Value   System Architecture (amd64 or arm64)"
     echo "       -b Value   Base Image"
     echo "       -r Value   Docker registry"
     echo "       -o Value   Organization in Docker registry"
+    echo "       -s         Don't squash images"
     echo "       -t Value   Tag for images"
     echo "       -p         Push images to registry"
     echo "       -h         Help"
@@ -36,7 +37,7 @@ function usage {
 }
 
 
-while getopts "a:b:r:o:t:ph" opt ; do
+while getopts "a:b:r:o:t:ph:s" opt ; do
     case $opt in
         a)
             ARCH=${OPTARG}
@@ -74,6 +75,9 @@ while getopts "a:b:r:o:t:ph" opt ; do
         h)
             usage
             ;;
+        s)
+            SQUASH_ARGS=""
+            ;;
         \?)
             echo "Invalid option -$OPTARG" >&2
             usage
@@ -92,6 +96,7 @@ echo "BASE IMAGE   : ${BASE_IMAGE}"
 echo "REGISTRY     : ${REGISTRY}"
 echo "ORG          : ${ORGANIZATION}"
 echo "TAG          : ${TAG}"
+echo "SQUASH:      : ${SQUASH_ARGS}"
 echo "PUSH IMAGES  : ${PUSH_IMAGES}"
 echo ""
 printf "${RESET}"
