@@ -32,7 +32,7 @@ func (c *CFPushApp) setEndpointInfo(config *configv3.Config) error {
 		config.SetAccessToken("bearer " + c.config.AuthToken)
 		// Note: We do not give the refresh token to the CLI code as we do NOT want it to refresh the token
 	} else {
-		return errors.New("Did not get a CF /v2/info response")
+		return errors.New("did not get a CF /v2/info response")
 	}
 
 	return nil
