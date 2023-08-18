@@ -24,12 +24,12 @@ func Init(portalProxy interfaces.PortalProxy) (interfaces.StratosPlugin, error) 
 
 // GetMiddlewarePlugin gets the middleware plugin for this plugin
 func (cfAppPush *CFAppPush) GetMiddlewarePlugin() (interfaces.MiddlewarePlugin, error) {
-	return nil, errors.New("Not implemented")
+	return nil, errors.New("not implemented")
 }
 
 // GetEndpointPlugin gets the endpoint plugin for this plugin
 func (cfAppPush *CFAppPush) GetEndpointPlugin() (interfaces.EndpointPlugin, error) {
-	return nil, errors.New("Not implemented")
+	return nil, errors.New("not implemented")
 }
 
 // GetRoutePlugin gets the route plugin for this plugin
