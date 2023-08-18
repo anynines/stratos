@@ -20,7 +20,7 @@ import (
 	// Sqlite driver
 	_ "github.com/mattn/go-sqlite3"
 
-	"bitbucket.org/liamstask/goose/lib/goose"
+	"github.com/pressly/goose"
 )
 
 const (
@@ -108,7 +108,7 @@ func NewDatabaseConnectionParametersFromConfig(dc DatabaseConfig) (DatabaseConfi
 			return dc, nil
 		}
 		// Invalid SSL mode
-		return dc, fmt.Errorf("Invalid SSL mode: %s", dc.SSLMode)
+		return dc, fmt.Errorf("invalid SSL mode: %s", dc.SSLMode)
 	} else if dc.DatabaseProvider == MYSQL {
 		// Map default of disabled to false for MySQL
 		if dc.SSLMode == "disable" {
@@ -118,9 +118,9 @@ func NewDatabaseConnectionParametersFromConfig(dc DatabaseConfig) (DatabaseConfi
 			return dc, nil
 		}
 		// Invalid SSL mode
-		return dc, fmt.Errorf("Invalid SSL mode: %s", dc.SSLMode)
+		return dc, fmt.Errorf("invalid SSL mode: %s", dc.SSLMode)
 	}
-	return dc, fmt.Errorf("Invalid provider %v", dc)
+	return dc, fmt.Errorf("invalid provider %v", dc)
 }
 
 func validateRequiredDatabaseParams(username, password, database, host string, port int) (err error) {
@@ -142,44 +142,35 @@ func validateRequiredDatabaseParams(username, password, database, host string, p
 }
 
 // GetConnection returns a database connection to either MySQL, PostgreSQL or SQLite
-func GetConnection(dc DatabaseConfig, env *env.VarSet) (*sql.DB, *goose.DBConf, error) {
+func GetConnection(dc DatabaseConfig, env *env.VarSet) (*sql.DB, error) {
 	log.Debug("GetConnection")
+	db, err := NewGooseDBConf(dc, env)
 
-	// Get a Goose Configuration so that we can pass that to the schema migrator
-	conf, err := NewGooseDBConf(dc, env)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	db, err := sql.Open(conf.Driver.Name, conf.Driver.OpenStr)
-	return db, conf, err
+	return db, err
 }
 
 // GetInMemorySQLLiteConnection returns an SQLite DB Connection
-func GetInMemorySQLLiteConnection() (*sql.DB, *goose.DBConf, error) {
+func GetInMemorySQLLiteConnection() (*sql.DB, error) {
 
 	databaseFile := "file::memory:?cache=shared"
 	log.Info("Using In Memory Database file")
 	db, err := sql.Open("sqlite3", databaseFile)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	driver := newDBDriver("sqlite3", databaseFile)
-	conf := &goose.DBConf{
-		Driver: driver,
-	}
+	goose.SetDialect("sqlite3")
 
-	err = ApplyMigrations(conf, db)
+	err = ApplyMigrations(db)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	return db, conf, nil
+	return db, nil
 }
 
 // NewGooseDBConf creates a new Goose config for database migrations
-func NewGooseDBConf(dc DatabaseConfig, env *env.VarSet) (*goose.DBConf, error) {
+func NewGooseDBConf(dc DatabaseConfig, env *env.VarSet) (*sql.DB, error) {
 
 	var openStr, name string
 
@@ -201,39 +192,10 @@ func NewGooseDBConf(dc DatabaseConfig, env *env.VarSet) (*goose.DBConf, error) {
 		}
 	}
 
-	driver := newDBDriver(name, openStr)
-	return &goose.DBConf{
-		MigrationsDir: ".",
-		Env:           fmt.Sprintf("%s_dbenv", name),
-		Driver:        driver,
-		PgSchema:      "",
-	}, nil
-}
+	goose.SetDialect(name)
+	db, err := sql.Open(name, openStr)
 
-// Create a new DBDriver and populate driver specific
-// fields for drivers that we know about.
-func newDBDriver(name, open string) goose.DBDriver {
-
-	d := goose.DBDriver{
-		Name:    name,
-		OpenStr: open,
-	}
-
-	switch name {
-	case "postgres":
-		d.Import = "github.com/lib/pq"
-		d.Dialect = &goose.PostgresDialect{}
-
-	case "mysql":
-		d.Import = "github.com/go-sql-driver/mysql"
-		d.Dialect = &goose.MySqlDialect{}
-
-	case "sqlite3":
-		d.Import = "github.com/mattn/go-sqlite3"
-		d.Dialect = &goose.Sqlite3Dialect{}
-	}
-
-	return d
+	return db, err
 }
 
 func buildConnectionString(dc DatabaseConfig) string {
@@ -300,7 +262,7 @@ func Ping(db *sql.DB) error {
 	log.Debug("Ping database")
 	err := db.Ping()
 	if err != nil {
-		return fmt.Errorf("Unable to ping the database: %+v", err)
+		return fmt.Errorf("unable to ping the database: %+v", err)
 	}
 
 	return nil
@@ -311,7 +273,7 @@ func Ping(db *sql.DB) error {
 // SQLite uses ?
 func ModifySQLStatement(sql string, databaseProvider string) string {
 	if databaseProvider == SQLITE || databaseProvider == MYSQL {
-		sqlParamReplace := regexp.MustCompile("\\$[0-9]+")
+		sqlParamReplace := regexp.MustCompile(`\$[0-9]+`)
 		return sqlParamReplace.ReplaceAllString(sql, "?")
 	}
 
@@ -321,8 +283,15 @@ func ModifySQLStatement(sql string, databaseProvider string) string {
 
 // WaitForMigrations will wait until all migrations have been applied
 func WaitForMigrations(db *sql.DB) error {
-	migrations := GetOrderedMigrations()
-	targetVersion := migrations[len(migrations)-1]
+	migrations, err := goose.CollectMigrations(".", minVersion, maxVersion)
+	if err != nil {
+		return err
+	}
+
+	targetVersion, err := migrations.Last()
+	if err != nil {
+		return err
+	}
 
 	// Timeout after which we will give up
 	timeout := time.Now().Add(time.Minute * TimeoutBoundary)
@@ -346,12 +315,12 @@ func WaitForMigrations(db *sql.DB) error {
 		}
 
 		// If our timeout boundary has been exceeded, bail out
-		if timeout.Sub(time.Now()) < 0 {
+		if time.Until(timeout) < 0 {
 			// If we timed out and the last request was a db error, show the error
 			if err != nil {
 				log.Error(err)
 			}
-			return fmt.Errorf("Timed out waiting for database schema to be initialized")
+			return fmt.Errorf("timed out waiting for database schema to be initialized")
 		}
 
 		time.Sleep(3 * time.Second)

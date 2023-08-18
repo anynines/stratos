@@ -20,6 +20,12 @@ require (
 	github.com/labstack/echo/v4 v4.11.1
 	github.com/mattn/go-sqlite3 v1.14.17
 	github.com/nwmac/sqlitestore v0.0.0-20180824125213-7d2ab221fb3f
+	github.com/onsi/ginkgo v1.11.0 // indirect
+	github.com/onsi/gomega v1.8.1 // indirect
+	github.com/pierrec/lz4 v2.0.5+incompatible // indirect
+	github.com/poy/eachers v0.0.0-20181020210610-23942921fe77 // indirect
+	github.com/pressly/goose v2.7.0+incompatible
+	github.com/sabhiram/go-gitignore v0.0.0-20180611051255-d3107576ba94 // indirect
 	github.com/satori/go.uuid v1.2.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/swaggo/echo-swagger v1.4.0
