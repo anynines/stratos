@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-
 	"fmt"
 	"html/template"
 	"io"
@@ -117,7 +116,6 @@ func (p *PushError) Error() string {
 
 // Constructor returns a CFPush based on the supplied config
 func Constructor(config *CFPushAppConfig, portalProxy api.PortalProxy) CFPush {
-
 	pushCmd := &v6.PushCommand{}
 	cfPush := &CFPushApp{
 		pushCommand: pushCmd,
@@ -134,7 +132,6 @@ func (c *CFPushApp) init(config *CFPushAppConfig) error {
 
 // Init initializes the push operation with the specified application directory and manifest path
 func (c *CFPushApp) Init(appDir string, manifestPath string, overrides CFPushAppOverrides) error {
-
 	// App name
 	if len(overrides.Name) > 0 {
 		c.pushCommand.OptionalArgs = flag.OptionalAppName{
@@ -257,7 +254,6 @@ func (c *CFPushApp) setConfig(config *configv3.Config) error {
 
 // Run performs the actual push
 func (c *CFPushApp) Run(msgSender DeployAppMessageSender, clientWebsocket *websocket.Conn) error {
-
 	// Get a CF Config
 	config, err := configv3.LoadConfig()
 	if err != nil {
@@ -285,7 +281,7 @@ func (c *CFPushApp) Run(msgSender DeployAppMessageSender, clientWebsocket *webso
 	defer commandUI.FlushDeferred()
 
 	err = c.setup(config, commandUI, msgSender, clientWebsocket)
-	//err = c.pushCommand.Setup(config, commandUI)
+	// err = c.pushCommand.Setup(config, commandUI)
 	if err != nil {
 		return handleError(err, *commandUI)
 	}
@@ -348,8 +344,6 @@ func (c *CFPushApp) setup(config command.Config, ui command.UI, msgSender Deploy
 	cmd.Actor = pushaction.NewActor(stratosV2Actor, v3Actor, sharedActor)
 
 	cmd.ApplicationSummaryActor = v2v3action.NewActor(v2Actor, v3Actor)
-
-	cmd.NOAAClient = shared.NewNOAAClient(ccClient.DopplerEndpoint(), config, uaaClient, ui)
 
 	cmd.ProgressBar = progressbar.NewProgressBar()
 	return nil
