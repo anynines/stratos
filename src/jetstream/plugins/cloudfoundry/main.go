@@ -127,7 +127,7 @@ func (c *CloudFoundrySpecification) cfLoginHook(context echo.Context) error {
 		log.Infof("Auto-registering cloud foundry endpoint %s as \"%s\"", cfAPI, autoRegName)
 
 		// Auto-register the Cloud Foundry
-		cfCnsi, err = c.portalProxy.DoRegisterEndpoint(autoRegName, cfAPI, true, c.portalProxy.GetConfig().CFClient, c.portalProxy.GetConfig().CFClientSecret, "", false, "", false, cfEndpointSpec.Info)
+		cfCnsi, err = c.portalProxy.DoRegisterEndpoint(autoRegName, cfAPI, true, c.portalProxy.GetConfig().CFClient, c.portalProxy.GetConfig().CFClientSecret, "", false, "", false, "", cfEndpointSpec.Info)
 		if err != nil {
 			log.Errorf("Could not auto-register Cloud Foundry endpoint: %v", err)
 			return nil
@@ -199,7 +199,7 @@ func (c *CloudFoundrySpecification) AddSessionGroupRoutes(echoGroup *echo.Group)
 	echoGroup.GET("/:cnsiGuid/apps/:appGuid/appFirehose", c.appFirehose)
 }
 
-func (c *CloudFoundrySpecification) Info(apiEndpoint string, skipSSLValidation bool) (api.CNSIRecord, interface{}, error) {
+func (c *CloudFoundrySpecification) Info(apiEndpoint string, skipSSLValidation bool, caCert string) (api.CNSIRecord, interface{}, error) {
 	log.Debug("Info")
 	var v2InfoResponse api.V2Info
 	var newCNSI api.CNSIRecord
@@ -212,7 +212,7 @@ func (c *CloudFoundrySpecification) Info(apiEndpoint string, skipSSLValidation b
 	}
 
 	uri.Path = "v2/info"
-	h := c.portalProxy.GetHttpClient(skipSSLValidation)
+	h := c.portalProxy.GetHttpClient(skipSSLValidation, caCert)
 
 	res, err := h.Get(uri.String())
 	if err != nil {
