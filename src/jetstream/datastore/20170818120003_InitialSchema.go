@@ -15,7 +15,7 @@ func Up20170818120003(txn *sql.Tx) error {
 
 	binaryDataType := "BYTEA"
 
-	if _, ok := dialect.(goose.MySQLDialect); ok {
+	if _, ok := dialect.(*goose.MySQLDialect); ok {
 		binaryDataType = "BLOB"
 	}
 
@@ -28,7 +28,7 @@ func Up20170818120003(txn *sql.Tx) error {
 	createTokens += "token_expiry  BIGINT      NOT NULL, "
 	createTokens += "last_updated  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)"
 
-	if _, ok := dialect.(goose.PostgresDialect); ok {
+	if _, ok := dialect.(*goose.PostgresDialect); ok {
 		createTokens += " WITH (OIDS=FALSE);"
 	} else {
 		createTokens += ";"
