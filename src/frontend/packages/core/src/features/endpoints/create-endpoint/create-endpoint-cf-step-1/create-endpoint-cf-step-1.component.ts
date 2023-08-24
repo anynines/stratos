@@ -56,7 +56,9 @@ export class CreateEndpointCfStep1Component extends CreateEndpointHelperComponen
   endpoint: StratosCatalogEndpointEntity;
   show = false;
 
+  showCACertField = false;
   showAdvancedOptions = false;
+  lastSkipSSLValue = false;
 
   constructor(
     private fb: FormBuilder,
@@ -77,6 +79,7 @@ export class CreateEndpointCfStep1Component extends CreateEndpointHelperComponen
       clientIDField: ['', []],
       clientSecretField: ['', []],
       createSystemEndpointField: [true, []],
+      caCertField: ['', []],
     });
 
     const epType = getIdFromRoute(activatedRoute, 'type');
@@ -90,16 +93,24 @@ export class CreateEndpointCfStep1Component extends CreateEndpointHelperComponen
 
   onNext: StepOnNextFunction = () => {
     const { subType, type } = this.endpoint.getTypeAndSubtype();
+
+    // SSL Setttings
+    let sslAllow = this.registerForm.value.skipSllField;
+    if (this.showCACertField) {
+      sslAllow = false;
+    }
+
     return stratosEntityCatalog.endpoint.api.register<ActionState>(
       type,
       subType,
       this.registerForm.value.nameField,
       this.registerForm.value.urlField,
-      this.registerForm.value.skipSllField,
+      sslAllow,
       this.registerForm.value.clientIDField,
       this.registerForm.value.clientSecretField,
       this.registerForm.value.ssoAllowedField,
       this.registerForm.value.createSystemEndpointField,
+      this.registerForm.value.caCertField,
     ).pipe(
       pairwise(),
       filter(([oldVal, newVal]) => (oldVal.busy && !newVal.busy)),
@@ -148,6 +159,16 @@ export class CreateEndpointCfStep1Component extends CreateEndpointHelperComponen
 
   toggleAdvancedOptions() {
     this.showAdvancedOptions = !this.showAdvancedOptions;
+  }
+
+  toggleCACertField() {
+    this.showCACertField = !this.showCACertField;
+    if (this.showCACertField) {
+      this.lastSkipSSLValue = this.registerForm.value.skipSllField;
+      this.registerForm.controls.skipSllField.setValue(false);
+    } else {
+      this.registerForm.controls.skipSllField.setValue(this.lastSkipSSLValue);
+    }
   }
 
   toggleCreateSystemEndpoint() {
