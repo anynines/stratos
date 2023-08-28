@@ -253,17 +253,17 @@ func (p *portalProxy) verifySession(c echo.Context) error {
 	collectErrors := func(p *portalProxy, c echo.Context) (*api.Info, error) {
 		sessionExpireTime, err := p.GetSessionInt64Value(c, "exp")
 		if err != nil {
-			return nil, errors.New("Could not find session date")
+			return nil, errors.New("could not find session date")
 		}
 
 		sessionUser, err := p.GetSessionStringValue(c, "user_id")
 		if err != nil {
-			return nil, errors.New("Could not find user_id in Session")
+			return nil, errors.New("could not find user_id in Session")
 		}
 
 		err = p.StratosAuthService.VerifySession(c, sessionUser, sessionExpireTime)
 		if err != nil {
-			return nil, errors.New("Could not verify user")
+			return nil, errors.New("could not verify user")
 		}
 
 		// Still need to extend the expires_on of the Session (set session will save session, in save we update `expires_on`)

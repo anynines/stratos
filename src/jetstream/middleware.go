@@ -366,7 +366,7 @@ func getAPIKeyFromHeader(c echo.Context) (string, error) {
 		return header[l+1:], nil
 	}
 
-	return "", errors.New("No API key in the header")
+	return "", errors.New("no API key in the header")
 }
 
 func (p *portalProxy) apiKeyMiddleware(h echo.HandlerFunc) echo.HandlerFunc {

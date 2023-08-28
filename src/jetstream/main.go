@@ -478,7 +478,7 @@ func getEncryptionKey(pc api.PortalConfig) ([]byte, error) {
 
 	// Check we have volume and filename
 	if len(pc.EncryptionKeyVolume) == 0 && len(pc.EncryptionKeyFilename) == 0 {
-		return nil, errors.New("You must configure either an Encryption key or the Encryption key filename")
+		return nil, errors.New("you must configure either an Encryption key or the Encryption key filename")
 	}
 
 	// Read the key from the shared volume
@@ -582,7 +582,7 @@ func loadPortalConfig(pc api.PortalConfig, env *env.VarSet) (api.PortalConfig, e
 	log.Debug("loadPortalConfig")
 
 	if err := config.Load(&pc, env.Lookup); err != nil {
-		return pc, fmt.Errorf("Unable to load configuration. %v", err)
+		return pc, fmt.Errorf("unable to load configuration. %v", err)
 	}
 
 	// Add custom properties
@@ -616,18 +616,18 @@ func loadDatabaseConfig(dc datastore.DatabaseConfig, env *env.VarSet) (datastore
 
 	parsedDBConfig, err := datastore.ParseCFEnvs(&dc, env)
 	if err != nil {
-		return dc, errors.New("Could not parse Cloud Foundry Services environment")
+		return dc, errors.New("could not parse Cloud Foundry Services environment")
 	}
 
 	if parsedDBConfig {
 		log.Info("Using Cloud Foundry DB service")
 	} else if err := config.Load(&dc, env.Lookup); err != nil {
-		return dc, fmt.Errorf("Unable to load database configuration. %v", err)
+		return dc, fmt.Errorf("unable to load database configuration. %v", err)
 	}
 
 	dc, err = datastore.NewDatabaseConnectionParametersFromConfig(dc)
 	if err != nil {
-		return dc, fmt.Errorf("Unable to load database configuration. %v", err)
+		return dc, fmt.Errorf("unable to load database configuration. %v", err)
 	}
 
 	return dc, nil
@@ -755,7 +755,7 @@ func newPortalProxy(pc api.PortalConfig, dcp *sql.DB, ss HttpSessionStore, sessi
 	var err error
 	pp.APIKeysRepository, err = apikeys.NewPgsqlAPIKeysRepository(pp.DatabaseConnectionPool)
 	if err != nil {
-		panic(fmt.Errorf("Can't initialize APIKeysRepository: %v", err))
+		panic(fmt.Errorf("can't initialize APIKeysRepository: %v", err))
 	}
 
 	return pp
@@ -979,7 +979,7 @@ func (p *portalProxy) pluginRegisterRouter(c echo.Context) error {
 		return val(c)
 	}
 
-	return fmt.Errorf("Unknown endpoint_type %s", params.EndpointType)
+	return fmt.Errorf("unknown endpoint_type %s", params.EndpointType)
 }
 
 func (p *portalProxy) registerRoutes(e *echo.Echo, needSetupMiddleware bool) {
@@ -1177,7 +1177,7 @@ func (p *portalProxy) ExecuteLoginHooks(c echo.Context) error {
 	}
 
 	if erred {
-		return fmt.Errorf("Failed to execute one or more login hooks")
+		return fmt.Errorf("failed to execute one or more login hooks")
 	}
 	return nil
 }

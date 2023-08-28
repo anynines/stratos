@@ -141,7 +141,7 @@ func (a *localAuth) localLogin(c echo.Context) (string, string, error) {
 	password := c.FormValue("password")
 
 	if len(username) == 0 || len(password) == 0 {
-		return "", username, errors.New("Needs usernameand password")
+		return "", username, errors.New("needs usernameand password")
 	}
 
 	localUsersRepo, err := localusers.NewPgsqlLocalUsersRepository(a.databaseConnectionPool)
@@ -158,21 +158,21 @@ func (a *localAuth) localLogin(c echo.Context) (string, string, error) {
 	// Get the GUID for the specified user
 	guid, err := localUsersRepo.FindUserGUID(username)
 	if err != nil {
-		return guid, username, fmt.Errorf("Access Denied - Invalid username/password credentials")
+		return guid, username, fmt.Errorf("access Denied - Invalid username/password credentials")
 	}
 
 	//Attempt to find the password has for the given user
 	if hash, authError = localUsersRepo.FindPasswordHash(guid); authError != nil {
-		authError = fmt.Errorf("Access Denied - Invalid username/password credentials")
+		authError = fmt.Errorf("access Denied - Invalid username/password credentials")
 		//Check the password hash
 	} else if authError = crypto.CheckPasswordHash(password, hash); authError != nil {
-		authError = fmt.Errorf("Access Denied - Invalid username/password credentials")
+		authError = fmt.Errorf("access Denied - Invalid username/password credentials")
 	} else {
 		//Ensure the local user has some kind of admin role configured and we check for it here
 		localUserScope, authError = localUsersRepo.FindUserScope(guid)
 		scopeOK = strings.Contains(localUserScope, a.localUserScope)
 		if (authError != nil) || (!scopeOK) {
-			authError = fmt.Errorf("Access Denied - User scope invalid")
+			authError = fmt.Errorf("access Denied - User scope invalid")
 		} else {
 			//Update the last login time here if login was successful
 			loginTime := time.Now()

@@ -380,12 +380,12 @@ func (p *portalProxy) logoutOfCNSI(c echo.Context) error {
 
 	userGUID, err := p.GetSessionStringValue(c, "user_id")
 	if err != nil {
-		return fmt.Errorf("Could not find correct session value: %s", err)
+		return fmt.Errorf("could not find correct session value: %s", err)
 	}
 
 	cnsiRecord, err := p.GetCNSIRecord(cnsiGUID)
 	if err != nil {
-		return fmt.Errorf("Unable to load CNSI record: %s", err)
+		return fmt.Errorf("unable to load CNSI record: %s", err)
 	}
 
 	// Get the existing token to see if it is connected as a system shared endpoint
@@ -412,7 +412,7 @@ func (p *portalProxy) DoAuthFlowRequest(cnsiRequest *api.CNSIRequest, req *http.
 	// get a cnsi token record and a cnsi record
 	tokenRec, cnsi, err := p.getCNSIRequestRecords(cnsiRequest)
 	if err != nil {
-		return nil, fmt.Errorf("Unable to retrieve Endpoint records: %v", err)
+		return nil, fmt.Errorf("unable to retrieve Endpoint records: %v", err)
 	}
 	return authHandler(tokenRec, cnsi)
 }
@@ -426,12 +426,12 @@ func (p *portalProxy) ClearCNSIToken(cnsiRecord api.CNSIRecord, userGUID string)
 
 		tokenRecord := p.InitEndpointTokenRecord(0, "cleared_token", "cleared_token", true)
 		if err := p.setCNSITokenRecord(cnsiRecord.GUID, userGUID, tokenRecord); err != nil {
-			return fmt.Errorf("Unable to clear token: %s", err)
+			return fmt.Errorf("unable to clear token: %s", err)
 		}
 	} else {
 		log.Debug("Deleting Token")
 		if err := p.deleteCNSIToken(cnsiRecord.GUID, userGUID); err != nil {
-			return fmt.Errorf("Unable to delete token: %s", err)
+			return fmt.Errorf("unable to delete token: %s", err)
 		}
 	}
 

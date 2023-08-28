@@ -32,7 +32,7 @@ func (a *noAuth) ShowConfig(config *api.ConsoleConfig) {
 
 //Login provides no-auth specific Stratos login
 func (a *noAuth) Login(c echo.Context) error {
-	return errors.New("Can not login when there is no auth")
+	return errors.New("can not login when there is no auth")
 }
 
 //Logout provides no-auth specific Stratos login
