@@ -28,8 +28,7 @@ func (p *portalProxy) OAuthHandlerFunc(cnsiRequest *api.CNSIRequest, req *http.R
 			}
 			req.Header.Set("Authorization", "bearer "+tokenRec.AuthToken)
 
-			var client http.Client
-			client = p.GetHttpClientForRequest(req, cnsi.SkipSSLValidation)
+			var client http.Client = p.GetHttpClientForRequest(req, cnsi.SkipSSLValidation)
 			res, err := client.Do(req)
 			if err != nil {
 				return nil, fmt.Errorf("request failed: %v", err)

@@ -103,8 +103,7 @@ func (a *localAuth) GetUser(userGUID string) (*api.ConnectedUser, error) {
 
 	uaaAdmin := (user.Scope == a.p.Config.ConsoleConfig.ConsoleAdminScope)
 
-	var scopes []string
-	scopes = make([]string, 3)
+	scopes := make([]string, 3)
 	scopes[0] = user.Scope
 	scopes[1] = "password.write"
 	scopes[2] = "scim.write"
@@ -190,8 +189,7 @@ func (a *localAuth) generateLoginSuccessResponse(c echo.Context, userGUID string
 	log.Debug("generateLoginResponse")
 
 	var err error
-	var expiry int64
-	expiry = math.MaxInt64
+	var expiry int64 = math.MaxInt64
 
 	sessionValues := make(map[string]interface{})
 	sessionValues["user_id"] = userGUID
