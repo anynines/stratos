@@ -243,7 +243,7 @@ func (p *portalProxy) adminMiddleware(h echo.HandlerFunc) echo.HandlerFunc {
 				return c.NoContent(http.StatusUnauthorized)
 			}
 
-			if u.Admin == true {
+			if u.Admin {
 				return h(c)
 			}
 		}
@@ -269,7 +269,7 @@ func (p *portalProxy) endpointAdminMiddleware(h echo.HandlerFunc) echo.HandlerFu
 
 		endpointAdmin := strings.Contains(strings.Join(u.Scopes, ""), "stratos.endpointadmin")
 
-		if endpointAdmin == false && u.Admin == false {
+		if !endpointAdmin && !u.Admin {
 			return handleSessionError(p.Config, c, errors.New("Unauthorized"), false, "You must be a Stratos admin or endpointAdmin to access this API")
 		}
 
@@ -429,5 +429,5 @@ func (p *portalProxy) apiKeyMiddleware(h echo.HandlerFunc) echo.HandlerFunc {
 }
 
 func (p *portalProxy) apiKeySkipper(c echo.Context) bool {
-	return c.Get(APIKeySkipperContextKey) != nil && c.Get(APIKeySkipperContextKey).(bool) == true
+	return c.Get(APIKeySkipperContextKey) != nil && c.Get(APIKeySkipperContextKey).(bool)
 }

@@ -9,8 +9,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
-	"math/rand"
 	"net"
 	"net/http"
 	"os"
@@ -136,8 +134,6 @@ func main() {
 			log.SetFormatter(&log.JSONFormatter{TimestampFormat: time.UnixDate})
 		}
 	}
-
-	rand.Seed(time.Now().UnixNano())
 
 	log.SetOutput(os.Stdout)
 
@@ -514,7 +510,7 @@ func initConnPool(dc datastore.DatabaseConfig, env *env.VarSet) (*sql.DB, error)
 		}
 
 		// If our timeout boundary has been exceeded, bail out
-		if timeout.Sub(time.Now()) < 0 {
+		if time.Until(timeout) < 0 {
 			return nil, fmt.Errorf("timeout boundary of %d minutes has been exceeded. Exiting", TimeoutBoundary)
 		}
 
@@ -659,12 +655,12 @@ func detectTLSCert(pc api.PortalConfig) (string, string, error) {
 		return pc.TLSCertPath, pc.TLSCertKeyPath, nil
 	}
 
-	err := ioutil.WriteFile(certFilename, []byte(pc.TLSCert), 0600)
+	err := os.WriteFile(certFilename, []byte(pc.TLSCert), 0600)
 	if err != nil {
 		return "", "", err
 	}
 
-	err = ioutil.WriteFile(certKeyFilename, []byte(pc.TLSCertKey), 0600)
+	err = os.WriteFile(certKeyFilename, []byte(pc.TLSCertKey), 0600)
 	if err != nil {
 		return "", "", err
 	}
@@ -800,10 +796,7 @@ func initializeHTTPClients(timeout int64, timeoutMutating int64, connectionTimeo
 
 func echoShouldNotLog(ec echo.Context) bool {
 	// Don't log readiness probes
-	if ec.Request().RequestURI == "/pp/v1/ping" {
-		return true
-	}
-	return false
+	return ec.Request().RequestURI == "/pp/v1/ping"
 }
 
 func start(config api.PortalConfig, p *portalProxy, needSetupMiddleware bool, isUpgrade bool, envLookup *env.VarSet) error {

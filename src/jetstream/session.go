@@ -12,8 +12,8 @@ import (
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/crypto"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/crypto"
 )
 
 const (
@@ -45,8 +45,8 @@ type SessionValueNotFound struct {
 
 // SessionInfoEnvelope -- contains response status, data and/or errors
 type SessionInfoEnvelope struct {
-	Status string           `json:"status"`
-	Error  string           `json:"error"`
+	Status string    `json:"status"`
+	Error  string    `json:"error"`
 	Data   *api.Info `json:"data"`
 }
 
@@ -209,7 +209,7 @@ func (p *portalProxy) handleSessionExpiryHeader(c echo.Context) error {
 	c.Response().Header().Set(sessionExpiresOnHeader, strconv.FormatInt(expOn.(time.Time).Unix(), 10))
 
 	expiry := expOn.(time.Time)
-	expiryDuration := expiry.Sub(time.Now())
+	expiryDuration := time.Until(expiry)
 
 	// Subtract time now to get the duration add this to the time provided by the client
 	clientDate := c.Request().Header.Get(clientRequestDateHeader)
