@@ -1,11 +1,15 @@
 import { Component, ContentChild, ContentChildren, Input, OnDestroy, QueryList } from '@angular/core';
+import {
+  EntityMonitorFactory,
+  MenuItem,
+  IFavoriteMetadata,
+  UserFavorite,
+  ComponentEntityMonitorConfig,
+  StratosStatus,
+} from '@stratosui/store';
 import { combineLatest, Observable, of as observableOf, of, Subscription } from 'rxjs';
 import { first, map, tap } from 'rxjs/operators';
 
-import { EntityMonitorFactory } from '../../../../../../../../store/src/monitors/entity-monitor.factory.service';
-import { MenuItem } from '../../../../../../../../store/src/types/menu-item.types';
-import { ComponentEntityMonitorConfig, StratosStatus } from '../../../../../../../../store/src/types/shared.types';
-import { IFavoriteMetadata, UserFavorite } from '../../../../../../../../store/src/types/user-favorites.types';
 import { UserFavoriteManager } from '../../../../../../../../store/src/user-favorite-manager';
 import { safeUnsubscribe } from '../../../../../../core/utils.service';
 import { MetaCardItemComponent } from '../meta-card-item/meta-card-item.component';
