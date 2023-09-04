@@ -139,6 +139,9 @@ website/versioned_sidebars
 website/versions.json
 website/versions-repo
 
+# Npm package builds
+/npm_pkg
+
 /scan_tmp
 
 # Desktop app using Electron
