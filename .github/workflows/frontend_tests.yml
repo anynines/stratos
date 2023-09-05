@@ -11,7 +11,7 @@ env:
   NODE_OPTIONS: --max-old-space-size=5500
 
 jobs:
-  setup:
+  test_suite:
     runs-on: ubuntu-latest
     steps:
     - name: Set up Node
@@ -37,11 +37,5 @@ jobs:
     - name: Install Dependencies
       run: npm install
 
-  test_suite:
-    runs-on: ubuntu-latest
-    needs: setup
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Run tests
+    - name: Run Tests
       run: npm run test
