@@ -39,4 +39,5 @@ jobs:
 
     - name: Run Tests
       uses: coactions/setup-xvfb@v1
-      run: npm run test
+      with:
+        run: npm run test
