@@ -7,11 +7,8 @@ on:
       - master
   pull_request:
 
-env:
-  NODE_OPTIONS: --max-old-space-size=5500
-
 jobs:
-  setup:
+  test_suite:
     runs-on: ubuntu-latest
     steps:
     - name: Set up Go
@@ -30,11 +27,5 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-go-
 
-  test_suite:
-    runs-on: ubuntu-latest
-    needs: setup
-
-    steps:
-    - uses: actions/checkout@v2
     - name: Run tests
-      run:  build/bk-build.sh test
+      run:  PATH=$GOPATH/bin:$PATH build/bk-build.sh test
