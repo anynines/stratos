@@ -15,6 +15,8 @@ export { WrapperRequestActionSuccess } from './types/request.types';
 
 export { flattenPagination, PaginationFlattener } from './helpers/paginated-request-helpers';
 
+// Operators
+export { entityFetchedWithoutError } from './operators';
 
 // Auto-generated from fiximports tool
 
@@ -40,6 +42,7 @@ export { getPaginationObservables } from './reducers/pagination-reducer/paginati
 export { ApiKey } from './apiKey.types';
 export { MultiActionListEntity, PaginationMonitor } from './monitors/pagination-monitor';
 export { selectDashboardState, selectIsMobile } from './selectors/dashboard.selectors';
+export { DashboardState } from './types/dashboard.types';
 export {
   PaginationPageIteratorConfig,
 } from './entity-request-pipeline/pagination-request-base-handlers/pagination-iterator.pipe';

@@ -10,7 +10,7 @@ import {
 import { combineLatest, Observable, of as observableOf, of, Subscription } from 'rxjs';
 import { first, map, tap } from 'rxjs/operators';
 
-import { UserFavoriteManager } from '../../../../../../../../store/src/user-favorite-manager';
+import { UserFavoriteManager } from '@stratosui/store';
 import { safeUnsubscribe } from '../../../../../../core/utils.service';
 import { MetaCardItemComponent } from '../meta-card-item/meta-card-item.component';
 import { MetaCardTitleComponent } from '../meta-card-title/meta-card-title.component';

@@ -5,7 +5,8 @@ import {
   ActionState,
   stratosEntityCatalog,
   entityCatalog,
-  StratosCatalogEndpointEntity,
+  StratosCatalogEndpointEntity
+} from '@stratosui/store';
 import { Observable } from 'rxjs';
 import { filter, map, pairwise } from 'rxjs/operators';
 

@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { StoreModule } from '@ngrx/store';
-import { EntityCatalogHelper, appReducers, EntityCatalogHelpers } from '@stratosui/store';
+import { EntityCatalogHelper, EntityCatalogHelpers, appReducers } from '@stratosui/store';
 import { createBasicStoreModule } from '@stratosui/store/testing';
 
 import { CoreModule } from '../src/core/core.module';
