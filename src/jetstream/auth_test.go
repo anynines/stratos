@@ -1076,7 +1076,7 @@ func TestVerifySessionNoDate(t *testing.T) {
 			So(err, ShouldBeNil)
 		})
 
-		var expectedBody = `{"status":"error","error":"Could not find session date","data":null}`
+		var expectedBody = `{"status":"error","error":"could not find session date","data":null}`
 		Convey("Should contain expected body", func() {
 			So(res, ShouldNotBeNil)
 			So(strings.TrimSpace(res.Body.String()), ShouldEqual, expectedBody)
@@ -1125,7 +1125,7 @@ func TestVerifySessionExpired(t *testing.T) {
 			So(err, ShouldBeNil)
 		})
 
-		var expectedBody = `{"status":"error","error":"Could not verify user","data":null}`
+		var expectedBody = `{"status":"error","error":"could not verify user","data":null}`
 		Convey("Should contain expected body", func() {
 			So(res, ShouldNotBeNil)
 			So(strings.TrimSpace(res.Body.String()), ShouldEqual, expectedBody)
