@@ -99,7 +99,7 @@
     "lodash": "^4.17.20"
   },
   "engines": {
-    "node": "18.7.0"
+    "node": "^20.6"
   },
   "devDependencies": {
     "@angular-builders/custom-webpack": "^10.0.1",
