@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MaterialDesignFrameworkModule } from '@cfstratos/ajsf-material';
 
 import { EntityMonitorFactory } from '../../../../../../store/src/monitors/entity-monitor.factory.service';
@@ -15,7 +15,7 @@ describe('SpecifyDetailsStepComponent', () => {
   let component: SpecifyDetailsStepComponent;
   let fixture: ComponentFixture<SpecifyDetailsStepComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         SpecifyDetailsStepComponent,

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -9,7 +9,7 @@ describe('KubernetesConfigAuthFormComponent', () => {
   let component: KubernetesConfigAuthFormComponent;
   let fixture: ComponentFixture<KubernetesConfigAuthFormComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [KubernetesConfigAuthFormComponent],
       imports: [

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -9,7 +9,7 @@ describe('KubernetesAWSAuthFormComponent', () => {
   let component: KubernetesAWSAuthFormComponent;
   let fixture: ComponentFixture<KubernetesAWSAuthFormComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [KubernetesAWSAuthFormComponent],
       imports: [
