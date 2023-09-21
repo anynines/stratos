@@ -1,6 +1,7 @@
 {
   "extends": "../../../tsconfig.app.json",
   "compilerOptions": {
+    "declarationMap": true,
     "outDir": "../../../../out-tsc"
   },
   "files": [
