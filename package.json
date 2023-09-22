@@ -50,7 +50,7 @@
   "author": "",
   "license": "Apache-2.0",
   "overrides": {
-    "@cfstratos/ajsf-material":{
+    "@cfstratos/ajsf-material": {
       "@angular/flex-layout": "11.0.0-beta.33"
     },
     "ngx-monaco-editor": {
@@ -62,7 +62,7 @@
       "jasmine-core": "3.8.0",
       "protractor": "7.0.0"
     },
-    "@angular/compiler-cli":{
+    "@angular/compiler-cli": {
       "typescript": "4.3.5"
     },
     "@angular/compiler": "12.2.17",
@@ -71,18 +71,18 @@
     }
   },
   "dependencies": {
-    "@angular/animations": "^11.2.14",
+    "@angular/animations": "^12.2.17",
     "@angular/cdk": "^11.2.13",
-    "@angular/common": "^11.2.14",
-    "@angular/core": "^11.2.14",
+    "@angular/common": "^12.2.17",
+    "@angular/core": "^12.2.17",
     "@angular/flex-layout": "^11.0.0-beta.33",
-    "@angular/forms": "^11.2.14",
+    "@angular/forms": "^12.2.17",
     "@angular/material": "^11.2.13",
     "@angular/material-moment-adapter": "^11.2.13",
-    "@angular/platform-browser": "^11.2.14",
-    "@angular/platform-browser-dynamic": "^11.2.14",
-    "@angular/platform-server": "^11.2.14",
-    "@angular/router": "^11.2.14",
+    "@angular/platform-browser": "^12.2.17",
+    "@angular/platform-browser-dynamic": "^12.2.17",
+    "@angular/platform-server": "^12.2.17",
+    "@angular/router": "^12.2.17",
     "@cfstratos/ajsf-material": "^0.1.6",
     "@cfstratos/monaco-yaml": "^2.5.0",
     "@ngrx/effects": "^11.1.1",
@@ -115,7 +115,7 @@
     "web-animations-js": "^2.3.2",
     "xterm": "^4.5.0",
     "xterm-addon-fit": "^0.3.0",
-    "zone.js": "~0.10.2",
+    "zone.js": "~0.11.8",
     "lodash": "^4.17.20"
   },
   "engines": {
@@ -128,7 +128,7 @@
     "@angular-devkit/core": "^11.2.19",
     "@angular-devkit/schematics": "^11.2.19",
     "@angular/cli": "^11.2.19",
-    "@angular/language-service": "^11.2.14",
+    "@angular/language-service": "^12.2.17",
     "@schematics/angular": "^9.1.5",
     "@types/jasmine": "~3.6.0",
     "@types/jasminewd2": "~2.0.8",
