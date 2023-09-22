@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { MaterialDesignFrameworkModule } from '@cfstratos/ajsf-material';
+import { MaterialDesignFrameworkModule } from '@ajsf/material';
 
 import {
   ApplicationStateIconComponent,
