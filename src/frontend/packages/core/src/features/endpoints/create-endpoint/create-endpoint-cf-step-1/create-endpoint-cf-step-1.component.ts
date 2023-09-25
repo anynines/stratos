@@ -1,15 +1,15 @@
 import { AfterContentInit, Component, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
-import { distinctUntilChanged, filter, map, pairwise } from 'rxjs/operators';
-
-import { entityCatalog } from '../../../../../../store/src/entity-catalog/entity-catalog';
 import {
-  StratosCatalogEndpointEntity,
-} from '../../../../../../store/src/entity-catalog/entity-catalog-entity/entity-catalog-entity';
-import { ActionState } from '../../../../../../store/src/reducers/api-request-reducer/types';
-import { stratosEntityCatalog } from '../../../../../../store/src/stratos-entity-catalog';
+  ActionState,
+  stratosEntityCatalog,
+  entityCatalog,
+  StratosCatalogEndpointEntity
+} from '@stratosui/store';
+import { Observable } from 'rxjs';
+import { filter, map, pairwise } from 'rxjs/operators';
+
 import { getIdFromRoute } from '../../../../core/utils.service';
 import { IStepperStep, StepOnNextFunction } from '../../../../shared/components/stepper/step/step.component';
 import { SessionService } from '../../../../shared/services/session.service';

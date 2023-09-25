@@ -20,7 +20,7 @@ func Up20190522121200(txn *sql.Tx) error {
 
 	binaryDataType := "BYTEA"
 
-	if _, ok := dialect.(goose.MySQLDialect); ok {
+	if _, ok := dialect.(*goose.MySQLDialect); ok {
 		binaryDataType = "BLOB"
 	}
 
@@ -42,7 +42,7 @@ func Up20190522121200(txn *sql.Tx) error {
 	createLocalUsers += "PRIMARY KEY (user_guid) )"
 
 	//Configure Postgres migration options
-	if _, ok := dialect.(goose.PostgresDialect); ok {
+	if _, ok := dialect.(*goose.PostgresDialect); ok {
 		createLocalUsers += " WITH (OIDS=FALSE);"
 	} else {
 		createLocalUsers += ";"

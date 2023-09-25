@@ -17,16 +17,16 @@ func (p *portalProxy) GetUserTokenInfo(tok string) (u *api.JWTUserTokenInfo, err
 	splits := strings.Split(accessToken, ".")
 
 	if len(splits) < 3 {
-		return u, errors.New("Token was poorly formed.")
+		return u, errors.New("token was poorly formed")
 	}
 
 	decoded, err := base64.RawStdEncoding.DecodeString(splits[1])
 	if err != nil {
-		return u, errors.New("Unable to decode token string.")
+		return u, errors.New("unable to decode token string")
 	}
 
 	if err = json.Unmarshal(decoded, &u); err != nil {
-		return u, errors.New("Failed to unmarshall decoded token.")
+		return u, errors.New("failed to unmarshall decoded token")
 	}
 
 	return u, err

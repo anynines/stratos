@@ -16,7 +16,7 @@ func (p *portalProxy) FindUserGUID(c echo.Context) (string, error) {
 	username := c.FormValue("username")
 
 	if len(username) == 0 {
-		return "", errors.New("Needs username")
+		return "", errors.New("needs username")
 	}
 
 	localUsersRepo, err := localusers.NewPgsqlLocalUsersRepository(p.DatabaseConnectionPool)
@@ -43,7 +43,7 @@ func (p *portalProxy) AddLocalUser(c echo.Context) (string, error) {
 	email := c.FormValue("email")
 
 	if len(username) == 0 || len(password) == 0 || len(scope) == 0 {
-		return "", errors.New("Needs username, password and scope")
+		return "", errors.New("needs username, password and scope")
 	}
 
 	//Generate a user GUID and hash the password

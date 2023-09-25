@@ -32,7 +32,7 @@ func (a *noAuth) ShowConfig(config *api.ConsoleConfig) {
 
 //Login provides no-auth specific Stratos login
 func (a *noAuth) Login(c echo.Context) error {
-	return errors.New("Can not login when there is no auth")
+	return errors.New("can not login when there is no auth")
 }
 
 //Logout provides no-auth specific Stratos login
@@ -47,8 +47,7 @@ func (a *noAuth) GetUsername(userid string) (string, error) {
 
 //GetUser gets the user guid for the specified local user
 func (a *noAuth) GetUser(userGUID string) (*api.ConnectedUser, error) {
-	var scopes []string
-	scopes = make([]string, 1)
+	var scopes = make([]string, 1)
 	scopes[0] = "stratos.noauth"
 
 	connectdUser := &api.ConnectedUser{
@@ -63,8 +62,7 @@ func (a *noAuth) GetUser(userGUID string) (*api.ConnectedUser, error) {
 
 func (a *noAuth) BeforeVerifySession(c echo.Context) {
 	var err error
-	var expiry int64
-	expiry = math.MaxInt64
+	var expiry int64 = math.MaxInt64
 
 	session, err := a.p.GetSession(c)
 	if err != nil {
@@ -96,8 +94,7 @@ func (a *noAuth) generateLoginSuccessResponse(c echo.Context, userGUID string, u
 	log.Debug("generateLoginResponse")
 
 	var err error
-	var expiry int64
-	expiry = math.MaxInt64
+	var expiry int64 = math.MaxInt64
 
 	sessionValues := make(map[string]interface{})
 	sessionValues["user_id"] = userGUID

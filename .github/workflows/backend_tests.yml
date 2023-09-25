@@ -1,0 +1,22 @@
+name: Backend Tests
+
+on:
+  push:
+    branches:
+      - develop
+      - master
+  pull_request:
+
+jobs:
+  test_suite:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-go@v4
+      with:
+        go-version: '1.21.0'
+        cache-dependency-path: |
+          src/jetstream/go.sum
+
+    - name: Run tests
+      run:  build/bk-build.sh test

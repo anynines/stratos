@@ -212,7 +212,7 @@ func TestDatastore(t *testing.T) {
 			Convey("when missing ssl mode", func() {
 
 				mockDatabaseConfigNoSSL.SSLMode = ""
-				expectedErrorMessage := fmt.Sprintf("Invalid SSL mode: %s", mockDatabaseConfigNoSSL.SSLMode)
+				expectedErrorMessage := fmt.Sprintf("invalid SSL mode: %s", mockDatabaseConfigNoSSL.SSLMode)
 
 				Convey("an error should be returned", func() {
 					_, err := NewDatabaseConnectionParametersFromConfig(mockDatabaseConfigNoSSL)
@@ -223,7 +223,7 @@ func TestDatastore(t *testing.T) {
 			Convey("when invalid ssl mode", func() {
 
 				mockDatabaseConfigNoSSL.SSLMode = "ekhewjhfjk"
-				expectedErrorMessage := fmt.Sprintf("Invalid SSL mode: %s", mockDatabaseConfigNoSSL.SSLMode)
+				expectedErrorMessage := fmt.Sprintf("invalid SSL mode: %s", mockDatabaseConfigNoSSL.SSLMode)
 
 				Convey("an error should be returned", func() {
 					_, err := NewDatabaseConnectionParametersFromConfig(mockDatabaseConfigNoSSL)
@@ -391,7 +391,7 @@ func TestDatastore(t *testing.T) {
 			Convey("when missing ssl mode", func() {
 
 				mockDatabaseConfigSSL.SSLMode = ""
-				expectedErrorMessage := fmt.Sprintf("Invalid SSL mode: %s", mockDatabaseConfigSSL.SSLMode)
+				expectedErrorMessage := fmt.Sprintf("invalid SSL mode: %s", mockDatabaseConfigSSL.SSLMode)
 
 				Convey("an error should be returned", func() {
 					_, err := NewDatabaseConnectionParametersFromConfig(mockDatabaseConfigSSL)
@@ -402,7 +402,7 @@ func TestDatastore(t *testing.T) {
 			Convey("when invalid ssl mode", func() {
 
 				mockDatabaseConfigSSL.SSLMode = "jhfewhjfejwhgfj"
-				expectedErrorMessage := fmt.Sprintf("Invalid SSL mode: %s", mockDatabaseConfigSSL.SSLMode)
+				expectedErrorMessage := fmt.Sprintf("invalid SSL mode: %s", mockDatabaseConfigSSL.SSLMode)
 
 				Convey("an error should be returned", func() {
 					_, err := NewDatabaseConnectionParametersFromConfig(mockDatabaseConfigSSL)

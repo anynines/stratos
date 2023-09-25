@@ -20,7 +20,7 @@ func Up20191008121900(txn *sql.Tx) error {
 	}
 
 	// Note: SQLite does not allow constraints to be added after table creation
-	if _, ok := dialect.(goose.Sqlite3Dialect); ok {
+	if _, ok := dialect.(*goose.Sqlite3Dialect); ok {
 		return nil
 	}
 

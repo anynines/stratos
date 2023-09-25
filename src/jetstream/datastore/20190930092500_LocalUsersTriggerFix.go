@@ -15,15 +15,15 @@ func Up20190930092500(txn *sql.Tx) error {
 
 	var dropTrigger string
 
-	if _, ok := dialect.(goose.Sqlite3Dialect); ok {
+	if _, ok := dialect.(*goose.Sqlite3Dialect); ok {
 		//SQLITE
 		dropTrigger = "DROP TRIGGER IF EXISTS update_last_updated;"
 	}
 
-	if _, ok := dialect.(goose.PostgresDialect); ok {
+	if _, ok := dialect.(*goose.PostgresDialect); ok {
 		// POSTGRESQL
 		dropTrigger = "DROP TRIGGER IF EXISTS update_trigger ON local_users;"
-	} else if _, ok := dialect.(goose.MySQLDialect); ok {
+	} else if _, ok := dialect.(*goose.MySQLDialect); ok {
 		// MYSQL
 		dropTrigger = "DROP TRIGGER IF EXISTS update_last_updated;"
 		// Ignore error - most likely permission bug issue on Mysql

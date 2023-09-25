@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path"
@@ -78,7 +77,7 @@ func getPortalUserGUID(c echo.Context) (string, error) {
 	log.Debug("getPortalUserGUID")
 	portalUserGUIDIntf := c.Get("user_id")
 	if portalUserGUIDIntf == nil {
-		return "", errors.New("Corrupted session")
+		return "", errors.New("corrupted session")
 	}
 	return portalUserGUIDIntf.(string), nil
 }
@@ -89,8 +88,8 @@ func getRequestParts(c echo.Context) (*http.Request, []byte, error) {
 	var err error
 	req := c.Request()
 	if bodyReader := req.Body; bodyReader != nil {
-		if body, err = ioutil.ReadAll(bodyReader); err != nil {
-			return nil, nil, errors.New("Failed to read request body")
+		if body, err = io.ReadAll(bodyReader); err != nil {
+			return nil, nil, errors.New("failed to read request body")
 		}
 	}
 	return req, body, nil
@@ -233,8 +232,8 @@ func (p *portalProxy) proxy(c echo.Context) error {
 func (p *portalProxy) ProxyRequest(c echo.Context, uri *url.URL) (map[string]*api.CNSIRequest, error) {
 	log.Debug("ProxyRequest")
 	cnsiList := strings.Split(c.Request().Header.Get("x-cap-cnsi-list"), ",")
-	shouldPassthrough := "true" == c.Request().Header.Get("x-cap-passthrough")
-	longRunning := "true" == c.Request().Header.Get(longRunningTimeoutHeader)
+	shouldPassthrough := c.Request().Header.Get("x-cap-passthrough") == "true"
+	longRunning := c.Request().Header.Get(longRunningTimeoutHeader) == "true"
 
 	if err := p.validateCNSIList(cnsiList); err != nil {
 		return nil, echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -255,7 +254,7 @@ func (p *portalProxy) ProxyRequest(c echo.Context, uri *url.URL) (map[string]*ap
 
 	if shouldPassthrough {
 		if len(cnsiList) > 1 {
-			err := errors.New("Requested passthrough to multiple CNSIs. Only single CNSI passthroughs are supported")
+			err := errors.New("requested passthrough to multiple CNSIs. Only single CNSI passthroughs are supported")
 			return nil, echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 	}
@@ -263,7 +262,7 @@ func (p *portalProxy) ProxyRequest(c echo.Context, uri *url.URL) (map[string]*ap
 	// Only support one endpoint for long running operation (due to way we do timeout with the response channel)
 	if longRunning {
 		if len(cnsiList) > 1 {
-			err := errors.New("Requested long-running proxy to multiple CNSIs. Only single CNSI is supported for long running passthrough")
+			err := errors.New("requested long-running proxy to multiple CNSIs. Only single CNSI is supported for long running passthrough")
 			return nil, echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 	}
@@ -325,7 +324,7 @@ func (p *portalProxy) ProxyRequest(c echo.Context, uri *url.URL) (map[string]*ap
 						}
 					}
 				}
-				break
+				return responses, nil
 			}
 		}
 	}
@@ -427,7 +426,7 @@ func (p *portalProxy) DoProxySingleRequestWithToken(cnsiGUID string, token *api.
 }
 
 func (p *portalProxy) SendProxiedResponse(c echo.Context, responses map[string]*api.CNSIRequest) error {
-	shouldPassthrough := "true" == c.Request().Header.Get("x-cap-passthrough")
+	shouldPassthrough := c.Request().Header.Get("x-cap-passthrough") == "true"
 
 	var cnsiList []string
 	for k := range responses {
@@ -525,7 +524,7 @@ func (p *portalProxy) doRequest(cnsiRequest *api.CNSIRequest, done chan<- *api.C
 	} else if res.Body != nil {
 		cnsiRequest.StatusCode = res.StatusCode
 		cnsiRequest.Status = res.Status
-		cnsiRequest.Response, cnsiRequest.Error = ioutil.ReadAll(res.Body)
+		cnsiRequest.Response, cnsiRequest.Error = io.ReadAll(res.Body)
 		defer res.Body.Close()
 	}
 
@@ -579,8 +578,8 @@ func (p *portalProxy) ProxySingleRequest(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, buildErr.Error())
 	}
 
-	longRunning := "true" == c.Request().Header.Get(longRunningTimeoutHeader)
-	noToken := "true" == c.Request().Header.Get(noTokenHeader)
+	longRunning := c.Request().Header.Get(longRunningTimeoutHeader) == "true"
+	noToken := c.Request().Header.Get(noTokenHeader) == "true"
 
 	cnsiRequest.LongRunning = longRunning
 	if noToken {
