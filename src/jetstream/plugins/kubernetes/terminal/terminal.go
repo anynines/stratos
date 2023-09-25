@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 
 	jetstream_api "github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
+	jetstream_config "github.com/cloudfoundry-incubator/stratos/src/jetstream/api/config"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/plugins/kubernetes/api"
 
 	log "github.com/sirupsen/logrus"
@@ -45,7 +46,7 @@ func NewKubeTerminal(p jetstream_api.PortalProxy) *KubeTerminal {
 	kt := &KubeTerminal{
 		PortalProxy: p,
 	}
-	if err := jetstream_api.Load(kt, p.Env().Lookup); err != nil {
+	if err := jetstream_config.Load(kt, p.Env().Lookup); err != nil {
 		log.Warnf("Unable to load Kube Terminal configuration. %v", err)
 		return nil
 	}

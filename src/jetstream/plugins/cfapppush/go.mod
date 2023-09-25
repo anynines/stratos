@@ -4,6 +4,7 @@ go 1.21.0
 
 replace (
 	code.cloudfoundry.org/cli => code.cloudfoundry.org/cli v6.53.0+incompatible
+  code.cloudfoundry.org/go-log-cache => code.cloudfoundry.org/go-log-cache v1.0.1-0.20200304231243-355ff60646f3
 	github.com/cloudfoundry-incubator/stratos/src/jetstream/api => ../../api
 	github.com/cloudfoundry/cli-plugin-repo => code.cloudfoundry.org/cli-plugin-repo v0.0.0-20230525012251-b9c89116786e
 	github.com/moby/moby => github.com/moby/moby v20.10.25+incompatible
@@ -25,7 +26,7 @@ require (
 	code.cloudfoundry.org/cfnetworking-cli-api v0.0.0-20190103195135-4b04f26287a6 // indirect
 	code.cloudfoundry.org/cli-plugin-repo v0.0.0-20230525012251-b9c89116786e // indirect
 	code.cloudfoundry.org/diego-ssh v0.0.0-20230810200140-af9d79fe9c82 // indirect
-	code.cloudfoundry.org/go-log-cache v1.0.0 // indirect
+	code.cloudfoundry.org/go-log-cache v1.0.1-0.20230224210401-5e305670b626 // indirect
 	code.cloudfoundry.org/go-loggregator v7.4.0+incompatible // indirect
 	code.cloudfoundry.org/gofileutils v0.0.0-20170111115228-4d0c80011a0f // indirect
 	code.cloudfoundry.org/jsonry v1.1.4 // indirect
