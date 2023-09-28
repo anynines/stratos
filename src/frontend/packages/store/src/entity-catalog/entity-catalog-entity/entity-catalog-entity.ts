@@ -36,9 +36,13 @@ import {
 import { ActionBuilderConfigMapper } from './action-builder-config.mapper';
 import { ActionDispatchers, EntityCatalogEntityStoreHelpers } from './entity-catalog-entity-store-helpers';
 import { EntityCatalogEntityStore } from './entity-catalog-entity.types';
-import { KnownKeys, NonOptionalKeys } from './type.helpers';
+import { NonOptionalKeys, RemoveIndex } from './type.helpers';
 
-export type KnownActionBuilders<ABC extends OrchestratedActionBuilders> = Pick<ABC, NonOptionalKeys<Pick<ABC, KnownKeys<ABC>>>>;
+export type KnownActionBuilders<ABC extends OrchestratedActionBuilders> = Pick<
+  ABC,
+  // @ts-expect-error: TS 4.5.5 solves this type issue and should be removed
+  NonOptionalKeys<RemoveIndex<ABC>>
+>;
 
 export interface EntityCatalogBuilders<
   T extends IEntityMetadata = IEntityMetadata,
