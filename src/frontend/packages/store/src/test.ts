@@ -14,7 +14,9 @@ declare const require: any;
 const testBed = getTestBed();
 testBed.initTestEnvironment(
   BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting()
+  platformBrowserDynamicTesting(), {
+    teardown: { destroyAfterEach: false }
+}
 );
 
 beforeEach(() => {

@@ -34,37 +34,34 @@ const monacoConfig: NgxMonacoEditorConfig = {
 };
 
 @NgModule({
-  imports: [
-    CoreModule,
-    CommonModule,
-    SharedModule,
-    WorkloadsStoreModule,
-    WorkloadsRouting,
-    NgxGraphModule,
-    KubernetesModule,
-    MaterialDesignFrameworkModule,
-    MonacoEditorModule.forRoot(monacoConfig),
-  ],
-  declarations: [
-    HelmReleasesTabComponent,
-    HelmReleaseTabBaseComponent,
-    HelmReleaseSummaryTabComponent,
-    HelmReleaseNotesTabComponent,
-    HelmReleaseValuesTabComponent,
-    HelmReleaseResourceGraphComponent,
-    HelmReleaseCardComponent,
-    HelmReleaseAnalysisTabComponent,
-    ChartValuesEditorComponent,
-    CreateReleaseComponent,
-    WorkloadLiveReloadComponent,
-    UpgradeReleaseComponent,
-    HelmReleaseHistoryTabComponent,
-  ],
-  entryComponents: [
-    HelmReleaseCardComponent
-  ],
-  providers: [
-    DatePipe,
-  ]
+    imports: [
+        CoreModule,
+        CommonModule,
+        SharedModule,
+        WorkloadsStoreModule,
+        WorkloadsRouting,
+        NgxGraphModule,
+        KubernetesModule,
+        MaterialDesignFrameworkModule,
+        MonacoEditorModule.forRoot(monacoConfig),
+    ],
+    declarations: [
+        HelmReleasesTabComponent,
+        HelmReleaseTabBaseComponent,
+        HelmReleaseSummaryTabComponent,
+        HelmReleaseNotesTabComponent,
+        HelmReleaseValuesTabComponent,
+        HelmReleaseResourceGraphComponent,
+        HelmReleaseCardComponent,
+        HelmReleaseAnalysisTabComponent,
+        ChartValuesEditorComponent,
+        CreateReleaseComponent,
+        WorkloadLiveReloadComponent,
+        UpgradeReleaseComponent,
+        HelmReleaseHistoryTabComponent,
+    ],
+    providers: [
+        DatePipe,
+    ]
 })
 export class WorkloadsModule { }

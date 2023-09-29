@@ -40,7 +40,6 @@ import { NonOptionalKeys, RemoveIndex } from './type.helpers';
 
 export type KnownActionBuilders<ABC extends OrchestratedActionBuilders> = Pick<
   ABC,
-  // @ts-expect-error: TS 4.5.5 solves this type issue and should be removed
   NonOptionalKeys<RemoveIndex<ABC>>
 >;
 
