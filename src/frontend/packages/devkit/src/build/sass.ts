@@ -37,7 +37,6 @@ export class SassHandler {
   private customSassImport(config: StratosConfig) {
     const that = this;
     return (url, resourcePath) => {
-      console.log("THISIS THE URL: ", url)
       if (url === '~@stratosui/theme/extensions') {
         // Generate SCSS to appy theming to the packages that need to be themed
         return {
