@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MDAppModule, SharedModule } from '../../../../../core/src/public-api';
@@ -24,7 +24,7 @@ describe('KubernetesAWSAuthFormComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(KubernetesAWSAuthFormComponent);
     component = fixture.componentInstance;
-    const fb = new FormBuilder();
+    const fb = new UntypedFormBuilder();
     const form = fb.group({
       authValues: fb.group({
         cluster: '',

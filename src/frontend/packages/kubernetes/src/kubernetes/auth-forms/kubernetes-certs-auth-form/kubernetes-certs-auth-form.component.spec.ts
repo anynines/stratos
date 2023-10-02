@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { CoreModule } from 'frontend/packages/core/src/core/core.module';
 
@@ -25,7 +25,7 @@ describe('KubernetesCertsAuthFormComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(KubernetesCertsAuthFormComponent);
     component = fixture.componentInstance;
-    const fb = new FormBuilder();
+    const fb = new UntypedFormBuilder();
     const form = fb.group({
       authValues: fb.group({
         cert: '',

@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { IAuthForm } from '@stratosui/store';
 
 @Component({
@@ -8,5 +8,5 @@ import { IAuthForm } from '@stratosui/store';
   styleUrls: ['./none-auth-form.component.scss']
 })
 export class NoneAuthFormComponent implements IAuthForm {
-  @Input() formGroup: FormGroup;
+  @Input() formGroup: UntypedFormGroup;
 }

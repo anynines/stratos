@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { SharedModule } from './../../../../../core/src/shared/shared.module';
@@ -23,7 +23,7 @@ describe('KubernetesGKEAuthFormComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(KubernetesGKEAuthFormComponent);
     component = fixture.componentInstance;
-    const fb = new FormBuilder();
+    const fb = new UntypedFormBuilder();
     const form = fb.group({
       authValues: fb.group({
         gkeconfig: ''

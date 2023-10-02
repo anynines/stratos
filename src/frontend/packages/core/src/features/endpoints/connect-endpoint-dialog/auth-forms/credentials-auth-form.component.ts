@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { IAuthForm } from '@stratosui/store';
 
 @Component({
@@ -17,7 +17,7 @@ export class CredentialsAuthFormComponent implements IAuthForm {
     passwordLabel: 'Password'
   };
 
-  @Input() formGroup: FormGroup;
+  @Input() formGroup: UntypedFormGroup;
 
   get config(): any {
     return this.pConfig;

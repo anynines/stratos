@@ -64,7 +64,6 @@
               "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
@@ -78,7 +77,6 @@
               "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
-              "aot": false,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": false,
@@ -93,7 +91,6 @@
         "serve": {
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "aot": true,
             "sslCert": "dev-ssl/server.crt",
             "proxyConfig": "proxy.conf.js",
             "ssl": true,
@@ -182,7 +179,6 @@
               "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true
@@ -359,7 +355,6 @@
     }
 
   },
-  "defaultProject": "stratos",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",

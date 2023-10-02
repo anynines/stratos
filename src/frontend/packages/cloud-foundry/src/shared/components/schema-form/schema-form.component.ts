@@ -1,5 +1,5 @@
 import { AfterContentInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { ErrorStateMatcher, ShowOnDirtyErrorStateMatcher } from '@angular/material/core';
 import { JsonPointer } from '@ajsf/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
@@ -65,7 +65,7 @@ export class SchemaFormComponent implements OnInit, OnDestroy, AfterContentInit 
   cleanSchema: object;
 
   jsonData: object;
-  jsonForm: FormGroup;
+  jsonForm: UntypedFormGroup;
 
   formData: object = {};
   formInitialData: object;
@@ -75,8 +75,8 @@ export class SchemaFormComponent implements OnInit, OnDestroy, AfterContentInit 
   subs: Subscription[] = [];
 
   ngOnInit() {
-    this.jsonForm = new FormGroup({
-      json: new FormControl('', isValidJsonValidator()),
+    this.jsonForm = new UntypedFormGroup({
+      json: new UntypedFormControl('', isValidJsonValidator()),
     });
   }
 
