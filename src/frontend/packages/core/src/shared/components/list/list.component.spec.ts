@@ -260,7 +260,7 @@ describe('ListComponent', () => {
         // expect(sortSection.hidden).toBeFalsy();
       });
 
-      it('First filter hidden if only one option', waitForAsync(() => {
+      it('First filter hidden if only one option', () => {
         component.config.getMultiFiltersConfigs = () => {
           return [
             {
@@ -301,8 +301,8 @@ describe('ListComponent', () => {
         const multiFilterSection: HTMLElement = hostElement.querySelector('.list-component__header__left--multi-filters');
         expect(multiFilterSection.hidden).toBeFalsy();
         expect(multiFilterSection.childElementCount).toBe(0);
-
-      }));
+                
+      });
     });
 
 
