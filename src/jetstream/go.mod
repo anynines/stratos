@@ -8,6 +8,7 @@ replace (
 	github.com/cloudfoundry-incubator/stratos/src/jetstream/crypto => ./crypto
 	github.com/cloudfoundry-incubator/stratos/src/jetstream/docs => ./docs
 	github.com/cloudfoundry-incubator/stratos/src/jetstream/plugins/cfapppush => ./plugins/cfapppush
+	github.com/cloudfoundry-incubator/stratos/src/jetstream/plugins/cloudfoundry => ./plugins/cloudfoundry
 	github.com/cloudfoundry-incubator/stratos/src/jetstream/plugins/kubernetes => ./plugins/kubernetes
 	github.com/cloudfoundry-incubator/stratos/src/jetstream/plugins/kubernetes/auth => ./plugins/kubernetes/auth
 	github.com/cloudfoundry-incubator/stratos/src/jetstream/plugins/kubernetes/terminal => ./plugins/kubernetes/terminal
@@ -23,6 +24,8 @@ replace (
 )
 
 require (
+	code.cloudfoundry.org/go-log-cache v1.0.1-0.20230224210401-5e305670b626
+	code.cloudfoundry.org/go-loggregator v7.4.0+incompatible
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/antonlindstrom/pgstore v0.0.0-20220421113606-e3a6e3fed12a
 	github.com/cf-stratos/mysqlstore v0.0.0-20170822100912-304308519d13
@@ -64,10 +67,10 @@ require (
 	code.cloudfoundry.org/cli v0.0.0-20230912192837-efd1d03e7292 // indirect
 	code.cloudfoundry.org/cli-plugin-repo v0.0.0-20230912184324-f005268561a6 // indirect
 	code.cloudfoundry.org/clock v1.1.0 // indirect
-	code.cloudfoundry.org/go-log-cache v1.0.1-0.20230224210401-5e305670b626 // indirect
 	code.cloudfoundry.org/go-loggregator/v8 v8.0.5 // indirect
 	code.cloudfoundry.org/gofileutils v0.0.0-20170111115228-4d0c80011a0f // indirect
 	code.cloudfoundry.org/jsonry v1.1.4 // indirect
+	code.cloudfoundry.org/rfc5424 v0.0.0-20201103192249-000122071b78 // indirect
 	code.cloudfoundry.org/tlsconfig v0.0.0-20230929201433-6cd2b78aba25 // indirect
 	code.cloudfoundry.org/ykk v0.0.0-20170424192843-e4df4ce2fd4d // indirect
 	github.com/AdaLogics/go-fuzz-headers v0.0.0-20230106234847-43070de90fa1 // indirect
