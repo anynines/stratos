@@ -4,7 +4,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 import { PreviewableComponent } from '../../previewable-component';
 
-import markdown from 'marked';
+import { marked } from 'marked';
 
 @Component({
   selector: 'app-markdown-preview',
@@ -42,17 +42,17 @@ export class MarkdownPreviewComponent implements PreviewableComponent {
       (markText) => {
         if (markText && markText.length > 0) {
           // Basic sanitization
-          markdown.setOptions({
+          marked.setOptions({
             sanitize: true,
             sanitizer: dirty => this.domSanitizer.sanitize(SecurityContext.HTML, dirty),
           });
-          const renderer = new markdown.Renderer();
+          const renderer = new marked.Renderer();
           // Ensure links in the readme open in a new tab
           renderer.link = (href, title, text) => {
-            const link = markdown.Renderer.prototype.link.call(renderer, href, title, text);
+            const link = marked.Renderer.prototype.link.call(renderer, href, title, text);
             return link.replace('<a', '<a target="_blank" ');
           };
-          this.markdownHtml = markdown(markText, { renderer });
+          this.markdownHtml = marked(markText, { renderer });
         }
       },
       (error) => console.warn(`Failed to fetch markdown with url ${this.documentUrl}: `, error));
