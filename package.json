@@ -58,6 +58,9 @@
       "jasmine-core": "3.8.0",
       "protractor": "7.0.0"
     },
+    "@swimlane/ngx-charts": {
+      "d3-color": "^3.1.0"
+    },
     "@ajsf/core": {
       "@angular/flex-layout": "14.0.0-beta.41"
     },
@@ -88,7 +91,7 @@
     "@ngrx/router-store": "^14.3.3",
     "@ngrx/store": "^14.3.3",
     "@ngrx/store-devtools": "^14.3.3",
-    "@swimlane/ngx-charts": "^16.0.0",
+    "@swimlane/ngx-charts": "^20.4.1",
     "@swimlane/ngx-graph": "^8.2.2",
     "@types/moment-timezone": "^0.5.13",
     "angular2-virtual-scroll": "^0.4.16",
