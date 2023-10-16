@@ -41,7 +41,7 @@ export class ListViewComponent<T> implements OnDestroy {
     // const componentFactory = this.componentFactoryResolver.resolveComponentFactory(ListComponent);
     const viewContainerRef = this.listHost.viewContainerRef;
     this.componentRef = viewContainerRef.createComponent(ListComponent,{
-      injector:this.makeCustomConfigInjector(listConfig.getListConfig())
+      injector: this.makeCustomConfigInjector(listConfig.getListConfig())
     });
   }
 
