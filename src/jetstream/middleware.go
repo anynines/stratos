@@ -10,6 +10,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/errorz"
+
 	"github.com/gorilla/context"
 	"github.com/govau/cf-common/env"
 	"github.com/labstack/echo/v4"
@@ -39,7 +41,7 @@ const APIKeyAuthScheme = "Bearer"
 func handleSessionError(config api.PortalConfig, c echo.Context, err error, doNotLog bool, msg string) error {
 	log.Debug("handleSessionError")
 
-	if strings.Contains(err.Error(), "dial tcp") {
+	if errors.Is(err, errorz.ErrDialTcp) {
 		return api.NewHTTPShadowError(
 			http.StatusServiceUnavailable,
 			"Service is currently unavailable",

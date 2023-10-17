@@ -2,12 +2,15 @@ package datastore
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"os"
 	"path"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/errorz"
 
 	goosedbversion "github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/goose-db-version"
 	"github.com/govau/cf-common/env"
@@ -301,9 +304,9 @@ func WaitForMigrations(db *sql.DB) error {
 		databaseVersionRec, err := dbVersionRepo.GetCurrentVersion()
 		if err != nil {
 			var errorMsg = err.Error()
-			if strings.Contains(err.Error(), "no such table") {
+			if errors.Is(err, errorz.ErrNoSuchTable) {
 				errorMsg = "Waiting for versions table to be created"
-			} else if strings.Contains(err.Error(), "No database versions found") {
+			} else if errors.Is(err, errorz.ErrNoDatabaseVersionsFound) {
 				errorMsg = "Versions table is empty - waiting for migrations"
 			}
 			log.Infof("Database schema check: %s", errorMsg)

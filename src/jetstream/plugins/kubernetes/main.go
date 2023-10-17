@@ -7,9 +7,10 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"strings"
 
 	"errors"
+
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/errorz"
 
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
 	"github.com/labstack/echo/v4"
@@ -288,7 +289,7 @@ func (c *KubernetesSpecification) RequiresCert(ec echo.Context) error {
 		Message  string
 	}
 	if err != nil {
-		if strings.Contains(err.Error(), "x509: certificate") {
+		if errors.Is(err, errorz.Err509Certificate) {
 			response.Status = http.StatusOK
 			response.Required = true
 		} else {

@@ -7,7 +7,8 @@ import (
 	"net/url"
 	"regexp"
 	"strconv"
-	"strings"
+
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/errorz"
 
 	"github.com/govau/cf-common/env"
 	"github.com/labstack/echo/v4"
@@ -93,7 +94,7 @@ func (p *portalProxy) setupGetAvailableScopes(c echo.Context) error {
 		errInfo, ok := err.(api.ErrHTTPRequest)
 		if ok {
 			if errInfo.Status == 0 {
-				if strings.Contains(errInfo.Error(), "x509: certificate") {
+				if errors.Is(errInfo, errorz.Err509Certificate) {
 					return api.NewHTTPShadowError(
 						http.StatusBadRequest,
 						"Could not connect to the UAA - Certificate error - check Skip SSL validation setting",
