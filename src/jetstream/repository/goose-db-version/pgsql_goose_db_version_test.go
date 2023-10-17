@@ -10,6 +10,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/errorz"
 )
 
 func TestPgSQLGooseDB(t *testing.T) {
@@ -63,9 +64,6 @@ func TestPgSQLGooseDB(t *testing.T) {
 		})
 
 		Convey("if one doesn't exist", func() {
-
-			expectedErrorMessage := "No database versions found"
-
 			// Database setup
 			rs := sqlmock.NewRows(rowFieldsForVersionID)
 			mock.ExpectQuery(selectFromDBVersionWhere).
@@ -74,7 +72,7 @@ func TestPgSQLGooseDB(t *testing.T) {
 			Convey("there should be an error", func() {
 				repository, _ := NewPostgresGooseDBVersionRepository(db)
 				_, err := repository.GetCurrentVersion()
-				So(err, ShouldResemble, errors.New(expectedErrorMessage))
+				So(err, ShouldResemble, errorz.ErrNoDatabaseVersionsFound)
 
 				dberr := mock.ExpectationsWereMet()
 				So(dberr, ShouldBeNil)
