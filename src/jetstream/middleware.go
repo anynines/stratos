@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"strings"
@@ -41,12 +42,15 @@ const APIKeyAuthScheme = "Bearer"
 func handleSessionError(config api.PortalConfig, c echo.Context, err error, doNotLog bool, msg string) error {
 	log.Debug("handleSessionError")
 
-	if errors.Is(err, errorz.ErrDialTcp) {
-		return api.NewHTTPShadowError(
-			http.StatusServiceUnavailable,
-			"Service is currently unavailable",
-			"Service is currently unavailable: %v", err,
-		)
+	var netOpErr *net.OpError
+	if errors.As(err, &netOpErr) {
+		if netOpErr.Op == errorz.ERR_DIAL_TCP {
+			return api.NewHTTPShadowError(
+				http.StatusServiceUnavailable,
+				"Service is currently unavailable",
+				"Service is currently unavailable: %v", err,
+			)
+		}
 	}
 
 	if doNotLog {
