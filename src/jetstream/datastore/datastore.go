@@ -304,7 +304,7 @@ func WaitForMigrations(db *sql.DB) error {
 		databaseVersionRec, err := dbVersionRepo.GetCurrentVersion()
 		if err != nil {
 			var errorMsg = err.Error()
-			if errors.Is(err, errorz.ErrNoSuchTable) {
+			if strings.Contains(err.Error(), errorz.ERR_NO_SUCH_TABLE) {
 				errorMsg = "Waiting for versions table to be created"
 			} else if errors.Is(err, errorz.ErrNoDatabaseVersionsFound) {
 				errorMsg = "Versions table is empty - waiting for migrations"
