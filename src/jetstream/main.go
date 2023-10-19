@@ -1034,6 +1034,7 @@ func (p *portalProxy) registerRoutes(e *echo.Echo, needSetupMiddleware bool) {
 	sessionGroup.POST("/api_keys", p.addAPIKey)
 	sessionGroup.GET("/api_keys", p.listAPIKeys)
 	sessionGroup.DELETE("/api_keys", p.deleteAPIKey)
+	sessionGroup.GET("/info", p.info)
 
 	for _, plugin := range p.Plugins {
 		middlewarePlugin, err := plugin.GetMiddlewarePlugin()
@@ -1071,9 +1072,6 @@ func (p *portalProxy) registerRoutes(e *echo.Echo, needSetupMiddleware bool) {
 
 	// Connect to Endpoint (SSO)
 	sessionAuthGroup.GET("/tokens", p.ssoLoginToCNSI)
-
-	// Info
-	sessionGroup.GET("/info", p.info)
 
 	for _, plugin := range p.Plugins {
 		routePlugin, err := plugin.GetRoutePlugin()

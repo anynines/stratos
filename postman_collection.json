@@ -1,0 +1,431 @@
+{
+	"info": {
+		"_postman_id": "262d5c77-d101-4e56-a83c-af01ee30717b",
+		"name": "Jetstream Collection",
+		"description": "Jetstream API collection documentation for APIs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30618077"
+	},
+	"item": [
+		{
+			"name": "Swagger",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/swagger/*",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"swagger",
+						"*"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify Session",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/api/v1/auth/verify",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"verify"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login UAA",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/pp/v1/auth/login/uaa",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"pp",
+						"v1",
+						"auth",
+						"login",
+						"uaa"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logout",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/pp/v1/auth/logout",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"pp",
+						"v1",
+						"auth",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SSO Login",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/pp/v1/auth/sso_login",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"pp",
+						"v1",
+						"auth",
+						"sso_login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SSO Logout",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/pp/v1/auth/sso_logout",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"pp",
+						"v1",
+						"auth",
+						"sso_logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SSO Login Callback",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/pp/v1/auth/sso_login_callback",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"pp",
+						"v1",
+						"auth",
+						"sso_login_callback"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Version Info",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/pp/v1/version",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"pp",
+						"v1",
+						"version"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ping",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/pp/v1/ping",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"pp",
+						"v1",
+						"ping"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add API Key",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/pp/v1/api_keys",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"pp",
+						"v1",
+						"api_keys"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List API Keys",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/pp/v1/api_keys",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"pp",
+						"v1",
+						"api_keys"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete API Key",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/pp/v1/api_keys",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"pp",
+						"v1",
+						"api_keys"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Info",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/pp/v1/info",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"pp",
+						"v1",
+						"info"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login To CNSI",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/api/v1/tokens",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tokens"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logout Of CNSI",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/api/v1/tokens/:cnsi_guid",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tokens",
+						":cnsi_guid"
+					],
+					"variable": [
+						{
+							"key": "cnsi_guid"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SSO Login To CNSI",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/api/v1/tokens",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tokens"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List CNSIs",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/api/v1/endpoints",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"endpoints"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Proxy Single Request",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/pp/v1/proxy/:uuid/*",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"pp",
+						"v1",
+						"proxy",
+						":uuid",
+						"*"
+					],
+					"variable": [
+						{
+							"key": "uuid"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SSO Login To CNSI (Session)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/pp/v1/auth/tokens",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"pp",
+						"v1",
+						"auth",
+						"tokens"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Proxy Requests",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/pp/v1/proxy/*",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"pp",
+						"v1",
+						"proxy",
+						"*"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Admin Routes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/pp/v1/admin",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"pp",
+						"v1",
+						"admin"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
