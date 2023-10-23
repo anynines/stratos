@@ -4,7 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 export const proxyAPIVersion = 'v1';
 
 // CF API Version
-export const cfAPIVersion = 'v2';
+export const cfAPIVersion = 'v3';
 
 /**
  * Actual error response from stratos
