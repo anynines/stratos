@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/x509"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -23,15 +24,21 @@ import (
 const dbReferenceError = "unable to establish a database reference: '%v'"
 
 func isSSLRelatedError(err error) (bool, string) {
-	if urlErr, ok := err.(*url.Error); ok {
-		if x509Err, ok := urlErr.Err.(x509.UnknownAuthorityError); ok {
-			return true, x509Err.Error()
+	var urlError *url.Error
+	if errors.As(err, &urlError) {
+		var (
+			certInvalidError      *x509.CertificateInvalidError
+			unknownAuthorityError *x509.UnknownAuthorityError
+			hostnameError         *x509.HostnameError
+		)
+		if errors.As(urlError.Err, unknownAuthorityError) {
+			return true, unknownAuthorityError.Error()
 		}
-		if x509Err, ok := urlErr.Err.(x509.HostnameError); ok {
-			return true, x509Err.Error()
+		if errors.As(urlError.Err, hostnameError) {
+			return true, hostnameError.Error()
 		}
-		if x509Err, ok := urlErr.Err.(x509.CertificateInvalidError); ok {
-			return true, x509Err.Error()
+		if errors.As(urlError.Err, certInvalidError) {
+			return true, certInvalidError.Error()
 		}
 	}
 	return false, ""

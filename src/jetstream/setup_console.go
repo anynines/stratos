@@ -1,13 +1,13 @@
 package main
 
 import (
+	"crypto/x509"
 	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
 	"regexp"
 	"strconv"
-	"strings"
 
 	"github.com/govau/cf-common/env"
 	"github.com/labstack/echo/v4"
@@ -17,7 +17,6 @@ import (
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api/config"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/crypto"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/errorz"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/console_config"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/localusers"
 )
@@ -94,7 +93,8 @@ func (p *portalProxy) setupGetAvailableScopes(c echo.Context) error {
 		errInfo, ok := err.(api.ErrHTTPRequest)
 		if ok {
 			if errInfo.Status == 0 {
-				if strings.Contains(errInfo.Error(), errorz.ERR_X509_CERTIFICATE) {
+				var certError *x509.CertificateInvalidError
+				if errors.As(err, certError) {
 					return api.NewHTTPShadowError(
 						http.StatusBadRequest,
 						"Could not connect to the UAA - Certificate error - check Skip SSL validation setting",

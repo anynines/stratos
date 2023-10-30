@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/errorz"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/custom_errors"
 
 	goosedbversion "github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/goose-db-version"
 	"github.com/govau/cf-common/env"
@@ -304,9 +304,9 @@ func WaitForMigrations(db *sql.DB) error {
 		databaseVersionRec, err := dbVersionRepo.GetCurrentVersion()
 		if err != nil {
 			var errorMsg = err.Error()
-			if strings.Contains(err.Error(), errorz.ERR_NO_SUCH_TABLE) {
+			if errors.Is(err, custom_errors.ErrNoSuchTable) {
 				errorMsg = "Waiting for versions table to be created"
-			} else if errors.Is(err, errorz.ErrNoDatabaseVersionsFound) {
+			} else if errors.Is(err, custom_errors.ErrNoDatabaseVersionsFound) {
 				errorMsg = "Versions table is empty - waiting for migrations"
 			}
 			log.Infof("Database schema check: %s", errorMsg)
