@@ -2,7 +2,6 @@ package goosedbversion
 
 import (
 	"errors"
-	"fmt"
 	"testing"
 
 	"gopkg.in/DATA-DOG/go-sqlmock.v1"
@@ -80,9 +79,6 @@ func TestPgSQLGooseDB(t *testing.T) {
 		})
 
 		Convey("if there is a problem talking to the database", func() {
-
-			expectedErrorMessage := fmt.Sprintf("Error trying to get current database version: %s", "error")
-
 			// Database setup
 			mock.ExpectQuery(selectFromDBVersionWhere).
 				WillReturnError(errors.New("error"))
@@ -90,7 +86,7 @@ func TestPgSQLGooseDB(t *testing.T) {
 			Convey("there should be an error", func() {
 				repository, _ := NewPostgresGooseDBVersionRepository(db)
 				_, err := repository.GetCurrentVersion()
-				So(err, ShouldResemble, errors.New(expectedErrorMessage))
+				So(err, ShouldResemble, custom_errors.ErrGettingCurrentVersion(errors.New("error")))
 
 				dberr := mock.ExpectationsWereMet()
 				So(dberr, ShouldBeNil)
