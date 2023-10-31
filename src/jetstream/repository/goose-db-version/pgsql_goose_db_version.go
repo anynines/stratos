@@ -2,12 +2,14 @@ package goosedbversion
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
 
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/custom_error"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/custom_errors"
 )
 
 const (
@@ -35,15 +37,15 @@ func (p *PostgresGooseDBVersionRepository) GetCurrentVersion() (api.GooseDBVersi
 
 	err := p.db.QueryRow(getCurrentVersion).Scan(&dbVersion.VersionID)
 
-	switch {
-	case err == sql.ErrNoRows:
-		return api.GooseDBVersionRecord{}, custom_error.ErrNoDatabaseVersionsFound
-	case err != nil:
-		return api.GooseDBVersionRecord{}, fmt.Errorf("Error trying to get current database version: %v", err)
-	default:
-		// do nothing
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return api.GooseDBVersionRecord{}, custom_errors.ErrNoDatabaseVersionsFound
+		} else if strings.Contains(err.Error(), "no such table") {
+			return api.GooseDBVersionRecord{}, custom_errors.ErrNoSuchTable
+		} else {
+			return api.GooseDBVersionRecord{}, custom_errors.ErrGettingCurrentVersion(err)
+		}
 	}
-
 	return *dbVersion, nil
 }
 

@@ -10,7 +10,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/custom_error"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/custom_errors"
 )
 
 func TestPgSQLGooseDB(t *testing.T) {
@@ -72,7 +72,7 @@ func TestPgSQLGooseDB(t *testing.T) {
 			Convey("there should be an error", func() {
 				repository, _ := NewPostgresGooseDBVersionRepository(db)
 				_, err := repository.GetCurrentVersion()
-				So(err, ShouldResemble, custom_error.ErrNoDatabaseVersionsFound)
+				So(err, ShouldResemble, custom_errors.ErrNoDatabaseVersionsFound)
 
 				dberr := mock.ExpectationsWereMet()
 				So(dberr, ShouldBeNil)

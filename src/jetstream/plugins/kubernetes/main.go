@@ -1,18 +1,17 @@
 package kubernetes
 
 import (
+	"crypto/x509"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
-	"strings"
 
 	"errors"
 
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/custom_error"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
 
@@ -289,7 +288,7 @@ func (c *KubernetesSpecification) RequiresCert(ec echo.Context) error {
 		Message  string
 	}
 	if err != nil {
-		if strings.Contains(err.Error(), custom_error.ERR_X509_CERTIFICATE) {
+		if errors.Is(err, new(x509.CertificateInvalidError)) {
 			response.Status = http.StatusOK
 			response.Required = true
 		} else {
