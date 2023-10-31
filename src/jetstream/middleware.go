@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/errorz"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/custom_error"
 
 	"github.com/gorilla/context"
 	"github.com/govau/cf-common/env"
@@ -44,7 +44,7 @@ func handleSessionError(config api.PortalConfig, c echo.Context, err error, doNo
 
 	var netOpErr *net.OpError
 	if errors.As(err, &netOpErr) {
-		if netOpErr.Op == errorz.ERR_DIAL_TCP {
+		if netOpErr.Op == custom_error.ERR_DIAL_TCP {
 			return api.NewHTTPShadowError(
 				http.StatusServiceUnavailable,
 				"Service is currently unavailable",

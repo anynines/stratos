@@ -1,4 +1,4 @@
-package errorz
+package custom_error
 
 import "errors"
 

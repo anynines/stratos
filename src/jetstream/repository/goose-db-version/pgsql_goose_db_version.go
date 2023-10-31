@@ -7,7 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/errorz"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/custom_error"
 )
 
 const (
@@ -37,7 +37,7 @@ func (p *PostgresGooseDBVersionRepository) GetCurrentVersion() (api.GooseDBVersi
 
 	switch {
 	case err == sql.ErrNoRows:
-		return api.GooseDBVersionRecord{}, errorz.ErrNoDatabaseVersionsFound
+		return api.GooseDBVersionRecord{}, custom_error.ErrNoDatabaseVersionsFound
 	case err != nil:
 		return api.GooseDBVersionRecord{}, fmt.Errorf("Error trying to get current database version: %v", err)
 	default:
