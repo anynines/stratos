@@ -34,18 +34,18 @@ func (p *portalProxy) getInfo(c echo.Context) (*api.Info, error) {
 	// get the version
 	versions, err := p.getVersionsData()
 	if err != nil {
-		return nil, errors.New("Could not find database version")
+		return nil, errors.New("could not find database version")
 	}
 
 	// get the user
 	userGUID, err := p.GetSessionStringValue(c, "user_id")
 	if err != nil {
-		return nil, errors.New("Could not find session user_id")
+		return nil, errors.New("could not find session user_id")
 	}
 
 	uaaUser, err := p.StratosAuthService.GetUser(userGUID)
 	if err != nil {
-		return nil, errors.New("Could not load session user data")
+		return nil, errors.New("could not load session user data")
 	}
 
 	// create initial info struct

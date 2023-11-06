@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -89,7 +90,8 @@ func (c *KubernetesSpecification) InstallRelease(ec echo.Context) error {
 	kubeClient, _ := c.GetConfigForEndpointUser(endpointGUID, userGUID)
 	clientset, _ := kubernetes.NewForConfig(kubeClient)
 	coreclient := clientset.CoreV1()
-	_, err = coreclient.Namespaces().Get(params.Namespace, metav1.GetOptions{})
+		ctx := context.Background()
+	_, err = coreclient.Namespaces().Get(ctx, params.Namespace, metav1.GetOptions{})
 	if err != nil {
 		return api.NewJetstreamErrorf("Namespace '%s' does not exist", params.Namespace)
 	}

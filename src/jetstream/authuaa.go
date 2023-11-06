@@ -93,7 +93,7 @@ func (a *uaaAuth) GetUser(userGUID string) (*api.ConnectedUser, error) {
 	// get the uaa token record
 	uaaTokenRecord, err := a.p.GetUAATokenRecord(userGUID)
 	if err != nil {
-		msg := "Unable to retrieve UAA token record."
+		msg := "unable to retrieve UAA token record"
 		log.Error(msg)
 		return nil, fmt.Errorf(msg)
 	}
@@ -101,7 +101,7 @@ func (a *uaaAuth) GetUser(userGUID string) (*api.ConnectedUser, error) {
 	// get the scope out of the JWT token data
 	userTokenInfo, err := a.p.GetUserTokenInfo(uaaTokenRecord.AuthToken)
 	if err != nil {
-		msg := "Unable to find scope information in the UAA Auth Token: %s"
+		msg := "unable to find scope information in the UAA Auth Token: %s"
 		log.Errorf(msg, err)
 		return nil, fmt.Errorf(msg, err)
 	}
@@ -279,12 +279,12 @@ func (p *portalProxy) setUAATokenRecord(key string, t api.TokenRecord) error {
 
 	tokenRepo, err := p.GetStoreFactory().TokenStore()
 	if err != nil {
-		return fmt.Errorf("Database error getting repo for UAA token: %v", err)
+		return fmt.Errorf("database error getting repo for UAA token: %v", err)
 	}
 
 	err = tokenRepo.SaveAuthToken(key, t, p.Config.EncryptionKeyInBytes)
 	if err != nil {
-		return fmt.Errorf("Database error saving UAA token: %v", err)
+		return fmt.Errorf("database error saving UAA token: %v", err)
 	}
 
 	return nil
@@ -361,7 +361,7 @@ func (p *portalProxy) getUAAToken(body url.Values, skipSSLValidation bool, clien
 	log.WithField("authEndpoint", authEndpoint).Debug("getUAAToken")
 	req, err := http.NewRequest("POST", authEndpoint, strings.NewReader(body.Encode()))
 	if err != nil {
-		msg := "Failed to create request for UAA: %v"
+		msg := "failed to create request for UAA: %v"
 		log.Errorf(msg, err)
 		return nil, fmt.Errorf(msg, err)
 	}
@@ -424,14 +424,14 @@ func (p *portalProxy) RefreshUAAToken(userGUID string) (t api.TokenRecord, err e
 	} else {
 		u, err := p.GetUserTokenInfo(uaaRes.AccessToken)
 		if err != nil {
-			return t, fmt.Errorf("Could not get user token info from access token")
+			return t, fmt.Errorf("could not get user token info from access token")
 		}
 
 		u.UserGUID = userGUID
 
 		t, err = p.saveAuthToken(*u, uaaRes.AccessToken, uaaRes.RefreshToken)
 		if err != nil {
-			return t, fmt.Errorf("Couldn't save new UAA token: %v", err)
+			return t, fmt.Errorf("couldn't save new UAA token: %v", err)
 		}
 	}
 	return t, err
@@ -609,7 +609,7 @@ func (p *portalProxy) loginHTTPBasic(c echo.Context) (uaaRes *api.UAAResponse, u
 	password := c.FormValue("password")
 
 	if len(username) == 0 || len(password) == 0 {
-		return uaaRes, u, errors.New("Needs username and password")
+		return uaaRes, u, errors.New("needs username and password")
 	}
 
 	authString := fmt.Sprintf("%s:%s", username, password)

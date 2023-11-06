@@ -21,7 +21,7 @@ func Up20200210105400(txn *sql.Tx) error {
 
 	// `user` is a reserved keyword in postgres. For other DBs the column is renamed into
 	// `user_guid` in a subsequent `20201102132553_RenameUserColumn` migration
-	if _, ok := dialect.(goose.PostgresDialect); ok {
+	if _, ok := dialect.(*goose.PostgresDialect); ok {
 		createAnalysisTabls += "user_guid      VARCHAR(36) NOT NULL,"
 	} else {
 		createAnalysisTabls += "user           VARCHAR(36) NOT NULL,"

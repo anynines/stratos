@@ -42,7 +42,7 @@ func (p *portalProxy) InitStratosAuthService(t api.AuthEndpointType) error {
 			p:                      p,
 		}
 	default:
-		err := fmt.Errorf("Invalid auth endpoint type: %v", t)
+		err := fmt.Errorf("invalid auth endpoint type: %v", t)
 		return err
 	}
 	p.StratosAuthService = auth
@@ -71,7 +71,7 @@ func (p *portalProxy) login(c echo.Context, skipSSLValidation bool, client strin
 		}
 
 		if len(params.Username) == 0 || len(params.Password) == 0 {
-			return uaaRes, u, errors.New("Needs username and password")
+			return uaaRes, u, errors.New("needs username and password")
 		}
 		uaaRes, err = p.getUAATokenWithCreds(skipSSLValidation, params.Username, params.Password, client, clientSecret, endpoint)
 	}

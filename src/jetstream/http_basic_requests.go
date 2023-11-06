@@ -40,7 +40,7 @@ func (p *portalProxy) doAuthHeaderFlowRequest(headerPrefix string, cnsiRequest *
 	authHandler := func(tokenRec api.TokenRecord, cnsi api.CNSIRecord) (*http.Response, error) {
 		authTokenDecodedBytes, err := base64.StdEncoding.DecodeString(tokenRec.AuthToken)
 		if err != nil {
-			return nil, errors.New("Failed to decode auth token")
+			return nil, errors.New("failed to decode auth token")
 		}
 
 		// Token auth has no token refresh or expiry - so much simpler than the OAuth flow

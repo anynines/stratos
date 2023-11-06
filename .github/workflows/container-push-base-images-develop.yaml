@@ -22,7 +22,7 @@ jobs:
       - name: 'Checkout current develop'
         uses: actions/checkout@v3
         with:
-          ref: "devlop"
+          ref: "develop"
       - name: 'Build stratos base images'
         run: |
           ./deploy/stratos-base-images/build-base-images.sh -r ghcr.io -o anynines -p -s
