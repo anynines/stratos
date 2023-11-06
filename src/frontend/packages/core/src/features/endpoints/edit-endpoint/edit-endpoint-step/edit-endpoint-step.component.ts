@@ -93,7 +93,7 @@ export class EditEndpointStepComponent implements OnDestroy, IStepperStep {
     ).subscribe(endpoint => {
       this.setAdvancedFields(endpoint);
       this.lastSkipSSLValue = endpoint.skip_ssl_validation;
-      this.showCACertField = !!endpoint.ca_cert;
+      this.showCACertField = !!endpoint.caCert;
       this.updateSSLFieldCheckbox();
       this.editEndpoint.setValue({
         name: endpoint.name,
