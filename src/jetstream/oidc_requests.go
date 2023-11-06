@@ -20,7 +20,7 @@ func (p *portalProxy) RefreshOidcToken(skipSSLValidation bool, cnsiGUID, userGUI
 	log.Debug("RefreshOidcToken")
 	userToken, ok := p.GetCNSITokenRecordWithDisconnected(cnsiGUID, userGUID)
 	if !ok {
-		return t, fmt.Errorf("Info could not be found for user with GUID %s", userGUID)
+		return t, fmt.Errorf("info could not be found for user with GUID %s", userGUID)
 	}
 
 	tokenEndpointWithPath := fmt.Sprintf("%s/oauth/token", tokenEndpoint)
@@ -52,12 +52,12 @@ func (p *portalProxy) RefreshOidcToken(skipSSLValidation bool, cnsiGUID, userGUI
 
 	uaaRes, err := p.getUAATokenWithRefreshToken(skipSSLValidation, userToken.RefreshToken, client, clientSecret, tokenEndpointWithPath, scopes)
 	if err != nil {
-		return t, fmt.Errorf("Token refresh request failed: %v", err)
+		return t, fmt.Errorf("token refresh request failed: %v", err)
 	}
 
 	u, err := p.GetUserTokenInfo(uaaRes.IDToken)
 	if err != nil {
-		return t, fmt.Errorf("Could not get user token info from id token")
+		return t, fmt.Errorf("could not get user token info from id token")
 	}
 
 	u.UserGUID = userGUID
@@ -69,7 +69,7 @@ func (p *portalProxy) RefreshOidcToken(skipSSLValidation bool, cnsiGUID, userGUI
 
 	err = p.setCNSITokenRecord(cnsiGUID, userGUID, tokenRecord)
 	if err != nil {
-		return t, fmt.Errorf("Couldn't save new token: %v", err)
+		return t, fmt.Errorf("couldn't save new token: %v", err)
 	}
 
 	return tokenRecord, nil

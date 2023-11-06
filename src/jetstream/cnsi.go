@@ -20,7 +20,7 @@ import (
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/plugins/userfavorites/userfavoritesendpoints"
 )
 
-const dbReferenceError = "Unable to establish a database reference: '%v'"
+const dbReferenceError = "unable to establish a database reference: '%v'"
 
 func isSSLRelatedError(err error) (bool, string) {
 	if urlErr, ok := err.(*url.Error); ok {
@@ -495,7 +495,7 @@ func (p *portalProxy) UpdateEndpointMetadata(guid string, metadata string) error
 
 	err = cnsiRepo.UpdateMetadata(guid, metadata)
 	if err != nil {
-		msg := "Unable to update endpoint metadata: %v"
+		msg := "unable to update endpoint metadata: %v"
 		log.Errorf(msg, err)
 		return fmt.Errorf(msg, err)
 	}
@@ -538,7 +538,7 @@ func (p *portalProxy) GetAdminCNSIRecordByEndpoint(endpoint string) (api.CNSIRec
 	}
 
 	if rec == nil {
-		return api.CNSIRecord{}, fmt.Errorf("Can not find admin CNSIRecord by given endpoint")
+		return api.CNSIRecord{}, fmt.Errorf("can not find admin CNSIRecord by given endpoint")
 	}
 
 	// Ensure that trailing slash is removed from the API Endpoint
@@ -564,7 +564,7 @@ func (p *portalProxy) setCNSIRecord(guid string, c api.CNSIRecord) error {
 
 	err = cnsiRepo.Save(guid, c, p.Config.EncryptionKeyInBytes)
 	if err != nil {
-		msg := "Unable to save a CNSI Token: %v"
+		msg := "unable to save a CNSI Token: %v"
 		log.Errorf(msg, err)
 		return fmt.Errorf(msg, err)
 	}
@@ -586,7 +586,7 @@ func (p *portalProxy) unsetCNSIRecord(guid string) error {
 	// Delete the endpoint
 	err = cnsiRepo.Delete(guid)
 	if err != nil {
-		msg := "Unable to delete a CNSI record: %v"
+		msg := "unable to delete a CNSI record: %v"
 		log.Errorf(msg, err)
 		return fmt.Errorf(msg, err)
 	}
@@ -681,7 +681,7 @@ func (p *portalProxy) updateTokenAuth(userGUID string, t api.TokenRecord) error 
 
 	err = tokenRepo.UpdateTokenAuth(userGUID, t, p.Config.EncryptionKeyInBytes)
 	if err != nil {
-		msg := "Unable to update Token: %v"
+		msg := "unable to update Token: %v"
 		log.Errorf(msg, err)
 		return fmt.Errorf(msg, err)
 	}
@@ -699,7 +699,7 @@ func (p *portalProxy) setCNSITokenRecord(cnsiGUID string, userGUID string, t api
 
 	err = tokenRepo.SaveCNSIToken(cnsiGUID, userGUID, t, p.Config.EncryptionKeyInBytes)
 	if err != nil {
-		msg := "Unable to save a CNSI Token: %v"
+		msg := "unable to save a CNSI Token: %v"
 		log.Errorf(msg, err)
 		return fmt.Errorf(msg, err)
 	}
@@ -711,14 +711,14 @@ func (p *portalProxy) unsetCNSITokenRecord(cnsiGUID string, userGUID string) err
 	log.Debug("unsetCNSITokenRecord")
 	tokenRepo, err := p.GetStoreFactory().TokenStore()
 	if err != nil {
-		msg := "Unable to establish a database reference: '%v'"
+		msg := "unable to establish a database reference: '%v'"
 		log.Errorf(msg, err)
 		return fmt.Errorf(msg, err)
 	}
 
 	err = tokenRepo.DeleteCNSIToken(cnsiGUID, userGUID)
 	if err != nil {
-		msg := "Unable to delete a CNSI Token: %v"
+		msg := "unable to delete a CNSI Token: %v"
 		log.Errorf(msg, err)
 		return fmt.Errorf(msg, err)
 	}
@@ -730,14 +730,14 @@ func (p *portalProxy) unsetCNSITokenRecords(cnsiGUID string) error {
 	log.Debug("unsetCNSITokenRecord")
 	tokenRepo, err := p.GetStoreFactory().TokenStore()
 	if err != nil {
-		msg := "Unable to establish a database reference: '%v'"
+		msg := "unable to establish a database reference: '%v'"
 		log.Errorf(msg, err)
 		return fmt.Errorf(msg, err)
 	}
 
 	err = tokenRepo.DeleteCNSITokens(cnsiGUID)
 	if err != nil {
-		msg := "Unable to delete a CNSI Token: %v"
+		msg := "unable to delete a CNSI Token: %v"
 		log.Errorf(msg, err)
 		return fmt.Errorf(msg, err)
 	}
@@ -787,7 +787,7 @@ func (p *portalProxy) updateEndpoint(ec echo.Context) error {
 
 	endpoint, err := cnsiRepo.Find(params.ID, p.Config.EncryptionKeyInBytes)
 	if err != nil {
-		return fmt.Errorf("Could not find the endpoint %s: '%v'", params.ID, err)
+		return fmt.Errorf("could not find the endpoint %s: '%v'", params.ID, err)
 	}
 
 	updates := false
@@ -812,7 +812,7 @@ func (p *portalProxy) updateEndpoint(ec echo.Context) error {
 					// Skip SSL validation is OFF - so check we can communicate with the endpoint
 					plugin, err := p.GetEndpointTypeSpec(endpoint.CNSIType)
 					if err != nil {
-						return fmt.Errorf("Can not get endpoint type for %s: '%v'", endpoint.CNSIType, err)
+						return fmt.Errorf("can not get endpoint type for %s: '%v'", endpoint.CNSIType, err)
 					}
 					_, _, err = plugin.Info(endpoint.APIEndpoint.String(), endpoint.SkipSSLValidation)
 					if err != nil {
@@ -862,7 +862,7 @@ func (p *portalProxy) updateEndpoint(ec echo.Context) error {
 	if updates {
 		err := cnsiRepo.Update(endpoint, p.Config.EncryptionKeyInBytes)
 		if err != nil {
-			return fmt.Errorf("Could not update the endpoint %s: '%v'", params.ID, err)
+			return fmt.Errorf("could not update the endpoint %s: '%v'", params.ID, err)
 		}
 	}
 

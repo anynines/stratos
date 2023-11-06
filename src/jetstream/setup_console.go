@@ -246,7 +246,7 @@ func (p *portalProxy) initialiseConsoleConfig(envLookup *env.VarSet) (*api.Conso
 
 	consoleConfig := &api.ConsoleConfig{}
 	if err := config.Load(consoleConfig, envLookup.Lookup); err != nil {
-		return consoleConfig, fmt.Errorf("Unable to load Console configuration. %v", err)
+		return consoleConfig, fmt.Errorf("unable to load Console configuration. %v", err)
 	}
 
 	if len(consoleConfig.AuthEndpointType) == 0 {

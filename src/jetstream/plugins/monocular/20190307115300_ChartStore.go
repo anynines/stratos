@@ -34,7 +34,7 @@ func Up20190307115301(txn *sql.Tx) error {
 	}
 
 	binaryDataType := "BYTEA"
-	if _, ok := dialect.(goose.MySQLDialect); ok {
+	if _, ok := dialect.(*goose.MySQLDialect); ok {
 		binaryDataType = "BLOB"
 	}
 
