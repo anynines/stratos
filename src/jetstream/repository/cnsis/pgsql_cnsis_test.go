@@ -569,7 +569,7 @@ func TestPgSQLCNSIs(t *testing.T) {
 			expectedCNSIRecord := api.CNSIRecord{GUID: mockCFGUID, Name: "Some fancy CF Cluster", CNSIType: "cf", APIEndpoint: u, AuthorizationEndpoint: mockAuthEndpoint, TokenEndpoint: mockAuthEndpoint, DopplerLoggingEndpoint: mockDopplerEndpoint, SkipSSLValidation: true, ClientId: mockClientId, ClientSecret: mockClientSecret, SSOAllowed: false, Creator: ""}
 
 			rs := sqlmock.NewRows(rowFieldsForCNSI).
-				AddRow(mockCFGUID, "Some fancy CF Cluster", "cf", mockAPIEndpoint, mockAuthEndpoint, mockAuthEndpoint, mockDopplerEndpoint, true, mockClientId, cipherClientSecret, false, "", "", "")
+				AddRow(mockCFGUID, "Some fancy CF Cluster", "cf", mockAPIEndpoint, mockAuthEndpoint, mockAuthEndpoint, mockDopplerEndpoint, true, mockClientId, cipherClientSecret, false, "", "", "", "")
 			mock.ExpectQuery(selectFromCNSIsWhere).
 				WillReturnRows(rs)
 
@@ -666,7 +666,7 @@ func TestPgSQLCNSIs(t *testing.T) {
 			expectedCNSIRecord := api.CNSIRecord{GUID: mockCFGUID, Name: "Some fancy CF Cluster", CNSIType: "cf", APIEndpoint: u, AuthorizationEndpoint: mockAuthEndpoint, TokenEndpoint: mockAuthEndpoint, DopplerLoggingEndpoint: mockDopplerEndpoint, SkipSSLValidation: true, ClientId: mockClientId, ClientSecret: mockClientSecret, SSOAllowed: true, Creator: ""}
 
 			rs := sqlmock.NewRows(rowFieldsForCNSI).
-				AddRow(mockCFGUID, "Some fancy CF Cluster", "cf", mockAPIEndpoint, mockAuthEndpoint, mockAuthEndpoint, mockDopplerEndpoint, true, mockClientId, cipherClientSecret, true, "", "", "")
+				AddRow(mockCFGUID, "Some fancy CF Cluster", "cf", mockAPIEndpoint, mockAuthEndpoint, mockAuthEndpoint, mockDopplerEndpoint, true, mockClientId, cipherClientSecret, true, "", "", "", "")
 			mock.ExpectQuery(selectFromCNSIsWhere).
 				WillReturnRows(rs)
 
