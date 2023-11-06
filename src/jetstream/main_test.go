@@ -166,7 +166,7 @@ func TestGenerateTLSCert(t *testing.T) {
 	pc := api.PortalConfig{}
 	err := generateTLSCert(&pc)
 	if err != nil {
-		t.Errorf("Error generating TLS certificate: %w", err)
+		t.Errorf("Error generating TLS certificate: %v", err)
 		return
 	}
 	certBlock, rest := pem.Decode([]byte(pc.TLSCert))
@@ -178,11 +178,11 @@ func TestGenerateTLSCert(t *testing.T) {
 	}
 	cert, err := x509.ParseCertificate(certBlock.Bytes)
 	if err != nil {
-		t.Errorf("Error parsing certificate: %w", err)
+		t.Errorf("Error parsing certificate: %v", err)
 		return
 	}
 	if err := cert.VerifyHostname("localhost"); err != nil {
-		t.Errorf("Certificate does not work for localhost: %w", err)
+		t.Errorf("Certificate does not work for localhost: %v", err)
 	}
 	privBlock, rest := pem.Decode([]byte(pc.TLSCertKey))
 	if len(rest) > 0 {
