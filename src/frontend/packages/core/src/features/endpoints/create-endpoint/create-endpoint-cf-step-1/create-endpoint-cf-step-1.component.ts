@@ -73,7 +73,7 @@ export class CreateEndpointCfStep1Component extends CreateEndpointHelperComponen
     this.registerForm = this.fb.group({
       nameField: ['', [Validators.required]],
       urlField: ['', [Validators.required]],
-      skipSllField: [false, []],
+      skipSSLField: [false, []],
       ssoAllowedField: [false, []],
       // Optional Client ID and Client Secret
       clientIDField: ['', []],
@@ -95,7 +95,7 @@ export class CreateEndpointCfStep1Component extends CreateEndpointHelperComponen
     const { subType, type } = this.endpoint.getTypeAndSubtype();
 
     // SSL Setttings
-    let sslAllow = this.registerForm.value.skipSllField;
+    let sslAllow = this.registerForm.value.skipSSLField;
     if (this.showCACertField) {
       sslAllow = false;
     }
@@ -164,10 +164,10 @@ export class CreateEndpointCfStep1Component extends CreateEndpointHelperComponen
   toggleCACertField() {
     this.showCACertField = !this.showCACertField;
     if (this.showCACertField) {
-      this.lastSkipSSLValue = this.registerForm.value.skipSllField;
-      this.registerForm.controls.skipSllField.setValue(false);
+      this.lastSkipSSLValue = this.registerForm.value.skipSSLField;
+      this.registerForm.controls.skipSSLField.setValue(false);
     } else {
-      this.registerForm.controls.skipSllField.setValue(this.lastSkipSSLValue);
+      this.registerForm.controls.skipSSLField.setValue(this.lastSkipSSLValue);
     }
   }
 

@@ -20,7 +20,7 @@ var (
 
 	defaulHTTPClientTimeout           int64
 	defaulHTTPClientMutatingTimeout   int64
-	defaulHTTPClientCcnnectionTimeout int64
+	defaulHTTPClientConnectionTimeout int64
 	defaultDialer                     net.Dialer
 )
 
@@ -30,7 +30,7 @@ func initializeHTTPClients(timeout int64, timeoutMutating int64, connectionTimeo
 	// Store defaut timeouts for when we create a client when a CA Cert is used
 	defaulHTTPClientTimeout = timeout
 	defaulHTTPClientMutatingTimeout = timeoutMutating
-	defaulHTTPClientCcnnectionTimeout = connectionTimeout
+	defaulHTTPClientConnectionTimeout = connectionTimeout
 
 	tr := createTransport(&tls.Config{InsecureSkipVerify: false})
 	httpClient.Transport = tr
@@ -50,7 +50,7 @@ func initializeHTTPClients(timeout int64, timeoutMutating int64, connectionTimeo
 func createTransport(tlsConfig *tls.Config) *http.Transport {
 	// Common KeepAlive dialer shared by transports
 	dial := (&net.Dialer{
-		Timeout:   time.Duration(defaulHTTPClientCcnnectionTimeout) * time.Second,
+		Timeout:   time.Duration(defaulHTTPClientConnectionTimeout) * time.Second,
 		KeepAlive: 30 * time.Second, // should be less than any proxy connection timeout (typically 2-3 minutes)
 	}).Dial
 
@@ -110,8 +110,9 @@ func (p *portalProxy) getHttpClient(skipSSLValidation bool, caCert string, mutat
 }
 
 func getHttpClientWIthCA(caCert string, mutating bool) *http.Client {
-	rootCAs, _ := x509.SystemCertPool()
-	if rootCAs == nil {
+	rootCAs, err := x509.SystemCertPool()
+
+	if rootCAs == nil || err != nil {
 		rootCAs = x509.NewCertPool()
 	}
 
