@@ -18,19 +18,19 @@ var (
 	httpClientMutating        = http.Client{}
 	httpClientMutatingSkipSSL = http.Client{}
 
-	defaulHTTPClientTimeout           int64
-	defaulHTTPClientMutatingTimeout   int64
-	defaulHTTPClientConnectionTimeout int64
-	defaultDialer                     net.Dialer
+	defaultHTTPClientTimeout           int64
+	defaultHTTPClientMutatingTimeout   int64
+	defaultHTTPClientConnectionTimeout int64
+	defaultDialer                      net.Dialer
 )
 
 func initializeHTTPClients(timeout int64, timeoutMutating int64, connectionTimeout int64) {
 	log.Debug("initializeHTTPClients")
 
 	// Store defaut timeouts for when we create a client when a CA Cert is used
-	defaulHTTPClientTimeout = timeout
-	defaulHTTPClientMutatingTimeout = timeoutMutating
-	defaulHTTPClientConnectionTimeout = connectionTimeout
+	defaultHTTPClientTimeout = timeout
+	defaultHTTPClientMutatingTimeout = timeoutMutating
+	defaultHTTPClientConnectionTimeout = connectionTimeout
 
 	tr := createTransport(&tls.Config{InsecureSkipVerify: false})
 	httpClient.Transport = tr
@@ -50,7 +50,7 @@ func initializeHTTPClients(timeout int64, timeoutMutating int64, connectionTimeo
 func createTransport(tlsConfig *tls.Config) *http.Transport {
 	// Common KeepAlive dialer shared by transports
 	dial := (&net.Dialer{
-		Timeout:   time.Duration(defaulHTTPClientConnectionTimeout) * time.Second,
+		Timeout:   time.Duration(defaultHTTPClientConnectionTimeout) * time.Second,
 		KeepAlive: 30 * time.Second, // should be less than any proxy connection timeout (typically 2-3 minutes)
 	}).Dial
 
@@ -129,9 +129,9 @@ func getHttpClientWIthCA(caCert string, mutating bool) *http.Client {
 	tr := createTransport(config)
 	client := &http.Client{Transport: tr}
 	if mutating {
-		client.Timeout = time.Duration(defaulHTTPClientTimeout) * time.Second
+		client.Timeout = time.Duration(defaultHTTPClientTimeout) * time.Second
 	} else {
-		client.Timeout = time.Duration(defaulHTTPClientMutatingTimeout) * time.Second
+		client.Timeout = time.Duration(defaultHTTPClientMutatingTimeout) * time.Second
 	}
 	return client
 }
