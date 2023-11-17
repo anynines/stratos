@@ -46,7 +46,7 @@ export class ConsoleUaaWizardComponent implements OnInit {
       uaa_endpoint: this.uaaForm.get('apiUrl').value,
       console_client: this.uaaForm.get('clientId').value,
       password: this.uaaForm.get('adminPassword').value,
-      skip_ssl_validation: this.uaaForm.get('skipSll').value,
+      skip_ssl_validation: this.uaaForm.get('skipSSL').value,
       username: this.uaaForm.get('adminUsername').value,
       console_client_secret: this.uaaForm.get('clientSecret').value,
       use_sso: this.uaaForm.get('useSSO').value,
@@ -78,7 +78,7 @@ export class ConsoleUaaWizardComponent implements OnInit {
       uaa_endpoint: this.uaaForm.get('apiUrl').value,
       console_client: this.uaaForm.get('clientId').value,
       password: this.uaaForm.get('adminPassword').value,
-      skip_ssl_validation: this.uaaForm.get('skipSll').value,
+      skip_ssl_validation: this.uaaForm.get('skipSSL').value,
       username: this.uaaForm.get('adminUsername').value,
       console_client_secret: this.uaaForm.get('clientSecret').value,
       use_sso: this.uaaForm.get('useSSO').value,
@@ -117,7 +117,7 @@ export class ConsoleUaaWizardComponent implements OnInit {
   ngOnInit() {
     this.uaaForm = new UntypedFormGroup({
       apiUrl: new UntypedFormControl('', [Validators.required as any]),
-      skipSll: new UntypedFormControl(false),
+      skipSSL: new UntypedFormControl(false),
       clientId: new UntypedFormControl('', [Validators.required as any]),
       clientSecret: new UntypedFormControl(''),
       adminUsername: new UntypedFormControl('', [Validators.required as any]),

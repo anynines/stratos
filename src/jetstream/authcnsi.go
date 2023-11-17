@@ -279,7 +279,7 @@ func (p *portalProxy) DoLoginToCNSIwithConsoleUAAtoken(c echo.Context, theCNSIre
 			return errors.New("could not parse current user UAA token")
 		}
 		cfEndpointSpec, _ := p.GetEndpointTypeSpec("cf")
-		cnsiInfo, _, err := cfEndpointSpec.Info(theCNSIrecord.APIEndpoint.String(), true)
+		cnsiInfo, _, err := cfEndpointSpec.Info(theCNSIrecord.APIEndpoint.String(), true, "")
 		if err != nil {
 			log.Fatal("Could not get the info for Cloud Foundry", err)
 			return err
@@ -526,6 +526,7 @@ func (p *portalProxy) InitEndpointTokenRecord(expiry int64, authTok string, refr
 		TokenExpiry:  expiry,
 		Disconnected: disconnect,
 		AuthType:     api.AuthTypeOAuth2,
+		Enabled:      true,
 	}
 
 	return tokenRecord

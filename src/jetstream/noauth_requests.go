@@ -12,7 +12,7 @@ func (p *portalProxy) doNoAuthFlowRequest(cnsiRequest *api.CNSIRequest, req *htt
 
 	authHandler := func(tokenRec api.TokenRecord, cnsi api.CNSIRecord) (*http.Response, error) {
 		// No need to add any headers or do any authentication
-		client := p.GetHttpClientForRequest(req, cnsi.SkipSSLValidation)
+		client := p.GetHttpClientForRequest(req, cnsi.SkipSSLValidation, cnsi.CACert)
 		return client.Do(req)
 	}
 	return p.DoAuthFlowRequest(cnsiRequest, req, authHandler)

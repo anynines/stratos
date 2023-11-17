@@ -52,7 +52,7 @@ func (c *KubeTokenAuth) doTokenFlowRequest(cnsiRequest *api.CNSIRequest, req *ht
 	authHandler := func(tokenRec api.TokenRecord, cnsi api.CNSIRecord) (*http.Response, error) {
 		// Token auth has no token refresh or expiry - so much simpler than the OAuth flow
 		req.Header.Set("Authorization", "bearer "+tokenRec.AuthToken)
-		client := c.portalProxy.GetHttpClientForRequest(req, cnsi.SkipSSLValidation)
+		client := c.portalProxy.GetHttpClientForRequest(req, cnsi.SkipSSLValidation, cnsi.CACert)
 		return client.Do(req)
 	}
 	return c.portalProxy.DoAuthFlowRequest(cnsiRequest, req, authHandler)

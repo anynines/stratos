@@ -89,7 +89,9 @@ func (p *portalProxy) RegisterEndpoint(c echo.Context, fetchInfo api.InfoFunc) e
 			"Failed to get session user: %v", err)
 	}
 
-	newCNSI, err := p.DoRegisterEndpoint(params.CNSIName, params.APIEndpoint, skipSSLValidation, cnsiClientId, cnsiClientSecret, userID, ssoAllowed, subType, createSystemEndpoint, fetchInfo)
+	caCert := params.CACert
+
+	newCNSI, err := p.DoRegisterEndpoint(params.CNSIName, params.APIEndpoint, skipSSLValidation, cnsiClientId, cnsiClientSecret, userID, ssoAllowed, subType, createSystemEndpoint, caCert, fetchInfo)
 	if err != nil {
 		return err
 	}
@@ -98,7 +100,7 @@ func (p *portalProxy) RegisterEndpoint(c echo.Context, fetchInfo api.InfoFunc) e
 	return nil
 }
 
-func (p *portalProxy) DoRegisterEndpoint(cnsiName string, apiEndpoint string, skipSSLValidation bool, clientId string, clientSecret string, userId string, ssoAllowed bool, subType string, createSystemEndpoint bool, fetchInfo api.InfoFunc) (api.CNSIRecord, error) {
+func (p *portalProxy) DoRegisterEndpoint(cnsiName string, apiEndpoint string, skipSSLValidation bool, clientId string, clientSecret string, userId string, ssoAllowed bool, subType string, createSystemEndpoint bool, caCert string, fetchInfo api.InfoFunc) (api.CNSIRecord, error) {
 	log.Debug("DoRegisterEndpoint")
 
 	if len(cnsiName) == 0 || len(apiEndpoint) == 0 {
@@ -186,7 +188,7 @@ func (p *portalProxy) DoRegisterEndpoint(cnsiName string, apiEndpoint string, sk
 	}
 	guid := base64.RawURLEncoding.EncodeToString(h.Sum(nil))
 
-	newCNSI, _, err := fetchInfo(apiEndpoint, skipSSLValidation)
+	newCNSI, _, err := fetchInfo(apiEndpoint, skipSSLValidation, caCert)
 	if err != nil {
 		if ok, detail := isSSLRelatedError(err); ok {
 			return api.CNSIRecord{}, api.NewHTTPShadowError(
@@ -209,6 +211,7 @@ func (p *portalProxy) DoRegisterEndpoint(cnsiName string, apiEndpoint string, sk
 	newCNSI.ClientSecret = clientSecret
 	newCNSI.SSOAllowed = ssoAllowed
 	newCNSI.SubType = subType
+	newCNSI.CACert = caCert
 
 	if p.GetConfig().UserEndpointsEnabled != config.UserEndpointsConfigEnum.Disabled && (!isAdmin || !createSystemEndpoint) {
 		newCNSI.Creator = userId
@@ -806,6 +809,13 @@ func (p *portalProxy) updateEndpoint(ec echo.Context) error {
 		updates = true
 	}
 
+	// CA Cert
+	caCert := params.CACert
+	if strings.Compare(endpoint.CACert, caCert) != 0 {
+		endpoint.CACert = caCert
+		updates = true
+	}
+
 	// Skip SSL validation
 	skipSSL := params.SkipSSL
 	if len(skipSSL) > 0 {
@@ -821,7 +831,7 @@ func (p *portalProxy) updateEndpoint(ec echo.Context) error {
 					if err != nil {
 						return fmt.Errorf("can not get endpoint type for %s: '%v'", endpoint.CNSIType, err)
 					}
-					_, _, err = plugin.Info(endpoint.APIEndpoint.String(), endpoint.SkipSSLValidation)
+					_, _, err = plugin.Info(endpoint.APIEndpoint.String(), endpoint.SkipSSLValidation, endpoint.CACert)
 					if err != nil {
 						if ok, detail := isSSLRelatedError(err); ok {
 							return api.NewHTTPShadowError(
