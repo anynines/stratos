@@ -10,6 +10,7 @@ import (
 	sqlmock "gopkg.in/DATA-DOG/go-sqlmock.v1"
 
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/testutils"
 )
 
 func TestPassthroughDoRequest(t *testing.T) {
@@ -47,7 +48,7 @@ func TestPassthroughDoRequest(t *testing.T) {
 
 		mock.ExpectQuery(selectAnyFromTokens).
 			WithArgs(mockCFGUID, mockUserGUID).
-			WillReturnRows(expectNoRows())
+			WillReturnRows(testutils.ExpectNoRows())
 
 		// set up the database expectation for pp.setCNSITokenRecord
 		mock.ExpectExec(insertIntoTokens).

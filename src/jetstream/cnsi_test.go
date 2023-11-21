@@ -10,6 +10,7 @@ import (
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api/config"
 	mock_api "github.com/cloudfoundry-incubator/stratos/src/jetstream/api/mock"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/testutils"
 	"github.com/golang/mock/gomock"
 	_ "github.com/satori/go.uuid"
 	. "github.com/smartystreets/goconvey/convey"
@@ -322,7 +323,7 @@ func TestRegisterWithUserEndpointsEnabled(t *testing.T) {
 							Return(mockAdmin.ConnectedUser, nil)
 
 						// return no already saved endpoints
-						rows := sqlmock.NewRows(rowFieldsForCNSI)
+						rows := testutils.GetEmptyCNSIRows()
 						mock.ExpectQuery(selectAnyFromCNSIs).WithArgs(mockV2Info[0].URL).WillReturnRows(rows)
 
 						mock.ExpectExec(insertIntoCNSIs).
@@ -352,7 +353,7 @@ func TestRegisterWithUserEndpointsEnabled(t *testing.T) {
 							Return(mockAdmin.ConnectedUser, nil)
 
 						// return a user endpoint with same apiurl
-						rows := sqlmock.NewRows(rowFieldsForCNSI).AddRow(userEndpoint.QueryArgs...)
+						rows := testutils.GetEmptyCNSIRows().AddRow(userEndpoint.QueryArgs...)
 						mock.ExpectQuery(selectAnyFromCNSIs).WithArgs(mockV2Info[0].URL).WillReturnRows(rows)
 
 						// save cnsi
@@ -380,7 +381,7 @@ func TestRegisterWithUserEndpointsEnabled(t *testing.T) {
 							Return(mockAdmin.ConnectedUser, nil)
 
 						// return a admin endpoint with same apiurl
-						rows := sqlmock.NewRows(rowFieldsForCNSI).AddRow(adminEndpoint.QueryArgs...)
+						rows := testutils.GetEmptyCNSIRows().AddRow(adminEndpoint.QueryArgs...)
 						mock.ExpectQuery(selectAnyFromCNSIs).WithArgs(mockV2Info[0].URL).WillReturnRows(rows)
 
 						// test
@@ -418,7 +419,7 @@ func TestRegisterWithUserEndpointsEnabled(t *testing.T) {
 							Return(mockAdmin.ConnectedUser, nil)
 
 						// return a admin endpoint with same apiurl
-						rows := sqlmock.NewRows(rowFieldsForCNSI).AddRow(systemEndpoint.QueryArgs...)
+						rows := testutils.GetEmptyCNSIRows().AddRow(systemEndpoint.QueryArgs...)
 						mock.ExpectQuery(selectAnyFromCNSIs).WithArgs(mockV2Info[0].URL).WillReturnRows(rows)
 
 						// save cnsi
@@ -446,7 +447,7 @@ func TestRegisterWithUserEndpointsEnabled(t *testing.T) {
 							Return(mockAdmin.ConnectedUser, nil)
 
 						// return a user endpoint with same apiurl
-						rows := sqlmock.NewRows(rowFieldsForCNSI).AddRow(adminEndpoint.QueryArgs...)
+						rows := testutils.GetEmptyCNSIRows().AddRow(adminEndpoint.QueryArgs...)
 						mock.ExpectQuery(selectAnyFromCNSIs).WithArgs(mockV2Info[0].URL).WillReturnRows(rows)
 
 						// test
@@ -484,7 +485,7 @@ func TestRegisterWithUserEndpointsEnabled(t *testing.T) {
 							GetUser(gomock.Eq(mockUser1.ConnectedUser.GUID)).
 							Return(mockUser1.ConnectedUser, nil)
 
-						rows := sqlmock.NewRows(rowFieldsForCNSI)
+						rows := testutils.GetEmptyCNSIRows()
 						mock.ExpectQuery(selectAnyFromCNSIs).WithArgs(mockV2Info[0].URL).WillReturnRows(rows)
 
 						mock.ExpectExec(insertIntoCNSIs).
@@ -511,7 +512,7 @@ func TestRegisterWithUserEndpointsEnabled(t *testing.T) {
 							GetUser(gomock.Eq(mockUser1.ConnectedUser.GUID)).
 							Return(mockUser1.ConnectedUser, nil)
 
-						rows := sqlmock.NewRows(rowFieldsForCNSI).AddRow(userEndpoint2.QueryArgs...)
+						rows := testutils.GetEmptyCNSIRows().AddRow(userEndpoint2.QueryArgs...)
 						mock.ExpectQuery(selectAnyFromCNSIs).WithArgs(mockV2Info[0].URL).WillReturnRows(rows)
 
 						mock.ExpectExec(insertIntoCNSIs).
@@ -536,7 +537,7 @@ func TestRegisterWithUserEndpointsEnabled(t *testing.T) {
 							GetUser(gomock.Eq(mockUser1.ConnectedUser.GUID)).
 							Return(mockUser1.ConnectedUser, nil)
 
-						rows := sqlmock.NewRows(rowFieldsForCNSI).AddRow(userEndpoint.QueryArgs...)
+						rows := testutils.GetEmptyCNSIRows().AddRow(userEndpoint.QueryArgs...)
 						mock.ExpectQuery(selectAnyFromCNSIs).WithArgs(mockV2Info[0].URL).WillReturnRows(rows)
 
 						err := pp.RegisterEndpoint(userEndpoint.EchoContext, getCFPlugin(pp, "cf").Info)
@@ -568,7 +569,7 @@ func TestRegisterWithUserEndpointsEnabled(t *testing.T) {
 							GetUser(gomock.Eq(mockUser1.ConnectedUser.GUID)).
 							Return(mockUser1.ConnectedUser, nil)
 
-						rows := sqlmock.NewRows(rowFieldsForCNSI).AddRow(userEndpoint.QueryArgs...)
+						rows := testutils.GetEmptyCNSIRows().AddRow(userEndpoint.QueryArgs...)
 						mock.ExpectQuery(selectAnyFromCNSIs).WithArgs(mockV2Info[0].URL).WillReturnRows(rows)
 
 						err := pp.RegisterEndpoint(userEndpoint.EchoContext, getCFPlugin(pp, "cf").Info)
@@ -621,11 +622,11 @@ func TestListCNSIsWithUserEndpointsEnabled(t *testing.T) {
 		userEndpoint1Args := createEndpointRowArgs("CF Endpoint 2", "https://127.0.0.1:50002", mockAuthEndpoint, mockTokenEndpoint, mockUser1.ConnectedUser.GUID, mockUser1.ConnectedUser.Admin)
 		userEndpoint2Args := createEndpointRowArgs("CF Endpoint 3", "https://127.0.0.1:50003", mockAuthEndpoint, mockTokenEndpoint, mockUser2.ConnectedUser.GUID, mockUser2.ConnectedUser.Admin)
 
-		adminRows := sqlmock.NewRows(rowFieldsForCNSI).
+		adminRows := testutils.GetEmptyCNSIRows().
 			AddRow(adminEndpointArgs...)
-		user1Rows := sqlmock.NewRows(rowFieldsForCNSI).
+		user1Rows := testutils.GetEmptyCNSIRows().
 			AddRow(userEndpoint1Args...)
-		allRows := sqlmock.NewRows(rowFieldsForCNSI).
+		allRows := testutils.GetEmptyCNSIRows().
 			AddRow(adminEndpointArgs...).
 			AddRow(userEndpoint1Args...).
 			AddRow(userEndpoint2Args...)

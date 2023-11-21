@@ -9,8 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cloudfoundry-incubator/stratos/src/jetstream/crypto"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/crypto"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/testutils"
 	. "github.com/smartystreets/goconvey/convey"
 	sqlmock "gopkg.in/DATA-DOG/go-sqlmock.v1"
 )
@@ -87,7 +88,7 @@ func TestDoOauthFlowRequestWithValidToken(t *testing.T) {
 		// set up the database expectation for pp.setCNSITokenRecord
 		mock.ExpectQuery(selectAnyFromTokens).
 			WithArgs(mockCNSIGUID, mockUserGUID).
-			WillReturnRows(sqlmock.NewRows([]string{"COUNT(*)"}).AddRow("0"))
+			WillReturnRows(testutils.ExpectNoRows())
 
 		mock.ExpectExec(insertIntoTokens).
 			//WithArgs(mockCNSIGUID, mockUserGUID, "cnsi", encryptedToken, encryptedToken, mockTokenRecord.TokenExpiry). // TODO: figure out why tokens mismatch on this test when this line is called
@@ -215,7 +216,7 @@ func TestDoOauthFlowRequestWithExpiredToken(t *testing.T) {
 		// 1) Set up the database expectation for pp.setCNSITokenRecord
 		mock.ExpectQuery(selectAnyFromTokens).
 			WithArgs(mockCNSIGUID, mockUserGUID).
-			WillReturnRows(sqlmock.NewRows([]string{"COUNT(*)"}).AddRow("0"))
+			WillReturnRows(testutils.ExpectNoRows())
 
 		mock.ExpectExec(insertIntoTokens).
 			//WithArgs(mockCNSIGUID, mockUserGUID, "cnsi", encryptedUAAToken, encryptedUAAToken, mockTokenRecord.TokenExpiry).
@@ -352,7 +353,7 @@ func TestDoOauthFlowRequestWithFailedRefreshMethod(t *testing.T) {
 
 		mock.ExpectQuery(selectAnyFromTokens).
 			WithArgs(mockCNSIGUID, mockUserGUID).
-			WillReturnRows(sqlmock.NewRows([]string{"COUNT(*)"}).AddRow("0"))
+			WillReturnRows(testutils.ExpectNoRows())
 
 		// 1) Set up the database expectation for pp.setCNSITokenRecord
 		mock.ExpectExec(insertIntoTokens).
@@ -596,7 +597,7 @@ func TestRefreshTokenWithDatabaseErrorOnSave(t *testing.T) {
 
 		mock.ExpectQuery(selectAnyFromTokens).
 			WithArgs(mockCNSIGUID, mockUserGUID).
-			WillReturnRows(sqlmock.NewRows([]string{"COUNT(*)"}).AddRow("0"))
+			WillReturnRows(testutils.ExpectNoRows())
 
 		// 1) Set up the database expectation for pp.setCNSITokenRecord
 		mock.ExpectExec(insertIntoTokens).
@@ -634,7 +635,7 @@ func TestRefreshTokenWithDatabaseErrorOnSave(t *testing.T) {
 
 		mock.ExpectQuery(selectAnyFromTokens).
 			WithArgs(mockCNSIGUID, mockUserGUID, mockAdminGUID).
-			WillReturnRows(sqlmock.NewRows([]string{"COUNT(*)"}).AddRow("1"))
+			WillReturnRows(testutils.ExpectOneRow())
 
 		// p.saveCNSIToken(cnsiGUID, *u, uaaRes.AccessToken, uaaRes.RefreshToken)
 		//   p.setCNSITokenRecord(cnsiID, u.UserGUID, tokenRecord)
