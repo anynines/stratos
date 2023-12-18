@@ -8,7 +8,7 @@ require (
 	github.com/go-sql-driver/mysql v1.4.1 // indirect
 	github.com/kubeapps/common v0.0.0-20190508164739-10b110436c1a
 	github.com/kylelemons/go-gypsy v0.0.0-20160905020020-08cad365cd28 // indirect
-	github.com/labstack/echo v3.3.10+incompatible
+	github.com/labstack/echo/v4 v4.11.3
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/mattn/go-sqlite3 v1.10.0 // indirect
@@ -21,4 +21,6 @@ require (
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 )
 
-replace github.com/cloudfoundry-incubator/stratos/src/jetstream => ../..
+replace github.com/cloudfoundry-incubator/stratos/src/jetstream => ../../
+replace github.com/cloudfoundry-incubator/stratos/src/jetstream/api => ../../api
+replace github.com/cloudfoundry-incubator/stratos/src/jetstream/plugins/cfapppush => ../cfapppush
