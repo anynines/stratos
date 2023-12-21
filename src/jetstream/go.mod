@@ -31,6 +31,7 @@ require (
 	github.com/cf-stratos/mysqlstore v0.0.0-20170822100912-304308519d13
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
 	github.com/cloudfoundry-incubator/stratos/src/jetstream/api v0.0.0-00010101000000-000000000000
+	github.com/cloudfoundry-incubator/stratos/src/jetstream/docs v0.0.0-00010101000000-000000000000
 	github.com/cloudfoundry-incubator/stratos/src/jetstream/plugins/cfapppush v0.0.0-00010101000000-000000000000
 	github.com/cloudfoundry-incubator/stratos/src/jetstream/plugins/kubernetes v0.0.0-20210416105629-f34f428ca775
 	github.com/cloudfoundry-incubator/stratos/src/jetstream/plugins/kubernetes/auth v0.0.0-00010101000000-000000000000
@@ -46,7 +47,7 @@ require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/govau/cf-common v0.0.7
 	github.com/kat-co/vala v0.0.0-20170210184112-42e1d8b61f12
-	github.com/labstack/echo/v4 v4.11.1
+	github.com/labstack/echo/v4 v4.11.4
 	github.com/mattn/go-sqlite3 v1.14.17
 	github.com/nwmac/sqlitestore v0.0.0-20180824125213-7d2ab221fb3f
 	github.com/pressly/goose v2.7.0+incompatible
@@ -55,7 +56,7 @@ require (
 	github.com/smartystreets/goconvey v1.8.1
 	github.com/swaggo/echo-swagger v1.4.0
 	github.com/swaggo/swag v1.16.1
-	golang.org/x/crypto v0.13.0
+	golang.org/x/crypto v0.17.0
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.0
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/client-go v0.28.2
@@ -149,7 +150,7 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/jtolds/gls v4.20.0+incompatible // indirect
 	github.com/klauspost/compress v1.16.6 // indirect
-	github.com/labstack/gommon v0.4.0 // indirect
+	github.com/labstack/gommon v0.4.2 // indirect
 	github.com/lann/builder v0.0.0-20180802200727-47ae307949d0 // indirect
 	github.com/lann/ps v0.0.0-20150810152359-62de8c46ede0 // indirect
 	github.com/lib/pq v1.10.9 // indirect
@@ -157,7 +158,7 @@ require (
 	github.com/lunixbochs/vtclean v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.19 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/mholt/archiver v3.1.1+incompatible // indirect
@@ -209,13 +210,13 @@ require (
 	go.opentelemetry.io/otel v1.14.0 // indirect
 	go.opentelemetry.io/otel/trace v1.14.0 // indirect
 	go.starlark.net v0.0.0-20230525235612-a134d8f9ddca // indirect
-	golang.org/x/net v0.15.0 // indirect
+	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/oauth2 v0.12.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect
-	golang.org/x/sys v0.12.0 // indirect
-	golang.org/x/term v0.12.0 // indirect
-	golang.org/x/text v0.13.0 // indirect
-	golang.org/x/time v0.3.0 // indirect
+	golang.org/x/sys v0.15.0 // indirect
+	golang.org/x/term v0.15.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
+	golang.org/x/time v0.5.0 // indirect
 	golang.org/x/tools v0.13.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto v0.0.0-20231002182017-d307bd883b97 // indirect
