@@ -69,6 +69,7 @@ func GetTestCNSIRecord() *api.CNSIRecord {
 		Metadata:               "",
 		Local:                  false,
 		Creator:                "",
+		CACert:                 "",
 	}
 }
 
@@ -92,6 +93,7 @@ func GetCNSIRows(records ...*api.CNSIRecord) *sqlmock.Rows {
 			/* sub_type */ record.SubType,
 			/* meta_data */ record.Metadata,
 			/* creator */ record.Creator,
+			/* ca_cert */ record.CACert,
 		)
 	}
 
@@ -134,6 +136,7 @@ func GetConnectedEndpointsRows(records ...*api.ConnectedEndpoint) *sqlmock.Rows 
 			/* sub_type */ record.SubType,
 			/* endpoint_metadata */ record.EndpointMetadata,
 			/* creator */ record.Creator,
+			/* enabled */ record.Enabled,
 		)
 	}
 
@@ -159,6 +162,7 @@ func GetTestConnectedEndpoint() *api.ConnectedEndpoint {
 		EndpointMetadata:       "",
 		Local:                  false,
 		Creator:                "",
+		CACert:                 "",
 	}
 }
 
@@ -171,7 +175,7 @@ func GetTokenRows(encriptionKey []byte) *sqlmock.Rows {
 
 	encryptedToken, _ := crypto.EncryptToken(encriptionKey, MockUAAToken)
 
-	rows.AddRow(MockTokenGUID, encryptedToken, encryptedToken, MockTokenExpiry, false, "OAuth2", "", MockAccount, nil)
+	rows.AddRow(MockTokenGUID, encryptedToken, encryptedToken, MockTokenExpiry, false, "OAuth2", "", MockAccount, nil, true)
 
 	return rows
 }

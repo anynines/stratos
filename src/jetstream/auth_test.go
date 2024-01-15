@@ -28,7 +28,7 @@ import (
 )
 
 const (
-	findUAATokenSQL = `SELECT token_guid, auth_token, refresh_token, token_expiry, auth_type, meta_data FROM tokens .*`
+	findUAATokenSQL = `SELECT token_guid, auth_token, refresh_token, token_expiry, auth_type, meta_data, enabled FROM tokens .*`
 )
 
 func TestLoginToUAA(t *testing.T) {
@@ -734,7 +734,7 @@ func TestLoginToCNSIWithUserEndpointsEnabled(t *testing.T) {
 				mock.ExpectQuery(selectAnyFromTokens).
 					WithArgs(adminEndpointArgs[0], mockEndpointAdmin1.ConnectedUser.GUID, mockAdminGUID).
 					WillReturnRows(testutils.GetEmptyTokenRows().
-						AddRow("", mockUAAToken, mockUAAToken, time.Now().Add(-time.Hour).Unix(), false, "", "", "", nil))
+						AddRow("", mockUAAToken, mockUAAToken, time.Now().Add(-time.Hour).Unix(), false, "", "", "", nil, false))
 
 				// remove other connection, since it has the same api url
 				mock.ExpectExec(deleteTokens).
@@ -1003,7 +1003,7 @@ func TestVerifySession(t *testing.T) {
 		encryptedUAAToken, _ := crypto.EncryptToken(pp.Config.EncryptionKeyInBytes, mockUAAToken)
 		// &tokenGUID, &ciphertextAuthToken, &ciphertextRefreshToken, &tokenExpiry, &authType, &metadata
 		expectedTokensRow := testutils.GetEmptyTokenRows("disconnected", "user_guid", "linked_token").
-			AddRow(mockTokenGUID, encryptedUAAToken, encryptedUAAToken, mockTokenExpiry, "oauth", "")
+			AddRow(mockTokenGUID, encryptedUAAToken, encryptedUAAToken, mockTokenExpiry, "oauth", "", true)
 
 		mock.ExpectQuery(selectAnyFromTokens).
 			WithArgs(mockUserGUID).
@@ -1014,7 +1014,7 @@ func TestVerifySession(t *testing.T) {
 		mock.ExpectQuery(getDbVersion).WillReturnRows(expectVersionRow)
 
 		rs := testutils.GetEmptyTokenRows("disconnected", "user_guid", "linked_token").
-			AddRow(mockTokenGUID, encryptedUAAToken, encryptedUAAToken, mockTokenExpiry, "oauth", "")
+			AddRow(mockTokenGUID, encryptedUAAToken, encryptedUAAToken, mockTokenExpiry, "oauth", "", true)
 		mock.ExpectQuery(findUAATokenSQL).
 			WillReturnRows(rs)
 

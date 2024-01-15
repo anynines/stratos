@@ -49,6 +49,7 @@ type CFPushAppConfig struct {
 	APIEndpointURL         string
 	DopplerLoggingEndpoint string
 	SkipSSLValidation      bool
+	CACert                 string
 	AuthToken              string
 	OrgGUID                string
 	OrgName                string

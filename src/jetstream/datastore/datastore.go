@@ -40,8 +40,8 @@ const (
 )
 
 var (
-	columnNamesForCNSIsBase              = []string{"guid", "name", "cnsi_type", "api_endpoint", "auth_endpoint", "token_endpoint", "doppler_logging_endpoint", "skip_ssl_validation", "client_id", "client_secret", "allow_sso", "sub_type", "meta_data", "creator"}
-	columnNamesForTokensBase             = []string{"token_guid", "auth_token", "refresh_token", "token_expiry", "disconnected", "auth_type", "meta_data", "user_guid", "linked_token"}
+	columnNamesForCNSIsBase              = []string{"guid", "name", "cnsi_type", "api_endpoint", "auth_endpoint", "token_endpoint", "doppler_logging_endpoint", "skip_ssl_validation", "client_id", "client_secret", "allow_sso", "sub_type", "meta_data", "creator", "ca_cert"}
+	columnNamesForTokensBase             = []string{"token_guid", "auth_token", "refresh_token", "token_expiry", "disconnected", "auth_type", "meta_data", "user_guid", "linked_token", "enabled"}
 	columnNamesForConnectedEndpointsBase = append(append(GetColumnNamesForCSNIs("meta_data"), []string{"account", "endpoint_metadata"}...), columnNamesForTokensBase...)
 	columnNamesForVersionsBase           = []string{"version_id"}
 )

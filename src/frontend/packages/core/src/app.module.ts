@@ -138,7 +138,8 @@ export class AppModule {
     private store: Store<GeneralEntityAppState>,
     eventService: GlobalEventService,
     private userFavoriteManager: UserFavoriteManager,
-    ech: EntityCatalogHelper
+    ech: EntityCatalogHelper,
+    customizationService: CustomizationService,
   ) {
     EntityCatalogHelpers.SetEntityCatalogHelper(ech);
 
@@ -254,6 +255,9 @@ export class AppModule {
         });
       }
     );
+
+    customizationService.setAppNameFromTitle();
+    customizationService.get().appName = 'Zuun';
   }
 
   private syncFavorite(favorite: UserFavorite<IFavoriteMetadata>, entities: GeneralRequestDataState) {

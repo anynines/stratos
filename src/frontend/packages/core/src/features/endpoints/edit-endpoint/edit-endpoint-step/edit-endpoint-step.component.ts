@@ -43,6 +43,8 @@ export class EditEndpointStepComponent implements OnDestroy, IStepperStep {
   formChangeSub: Subscription;
   setClientInfo = false;
   show = false;
+  showCACertField = false;
+  lastSkipSSLValue = false;
 
   constructor(
     activatedRoute: ActivatedRoute,
@@ -90,6 +92,9 @@ export class EditEndpointStepComponent implements OnDestroy, IStepperStep {
       first()
     ).subscribe(endpoint => {
       this.setAdvancedFields(endpoint);
+      this.lastSkipSSLValue = endpoint.skip_ssl_validation;
+      this.showCACertField = !!endpoint.caCert;
+      this.updateSSLFieldCheckbox();
       this.editEndpoint.setValue({
         name: endpoint.name,
         url: getFullEndpointApiUrl(endpoint),
@@ -130,17 +135,20 @@ export class EditEndpointStepComponent implements OnDestroy, IStepperStep {
     return this.endpoint$.pipe(
       first(),
       switchMap(endpoint => {
+        const caCert = this.showCACertField ? this.editEndpoint.value.caCert : undefined;
+        const skipSSL = this.showCACertField ? false : this.editEndpoint.value.skipSSL;
         return stratosEntityCatalog.endpoint.api.update<ActionState>(
           this.endpointID,
           this.endpointID, {
           endpointType: endpoint.cnsi_type,
           id: this.endpointID,
           name: this.editEndpoint.value.name,
-          skipSSL: this.editEndpoint.value.skipSSL,
+          skipSSL,
           setClientInfo: this.editEndpoint.value.setClientInfo,
           clientID: this.editEndpoint.value.clientID,
           clientSecret: this.editEndpoint.value.clientSecret,
           allowSSO: this.editEndpoint.value.allowSSO,
+          caCert,
         }
         ).pipe(
           pairwise(),
@@ -170,4 +178,22 @@ export class EditEndpointStepComponent implements OnDestroy, IStepperStep {
     this.endpointTypeSupportsSSO = isCloudFoundry;
   }
 
+  toggleCACertField() {
+    this.showCACertField = !this.showCACertField;
+    if (this.showCACertField) {
+      this.lastSkipSSLValue = this.editEndpoint.value.skipSSL;
+      this.editEndpoint.controls.skipSSL.setValue(false);
+    } else {
+      this.editEndpoint.controls.skipSSL.setValue(this.lastSkipSSLValue);
+    }
+    this.updateSSLFieldCheckbox();
+  }
+
+  private updateSSLFieldCheckbox() {
+    if (this.showCACertField) {
+      this.editEndpoint.controls.skipSSL.disable();
+    } else {
+      this.editEndpoint.controls.skipSSL.enable();
+    }
+  }
 }

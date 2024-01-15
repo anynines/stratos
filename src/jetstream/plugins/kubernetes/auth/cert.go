@@ -3,6 +3,7 @@ package auth
 import (
 	"bytes"
 	"crypto/tls"
+	"crypto/x509"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -123,6 +124,18 @@ func (c *CertKubeAuth) DoFlowRequest(cnsiRequest *api.CNSIRequest, req *http.Req
 		if err != nil {
 			return nil, err
 		}
+
+		rootCAs, _ := x509.SystemCertPool()
+		if rootCAs == nil {
+			rootCAs = x509.NewCertPool()
+		}
+
+		if len(cnsi.CACert) > 0 {
+			if ok := rootCAs.AppendCertsFromPEM([]byte(cnsi.CACert)); !ok {
+				log.Warn("Could not append the CA - using system certs only")
+			}
+		}
+
 		dial := (&net.Dialer{
 			Timeout:   time.Duration(30) * time.Second,
 			KeepAlive: 30 * time.Second,

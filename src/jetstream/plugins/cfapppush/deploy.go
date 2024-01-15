@@ -17,7 +17,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	yaml "gopkg.in/yaml.v2"
 
-	archiver "github.com/mholt/archiver"
+	archiver "github.com/mholt/archiver/v3"
 )
 
 // Success
@@ -397,7 +397,7 @@ func (cfAppPush *CFAppPush) getGitSCMSource(clientWebSocket *websocket.Conn, tem
 
 	loggerURL := info.URL
 	cloneURL := info.URL
-	skipSLL := false
+	skipSSL := false
 
 	// Apply credentials associated with the endpoint
 	if len(info.EndpointGUID) != 0 {
@@ -411,7 +411,7 @@ func (cfAppPush *CFAppPush) getGitSCMSource(clientWebSocket *websocket.Conn, tem
 			return StratosProject{}, tempDir, errors.New("failed to find endpoint with guid " + info.EndpointGUID)
 		}
 
-		skipSLL = cnsiRecord.SkipSSLValidation
+		skipSSL = cnsiRecord.SkipSSLValidation
 
 		tokenRecord, isTokenFound := cfAppPush.portalProxy.GetCNSITokenRecord(info.EndpointGUID, userGUID)
 		if isTokenFound {
@@ -458,7 +458,7 @@ func (cfAppPush *CFAppPush) getGitSCMSource(clientWebSocket *websocket.Conn, tem
 		LoggerUrl: loggerURL,
 		Branch:    info.Branch,
 		Commit:    info.CommitHash,
-		SkipSSL:   skipSLL,
+		SkipSSL:   skipSSL,
 	}
 	info.CommitHash, err = cloneRepository(cloneDetails, clientWebSocket, tempDir)
 	if err != nil {
@@ -601,6 +601,7 @@ func (cfAppPush *CFAppPush) getConfigData(echoContext echo.Context, cnsiGUID str
 		APIEndpointURL:         cnsiRecord.APIEndpoint.String(),
 		DopplerLoggingEndpoint: cnsiRecord.DopplerLoggingEndpoint,
 		SkipSSLValidation:      cnsiRecord.SkipSSLValidation,
+		CACert:                 cnsiRecord.CACert,
 		AuthToken:              token.AuthToken,
 		OrgGUID:                orgGUID,
 		OrgName:                orgName,

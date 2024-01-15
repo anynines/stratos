@@ -719,7 +719,7 @@ func TestPgSQLCNSIs(t *testing.T) {
 			cnsi.SSOAllowed = true
 
 			mock.ExpectExec(insertIntoCNSIs).
-				WithArgs(testutils.MockCFGUID, testutils.MockCFName, "cf", testutils.MockAPIEndpoint, testutils.MockAuthEndpoint, testutils.MockAuthEndpoint, testutils.MockDopplerEndpoint, true, testutils.MockClientId, sqlmock.AnyArg(), true, sqlmock.AnyArg(), sqlmock.AnyArg(), "").
+				WithArgs(testutils.MockCFGUID, testutils.MockCFName, "cf", testutils.MockAPIEndpoint, testutils.MockAuthEndpoint, testutils.MockAuthEndpoint, testutils.MockDopplerEndpoint, true, testutils.MockClientId, sqlmock.AnyArg(), true, sqlmock.AnyArg(), sqlmock.AnyArg(), "", sqlmock.AnyArg()).
 				WillReturnResult(sqlmock.NewResult(1, 1))
 
 			Convey("there should be no error returned", func() {
@@ -739,7 +739,7 @@ func TestPgSQLCNSIs(t *testing.T) {
 			expectedErrorMessage := fmt.Sprintf("Unable to Save CNSI record: %s", unknownDBError)
 
 			mock.ExpectExec(insertIntoCNSIs).
-				WithArgs(testutils.MockCFGUID, testutils.MockCFName, "cf", testutils.MockAPIEndpoint, testutils.MockAuthEndpoint, testutils.MockAuthEndpoint, testutils.MockDopplerEndpoint, true, testutils.MockClientId, sqlmock.AnyArg(), true, sqlmock.AnyArg(), sqlmock.AnyArg(), "").
+				WithArgs(testutils.MockCFGUID, testutils.MockCFName, "cf", testutils.MockAPIEndpoint, testutils.MockAuthEndpoint, testutils.MockAuthEndpoint, testutils.MockDopplerEndpoint, true, testutils.MockClientId, sqlmock.AnyArg(), true, sqlmock.AnyArg(), sqlmock.AnyArg(), "", sqlmock.AnyArg()).
 				WillReturnError(errors.New(unknownDBError))
 
 			Convey("there should be an error returned", func() {
