@@ -474,7 +474,7 @@ func TestRefreshTokenWithInvalidRefreshToken(t *testing.T) {
 		// Setup for getCNSITokenRecord
 		tokenExpiration := time.Now().AddDate(0, 0, 1).Unix()
 		expectedCNSITokenRow := testutils.GetEmptyTokenRows("token_guid", "user_guid", "linked_token").
-			AddRow(mockUAAToken, mockUAAToken, tokenExpiration, true, "OAuth2", "")
+			AddRow(mockUAAToken, mockUAAToken, tokenExpiration, true, "OAuth2", "", false)
 		mock.ExpectQuery(selectAnyFromTokens).
 			WithArgs(testutils.MockCFGUID, testutils.MockAccount).
 			WillReturnRows(expectedCNSITokenRow)
@@ -567,7 +567,7 @@ func TestRefreshTokenWithDatabaseErrorOnSave(t *testing.T) {
 		//     p.getCNSITokenRecord(r.GUID, r.UserGUID) ->
 		//        tokenRepo.FindCNSIToken(cnsiGUID, userGUID)
 		expectedCNSITokenRow := testutils.GetEmptyTokenRows("token_guid", "user_guid", "linked_token").
-			AddRow(mockUAAToken, mockUAAToken, tokenExpiration, false, "OAuth2", "")
+			AddRow(mockUAAToken, mockUAAToken, tokenExpiration, false, "OAuth2", "", false)
 		mock.ExpectQuery(selectAnyFromTokens).
 			WithArgs(testutils.MockCFGUID, testutils.MockAccount, testutils.MockAdminGUID).
 			WillReturnRows(expectedCNSITokenRow)
@@ -582,7 +582,7 @@ func TestRefreshTokenWithDatabaseErrorOnSave(t *testing.T) {
 			WillReturnRows(expectedCNSIRecordRow)
 
 		expectedCNSITokenRecordRow := testutils.GetEmptyTokenRows("token_guid", "user_guid", "linked_token").
-			AddRow(mockUAAToken, mockUAAToken, tokenExpiration, false, "OAuth2", "")
+			AddRow(mockUAAToken, mockUAAToken, tokenExpiration, false, "OAuth2", "", false)
 		mock.ExpectQuery(selectAnyFromTokens).
 			WithArgs(testutils.MockCFGUID, testutils.MockAccount, testutils.MockAdminGUID).
 			WillReturnRows(expectedCNSITokenRecordRow)
