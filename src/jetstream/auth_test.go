@@ -378,7 +378,7 @@ func TestLoginToCNSI(t *testing.T) {
 		}
 
 		expectedCNSIRow := sqlmock.NewRows(datastore.GetColumnNamesForCSNIs()).
-			AddRow(mockCNSIGUID, mockCNSI.Name, stringCFType, mockUAA.URL, mockCNSI.AuthorizationEndpoint, mockCNSI.TokenEndpoint, mockCNSI.DopplerLoggingEndpoint, true, mockCNSI.ClientId, cipherClientSecret, true, "", "", "")
+			AddRow(mockCNSIGUID, mockCNSI.Name, stringCFType, mockUAA.URL, mockCNSI.AuthorizationEndpoint, mockCNSI.TokenEndpoint, mockCNSI.DopplerLoggingEndpoint, true, mockCNSI.ClientId, cipherClientSecret, true, "", "", "", "")
 
 		mock.ExpectQuery(selectAnyFromCNSIs).
 			WithArgs(mockCNSIGUID).
@@ -502,7 +502,7 @@ func TestLoginToCNSIWithMissingCreds(t *testing.T) {
 
 		defer mockUAA.Close()
 
-		expectedCNSIRow := testutils.GetEmptyCNSIRows("skip_ssl_validation", "client_id", "client_secret", "allow_sso", "sub_type", "meta_data", "creator").
+		expectedCNSIRow := testutils.GetEmptyCNSIRows("skip_ssl_validation", "client_id", "client_secret", "allow_sso", "sub_type", "meta_data", "creator", "ca_cert").
 			AddRow(mockCNSIGUID, "mockCF", "cf", mockUAA.URL, mockUAA.URL, mockUAA.URL, mockDopplerEndpoint)
 		mock.ExpectQuery(selectAnyFromCNSIs).
 			WithArgs(mockCNSIGUID).
@@ -554,7 +554,7 @@ func TestLoginToCNSIWithBadUserIDinSession(t *testing.T) {
 			TokenEndpoint:         mockUAA.URL,
 		}
 
-		expectedCNSIRow := testutils.GetEmptyCNSIRows("skip_ssl_validation", "client_id", "client_secret", "allow_sso", "sub_type", "meta_data", "creator").
+		expectedCNSIRow := testutils.GetEmptyCNSIRows("skip_ssl_validation", "client_id", "client_secret", "allow_sso", "sub_type", "meta_data", "creator", "ca_cert").
 			AddRow(mockCNSIGUID, mockCNSI.Name, stringCFType, mockUAA.URL, mockCNSI.AuthorizationEndpoint, mockCNSI.TokenEndpoint, mockDopplerEndpoint)
 		mock.ExpectQuery(selectAnyFromCNSIs).
 			WithArgs(mockCNSIGUID).
@@ -1111,7 +1111,7 @@ func TestVerifySessionExpired(t *testing.T) {
 		sessionValues["exp"] = time.Now().Add(-time.Hour).Unix()
 
 		mock.ExpectQuery(selectAnyFromTokens).
-			WillReturnRows(testutils.GetEmptyTokenRows("token_guid", "auth_type", "meta_data", "user_guid", "linked_token"))
+			WillReturnRows(testutils.GetEmptyTokenRows("token_guid", "auth_type", "meta_data", "user_guid", "linked_token", "enabled"))
 		mock.ExpectExec(insertIntoTokens).
 			WillReturnError(errors.New("Session has expired"))
 
@@ -1120,7 +1120,7 @@ func TestVerifySessionExpired(t *testing.T) {
 		}
 
 		mock.ExpectQuery(selectAnyFromTokens).
-			WillReturnRows(testutils.GetEmptyTokenRows("token_guid", "auth_type", "meta_data", "user_guid", "linked_token").
+			WillReturnRows(testutils.GetEmptyTokenRows("token_guid", "auth_type", "meta_data", "user_guid", "linked_token", "enabled").
 				AddRow(mockUAAToken, mockUAAToken, sessionValues["exp"], false))
 		err := pp.verifySession(ctx)
 
