@@ -12,6 +12,8 @@ import (
 )
 
 var (
+	MockCNSIGUID        = "some-guid-1234"
+	MockCNSIName        = "mockCF"
 	MockCFGUID          = "some-cf-guid-1234"
 	MockCFName          = "Some fancy CF Cluster"
 	MockHCEGUID         = "some-hce-guid-1234"
@@ -54,8 +56,8 @@ func GetTestCNSIRecord() *api.CNSIRecord {
 	u, _ := url.Parse(MockAPIEndpoint)
 
 	return &api.CNSIRecord{
-		GUID:                   MockCFGUID,
-		Name:                   MockCFName,
+		GUID:                   MockCNSIGUID,
+		Name:                   MockCNSIName,
 		CNSIType:               "cf",
 		APIEndpoint:            u,
 		AuthorizationEndpoint:  MockAuthEndpoint,
@@ -119,6 +121,7 @@ func GetConnectedEndpointsRows(records ...*api.ConnectedEndpoint) *sqlmock.Rows 
 		"auth_type",
 		"user_guid",
 		"linked_token",
+		"enabled",
 	)
 
 	for _, record := range records {
@@ -134,9 +137,9 @@ func GetConnectedEndpointsRows(records ...*api.ConnectedEndpoint) *sqlmock.Rows 
 			/* disconnected */ false,
 			/* meta_data */ record.TokenMetadata,
 			/* sub_type */ record.SubType,
+			/* ca_cert */ record.CACert,
 			/* endpoint_metadata */ record.EndpointMetadata,
 			/* creator */ record.Creator,
-			/* enabled */ record.Enabled,
 		)
 	}
 
@@ -176,6 +179,16 @@ func GetTokenRows(encriptionKey []byte) *sqlmock.Rows {
 	encryptedToken, _ := crypto.EncryptToken(encriptionKey, MockUAAToken)
 
 	rows.AddRow(MockTokenGUID, encryptedToken, encryptedToken, MockTokenExpiry, false, "OAuth2", "", MockAccount, nil, true)
+
+	return rows
+}
+
+func GetTokenRowsWithExpiredToken(encriptionKey []byte) *sqlmock.Rows {
+	rows := GetEmptyTokenRows()
+
+	encryptedToken, _ := crypto.EncryptToken(encriptionKey, MockUAAToken)
+
+	rows.AddRow(MockTokenGUID, encryptedToken, encryptedToken, time.Now().AddDate(0, 0, -1).Unix(), false, "OAuth2", "", MockAccount, nil, true)
 
 	return rows
 }

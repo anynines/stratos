@@ -187,14 +187,14 @@ func TestDoOauthFlowRequestWithExpiredToken(t *testing.T) {
 
 		// 1) Set up the database expectation for pp.setCNSITokenRecord
 		mock.ExpectQuery(selectAnyFromTokens).
-			WithArgs(testutils.MockCFGUID, testutils.MockAccount).
+			WithArgs(testutils.MockCNSIGUID, testutils.MockAccount).
 			WillReturnRows(testutils.ExpectNoRows())
 
 		mock.ExpectExec(insertIntoTokens).
 			//WithArgs(testutils.MockCFGUID, testutils.MockAccount, "cnsi", encryptedUAAToken, encryptedUAAToken, mockTokenRecord.TokenExpiry).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 
-		pp.setCNSITokenRecord(testutils.MockCFGUID, testutils.MockAccount, mockTokenRecord)
+		pp.setCNSITokenRecord(testutils.MockCNSIGUID, testutils.MockAccount, mockTokenRecord)
 
 		if dberr := mock.ExpectationsWereMet(); dberr != nil {
 			t.Errorf("There were unfulfilled expectations: %s", dberr)
@@ -204,23 +204,25 @@ func TestDoOauthFlowRequestWithExpiredToken(t *testing.T) {
 		//   p.getCNSIRequestRecords(cnsiRequest) ->
 		//     p.getCNSITokenRecord(r.GUID, r.UserGUID) ->
 		//        tokenRepo.FindCNSIToken(cnsiGUID, userGUID)
-		expectedCNSITokenRow := testutils.GetTokenRows(pp.Config.EncryptionKeyInBytes)
+		expectedCNSITokenRow := testutils.GetTokenRowsWithExpiredToken(pp.Config.EncryptionKeyInBytes)
 		mock.ExpectQuery(selectAnyFromTokens).
-			WithArgs(testutils.MockCFGUID, testutils.MockAccount, testutils.MockAdminGUID).
+			WithArgs(testutils.MockCNSIGUID, testutils.MockAccount, testutils.MockAdminGUID).
 			WillReturnRows(expectedCNSITokenRow)
 
 		r1 := testutils.GetTestCNSIRecord()
+		r1.AuthorizationEndpoint = mockUAA.URL
+		r1.TokenEndpoint = mockUAA.URL
 		r1.SSOAllowed = true
 
 		//  p.GetCNSIRecord(r.GUID) -> cnsiRepo.Find(guid)
 		expectedCNSIRecordRow := testutils.GetCNSIRows(r1)
 		mock.ExpectQuery(selectAnyFromCNSIs).
-			WithArgs(testutils.MockCFGUID).
+			WithArgs(testutils.MockCNSIGUID).
 			WillReturnRows(expectedCNSIRecordRow)
 
-		expectedCNSITokenRecordRow := testutils.GetTokenRows(pp.Config.EncryptionKeyInBytes)
+		expectedCNSITokenRecordRow := testutils.GetTokenRowsWithExpiredToken(pp.Config.EncryptionKeyInBytes)
 		mock.ExpectQuery(selectAnyFromTokens).
-			WithArgs(testutils.MockCFGUID, testutils.MockAccount, testutils.MockAdminGUID).
+			WithArgs(testutils.MockCNSIGUID, testutils.MockAccount, testutils.MockAdminGUID).
 			WillReturnRows(expectedCNSITokenRecordRow)
 
 		// A token refresh attempt will be made - which is just an update
@@ -229,7 +231,7 @@ func TestDoOauthFlowRequestWithExpiredToken(t *testing.T) {
 
 		//
 		res, err := pp.DoOAuthFlowRequest(&api.CNSIRequest{
-			GUID:     testutils.MockCFGUID,
+			GUID:     testutils.MockCNSIGUID,
 			UserGUID: testutils.MockAccount,
 		}, req)
 
@@ -331,7 +333,7 @@ func TestDoOauthFlowRequestWithFailedRefreshMethod(t *testing.T) {
 		//   p.getCNSIRequestRecords(cnsiRequest) ->
 		//     p.getCNSITokenRecord(r.GUID, r.UserGUID) ->
 		//        tokenRepo.FindCNSIToken(cnsiGUID, userGUID)
-		expectedCNSITokenRow := testutils.GetTokenRows(pp.Config.EncryptionKeyInBytes)
+		expectedCNSITokenRow := testutils.GetTokenRowsWithExpiredToken(pp.Config.EncryptionKeyInBytes)
 		mock.ExpectQuery(selectAnyFromTokens).
 			WithArgs(testutils.MockCFGUID, testutils.MockAccount, testutils.MockAdminGUID).
 			WillReturnRows(expectedCNSITokenRow)
