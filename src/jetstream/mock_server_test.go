@@ -22,6 +22,7 @@ import (
 
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/crypto"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/datastore"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/factory"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/tokens"
 
@@ -183,39 +184,31 @@ func setupPortalProxy(db *sql.DB) *portalProxy {
 	return pp
 }
 
-func expectNoRows() *sqlmock.Rows {
-	return sqlmock.NewRows([]string{"COUNT(*)"}).AddRow("0")
-}
-
-func expectOneRow() *sqlmock.Rows {
-	return sqlmock.NewRows([]string{"COUNT(*)"}).AddRow("1")
-}
-
 func expectCFRow() *sqlmock.Rows {
-	return sqlmock.NewRows(rowFieldsForCNSI).
+	return sqlmock.NewRows(datastore.GetColumnNamesForCSNIs()).
 		AddRow(mockCFGUID, "Some fancy CF Cluster", "cf", mockAPIEndpoint, mockAuthEndpoint, mockAuthEndpoint, mockDopplerEndpoint, true, mockClientId, cipherClientSecret, true, "", "", "", "")
 }
 
 func expectCERow() *sqlmock.Rows {
-	return sqlmock.NewRows(rowFieldsForCNSI).
+	return sqlmock.NewRows(datastore.GetColumnNamesForCSNIs()).
 		AddRow(mockCEGUID, "Some fancy HCE Cluster", "hce", mockAPIEndpoint, mockAuthEndpoint, mockAuthEndpoint, "", true, mockClientId, cipherClientSecret, true, "", "", "", "")
 }
 
 func expectCFAndCERows() *sqlmock.Rows {
-	return sqlmock.NewRows(rowFieldsForCNSI).
+	return sqlmock.NewRows(datastore.GetColumnNamesForCSNIs()).
 		AddRow(mockCFGUID, "Some fancy CF Cluster", "cf", mockAPIEndpoint, mockAuthEndpoint, mockAuthEndpoint, mockDopplerEndpoint, true, mockClientId, cipherClientSecret, false, "", "", "", "").
 		AddRow(mockCEGUID, "Some fancy HCE Cluster", "hce", mockAPIEndpoint, mockAuthEndpoint, mockAuthEndpoint, "", true, mockClientId, cipherClientSecret, false, "", "", "", "")
 }
 
 func expectTokenRow() *sqlmock.Rows {
-	return sqlmock.NewRows([]string{"token_guid", "auth_token", "refresh_token", "token_expiry", "disconnected", "auth_type", "meta_data", "user_guid", "linked_token", "enabled"}).
+	return sqlmock.NewRows(datastore.GetColumnNamesForTokens()).
 		AddRow(mockTokenGUID, mockUAAToken, mockUAAToken, mockTokenExpiry, false, "OAuth2", "", mockUserGUID, nil, false)
 }
 
 func expectEncryptedTokenRow(mockEncryptionKey []byte) *sqlmock.Rows {
 
 	encryptedUaaToken, _ := crypto.EncryptToken(mockEncryptionKey, mockUAAToken)
-	return sqlmock.NewRows([]string{"token_guid", "auth_token", "refresh_token", "token_expiry", "disconnected", "auth_type", "meta_data", "user_guid", "linked_token", "enabled"}).
+	return sqlmock.NewRows(datastore.GetColumnNamesForTokens()).
 		AddRow(mockTokenGUID, encryptedUaaToken, encryptedUaaToken, mockTokenExpiry, false, "OAuth2", "", mockUserGUID, nil, false)
 }
 
@@ -391,8 +384,6 @@ const (
 	findLastLoginTime      = `SELECT last_login FROM local_users WHERE (.+)`
 	getDbVersion           = `SELECT version_id FROM goose_db_version WHERE is_applied = '1' ORDER BY id DESC LIMIT 1`
 )
-
-var rowFieldsForCNSI = []string{"guid", "name", "cnsi_type", "api_endpoint", "auth_endpoint", "token_endpoint", "doppler_logging_endpoint", "skip_ssl_validation", "client_id", "client_secret", "allow_sso", "sub_type", "meta_data", "creator", "ca_cert"}
 
 var mockEncryptionKey = make([]byte, 32)
 

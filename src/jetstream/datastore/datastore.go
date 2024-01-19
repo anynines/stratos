@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/custom_errors"
+	"github.com/samber/lo"
 
 	goosedbversion "github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/goose-db-version"
 	"github.com/govau/cf-common/env"
@@ -37,6 +38,42 @@ const (
 	// TimeoutBoundary is the max time in minutes to wait for the DB Schema to be initialized
 	TimeoutBoundary = 10
 )
+
+var (
+	columnNamesForCNSIsBase              = []string{"guid", "name", "cnsi_type", "api_endpoint", "auth_endpoint", "token_endpoint", "doppler_logging_endpoint", "skip_ssl_validation", "client_id", "client_secret", "allow_sso", "sub_type", "meta_data", "creator", "ca_cert"}
+	columnNamesForTokensBase             = []string{"token_guid", "auth_token", "refresh_token", "token_expiry", "disconnected", "auth_type", "meta_data", "user_guid", "linked_token", "enabled"}
+	columnNamesForConnectedEndpointsBase = append(append(GetColumnNamesForCSNIs("meta_data"), []string{"account", "endpoint_metadata"}...), columnNamesForTokensBase...)
+	columnNamesForVersionsBase           = []string{"version_id"}
+)
+
+func GetColumnNamesForCSNIs(exclude ...string) []string {
+	return lo.Without(columnNamesForCNSIsBase, exclude...)
+}
+
+func GetColumnNamesForTokens(exclude ...string) []string {
+	return lo.Without(columnNamesForTokensBase, exclude...)
+}
+
+func GetColumnNamesForConnectedEndpoints(exclude ...string) []string {
+	return lo.Without(columnNamesForConnectedEndpointsBase, exclude...)
+}
+
+func GetColumnNamesForVersions(exclude ...string) []string {
+	return lo.Without(columnNamesForVersionsBase, exclude...)
+}
+
+func GetColumnNames(databaseName string, exclude ...string) []string {
+	switch databaseName {
+	case "cnsis":
+		return lo.Without(columnNamesForCNSIsBase, exclude...)
+	case "tokens":
+		return lo.Without(columnNamesForTokensBase, exclude...)
+	case "versions":
+		return lo.Without(columnNamesForVersionsBase, exclude...)
+	default:
+		panic("Unknown database name")
+	}
+}
 
 // DatabaseConfig represents the connection configuration parameters
 type DatabaseConfig struct {
