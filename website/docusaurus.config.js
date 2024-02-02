@@ -70,16 +70,6 @@ module.exports = {
       defaultMode: 'light',
       disableSwitch: false,
       respectPrefersColorScheme: true,
-      switchConfig: {
-        darkIcon: '🌙',
-        darkIconStyle: {
-          marginLeft: '2px',
-        },
-        lightIcon: '☀️',
-        lightIconStyle: {
-          marginLeft: '1px',
-        },
-      },
     },
   },
   presets: [
@@ -88,7 +78,6 @@ module.exports = {
       {
         docs: {
           // It is recommended to set document id as docs home page (`docs/` path).
-          homePageId: 'introduction',
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           editUrl: 'https://github.com/cloudfoundry/stratos/edit/master/website/',
