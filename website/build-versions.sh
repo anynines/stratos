@@ -59,7 +59,7 @@ function createVersionedDocs() (
         fi
         echo $gnu_sed
         find $checkedOutRepo/website/versioned_docs/version-$label -type f -name "*.md" -exec ${gnu_sed} -i 's/cloud-foundry\/cloud-foundry/cloud-foundry\/cloud-foundry.md/g' {} \;
-        find $checkedOutRepo/website/versioned_docs/version-$label -type f -name "*.md" -exec ${gnu_sed} -i 's/\]\(cloud-foundry\)/cloud-foundry.md/g' {} \;
+        find $checkedOutRepo/website/versioned_docs/version-$label -type f -name "*.md" -exec ${gnu_sed} -i 's/\(cloud-foundry\)/cloud-foundry.md/g' {} \;
     fi
   # End of workaround
 
