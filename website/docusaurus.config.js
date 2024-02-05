@@ -5,6 +5,8 @@ module.exports = {
   baseUrl: '/',
   favicon: 'img/favicon.ico',
   organizationName: 'cloudfoundry',
+  onBrokenLinks: 'warn',
+  onBrokenMarkdownLinks: 'warn',
   projectName: 'stratos',
   themeConfig: {
     navbar: {
@@ -19,7 +21,7 @@ module.exports = {
         nextVersionLabel: 'Latest',
       },
       {
-        to: 'docs/',
+        to: 'docs/introduction',
         activeBasePath: 'docs',
         label: 'Docs',
         position: 'right',
@@ -35,7 +37,7 @@ module.exports = {
         title: 'Docs',
         items: [{
           label: 'Getting Started',
-          to: 'docs/',
+          to: 'docs/introduction',
         },
         {
           label: 'Deploying Stratos',
