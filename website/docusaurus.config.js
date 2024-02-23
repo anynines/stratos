@@ -18,7 +18,7 @@ module.exports = {
       items: [{
         type: 'docsVersionDropdown',
         position: 'right',
-        nextVersionLabel: 'Latest',
+        dropdownItemsAfter: [{to: '/versions', label: 'All versions'}],
       },
       {
         to: 'docs/introduction',
