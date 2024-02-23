@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "docusaurus start",
+    "clear": "docusaurus clear",
     "start-no-watch": "docusaurus start --no-open --poll",
     "build": "npm run versions && docusaurus build",
     "swizzle": "docusaurus swizzle",

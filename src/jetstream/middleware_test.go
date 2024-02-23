@@ -11,6 +11,7 @@ import (
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/api/config"
 	mock_api "github.com/cloudfoundry-incubator/stratos/src/jetstream/api/mock"
+	"github.com/cloudfoundry-incubator/stratos/src/jetstream/datastore"
 	"github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/apikeys"
 	mock_apikeys "github.com/cloudfoundry-incubator/stratos/src/jetstream/repository/apikeys/mock"
 	"github.com/golang/mock/gomock"
@@ -495,13 +496,13 @@ func TestEndpointUpdateDeleteMiddleware(t *testing.T) {
 		mockEndpointAdmin2 := setupMockUser(mockUserGUID+"2", false, []string{"stratos.endpointadmin"})
 
 		adminEndpointArgs := createEndpointRowArgs("CF Endpoint 1", "https://127.0.0.1:50001", mockAuthEndpoint, mockTokenEndpoint, mockAdmin.ConnectedUser.GUID, mockAdmin.ConnectedUser.Admin)
-		adminEndpointRows := sqlmock.NewRows(rowFieldsForCNSI).AddRow(adminEndpointArgs...)
+		adminEndpointRows := sqlmock.NewRows(datastore.GetColumnNamesForCSNIs()).AddRow(adminEndpointArgs...)
 
 		userEndpoint1Args := createEndpointRowArgs("CF Endpoint 2", "https://127.0.0.1:50002", mockAuthEndpoint, mockTokenEndpoint, mockEndpointAdmin1.ConnectedUser.GUID, mockEndpointAdmin1.ConnectedUser.Admin)
-		userEndpoint1Rows := sqlmock.NewRows(rowFieldsForCNSI).AddRow(userEndpoint1Args...)
+		userEndpoint1Rows := sqlmock.NewRows(datastore.GetColumnNamesForCSNIs()).AddRow(userEndpoint1Args...)
 
 		userEndpoint2Args := createEndpointRowArgs("CF Endpoint 3", "https://127.0.0.1:50003", mockAuthEndpoint, mockTokenEndpoint, mockEndpointAdmin2.ConnectedUser.GUID, mockEndpointAdmin2.ConnectedUser.Admin)
-		userEndpoint2Rows := sqlmock.NewRows(rowFieldsForCNSI).AddRow(userEndpoint2Args...)
+		userEndpoint2Rows := sqlmock.NewRows(datastore.GetColumnNamesForCSNIs()).AddRow(userEndpoint2Args...)
 
 		Convey("as admin", func() {
 			if errSession := pp.setSessionValues(ctx, mockAdmin.SessionValues); errSession != nil {

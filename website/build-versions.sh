@@ -48,6 +48,21 @@ function createVersionedDocs() (
   label=$3
   
   mkdir -p $currentWebsite/versioned_docs
+  
+  # Workaround for broken links in versions 4.4.0 and before
+  printf '%s\n%s\n' "$target_version" "$version" | sort -V | head -n1
+  if [[ $? -eq 0 ]]; then
+      logInner "Version is 4.4.0 or less, applying workaround for broken links"
+      gnu_sed=sed
+      if [[ "$(uname)" == "Darwin" ]]; then
+        gnu_sed=gsed
+      fi
+      echo $gnu_sed
+      find $checkedOutRepo/website/versioned_docs/version-$label -type f -name "*.md" -exec ${gnu_sed} -i 's/cloud-foundry\/cloud-foundry/cloud-foundry\/cloud-foundry.md/g' {} \;
+      find $checkedOutRepo/website/versioned_docs/version-$label -type f -name "*.md" -exec ${gnu_sed} -i 's/](cloud-foundry)/(cloud-foundry.md)/g' {} \;
+  fi
+  # End of workaround
+
   cp -r $checkedOutRepo/website/versioned_docs/version-$label $currentWebsite/versioned_docs
 )
 
