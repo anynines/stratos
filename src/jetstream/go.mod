@@ -31,6 +31,7 @@ require (
 	github.com/cf-stratos/mysqlstore v0.0.0-20170822100912-304308519d13
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
 	github.com/cloudfoundry-incubator/stratos/src/jetstream/api v0.0.0-00010101000000-000000000000
+	github.com/cloudfoundry-incubator/stratos/src/jetstream/docs v0.0.0-00010101000000-000000000000
 	github.com/cloudfoundry-incubator/stratos/src/jetstream/plugins/cfapppush v0.0.0-00010101000000-000000000000
 	github.com/cloudfoundry-incubator/stratos/src/jetstream/plugins/kubernetes v0.0.0-20210416105629-f34f428ca775
 	github.com/cloudfoundry-incubator/stratos/src/jetstream/plugins/kubernetes/auth v0.0.0-00010101000000-000000000000
@@ -50,6 +51,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.17
 	github.com/nwmac/sqlitestore v0.0.0-20180824125213-7d2ab221fb3f
 	github.com/pressly/goose v2.7.0+incompatible
+	github.com/samber/lo v1.38.1
 	github.com/satori/go.uuid v1.2.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/smartystreets/goconvey v1.8.1
@@ -192,7 +194,6 @@ require (
 	github.com/rubenv/sql-migrate v1.3.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sabhiram/go-gitignore v0.0.0-20180611051255-d3107576ba94 // indirect
-	github.com/samber/lo v1.38.1 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/smarty/assertions v1.15.0 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
@@ -226,7 +227,7 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20231002182017-d307bd883b97 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231002182017-d307bd883b97 // indirect
 	google.golang.org/grpc v1.58.3 // indirect
-	google.golang.org/protobuf v1.31.0 // indirect
+	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/cheggaaa/pb.v1 v1.0.28 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
