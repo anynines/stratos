@@ -269,7 +269,11 @@ func (c *CFPushApp) Run(msgSender DeployAppMessageSender, clientWebsocket *webso
 	defer commandUI.FlushDeferred()
 
 	err = c.setup(config, commandUI, msgSender, clientWebsocket)
-	// err = c.pushCommand.Setup(config, commandUI)
+	if err != nil {
+		return handleError(err, *commandUI)
+	}
+
+	err = c.pushCommand.Setup(config, commandUI)
 	if err != nil {
 		return handleError(err, *commandUI)
 	}
