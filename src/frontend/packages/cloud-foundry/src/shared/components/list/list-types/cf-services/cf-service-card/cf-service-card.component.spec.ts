@@ -75,4 +75,34 @@ describe('CfServiceCardComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('active field should be true/YES', () => {
+    const activeStatus = fixture.nativeElement.querySelector('app-table-cell-service-active').textContent;
+
+    expect(activeStatus).toContain('Yes');
+  });
+
+  it('active field should be false/NO', () => {
+    component.serviceEntity.entity.active = 0;
+    fixture.detectChanges();
+
+    const activeStatus = fixture.nativeElement.querySelector('app-table-cell-service-active').textContent;
+
+    expect(activeStatus).toContain('No');
+  });
+
+  it('bindable field should be true/YES', () => {
+    const bindableStatus = fixture.nativeElement.querySelector('app-table-cell-service-bindable').textContent;
+
+    expect(bindableStatus).toContain('Yes');
+  });
+
+  it('bindable field should be false/NO', () => {
+    component.serviceEntity.entity.bindable = 0;
+    fixture.detectChanges();
+
+    const bindableStatus = fixture.nativeElement.querySelector('app-table-cell-service-bindable').textContent;
+
+    expect(bindableStatus).toContain('No');
+  });
 });
