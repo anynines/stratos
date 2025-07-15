@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -79,11 +80,38 @@ func findDatabaseConfig(vcapServices map[string][]VCAPService, db *DatabaseConfi
 		db.Password = getDBCredentialsValue(dbCredentials["password"])
 		db.Host = getDBCredentialsValue(dbCredentials["hostname"])
 		db.SSLMode = env.String("DB_SSL_MODE", "disable")
+
+		escapeStr := func(in string) string {
+			return strings.Replace(in, `'`, `\'`, -1)
+		}
+
 		db.Port, _ = strconv.Atoi(getDBCredentialsValue(dbCredentials["port"]))
+
 		// Note - Both isPostgresService and isMySQLService look at the credentials uri & tags
 		if isPostgresService(service) {
 			db.DatabaseProvider = "pgsql"
 			db.Database = getDBCredentialsValue(dbCredentials["dbname"])
+			if db.SSLMode == string(SSLVerifyCA) {
+				tempFile, err := os.CreateTemp("", "postgres-ssl-*.crt")
+				if err != nil {
+					log.Warnf("Failed store Cloud Foundry service certificate in temp file; could not create temp file: %s", err.Error())
+					return false
+				}
+
+				_, err = tempFile.WriteString(getDBCredentialsValue(dbCredentials["cacrt"]))
+				if err != nil {
+					log.Warnf("Failed store Cloud Foundry service certificate in temp file; could not write to temp file: %s", err.Error())
+					return false
+				}
+
+				err = tempFile.Close()
+				if err != nil {
+					log.Warnf("Failed store Cloud Foundry service certificate in temp file; could not save temp file after writing: %s", err.Error())
+					return false
+				}
+
+				db.SSLCertificate = escapeStr(tempFile.Name())
+			}
 		} else if isMySQLService(service) {
 			db.DatabaseProvider = "mysql"
 			db.Database = getDBCredentialsValue(dbCredentials["name"])
