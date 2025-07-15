@@ -111,7 +111,7 @@ func findDatabaseConfig(vcapServices map[string][]VCAPService, db *DatabaseConfi
 					return false
 				}
 
-				db.SSLCertificate = escapeStr(tempFile.Name())
+				db.SSLRootCertificate = escapeStr(tempFile.Name())
 			}
 		} else if isMySQLService(service) {
 			db.DatabaseProvider = "mysql"
