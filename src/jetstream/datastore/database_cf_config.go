@@ -78,7 +78,7 @@ func findDatabaseConfig(vcapServices map[string][]VCAPService, db *DatabaseConfi
 		// 1) Check db config in credentials
 		db.Username = getDBCredentialsValue(dbCredentials["username"])
 		db.Password = getDBCredentialsValue(dbCredentials["password"])
-		db.Host = getDBCredentialsValue(dbCredentials["hostname"])
+		db.Host = getDBCredentialsValue(dbCredentials["host"])
 		db.SSLMode = env.String("DB_SSL_MODE", "disable")
 
 		escapeStr := func(in string) string {
@@ -90,8 +90,9 @@ func findDatabaseConfig(vcapServices map[string][]VCAPService, db *DatabaseConfi
 		// Note - Both isPostgresService and isMySQLService look at the credentials uri & tags
 		if isPostgresService(service) {
 			db.DatabaseProvider = "pgsql"
-			db.Database = getDBCredentialsValue(dbCredentials["dbname"])
+			db.Database = getDBCredentialsValue(dbCredentials["name"])
 			if db.SSLMode == string(SSLVerifyCA) {
+				log.Infof("Attempting to use SSL for database connection")
 				tempFile, err := os.CreateTemp("", "postgres-ssl-*.crt")
 				if err != nil {
 					log.Warnf("Failed store Cloud Foundry service certificate in temp file; could not create temp file: %s", err.Error())
