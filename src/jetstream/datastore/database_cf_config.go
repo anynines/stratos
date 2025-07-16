@@ -81,10 +81,6 @@ func findDatabaseConfig(vcapServices map[string][]VCAPService, db *DatabaseConfi
 		db.Host = getDBCredentialsValue(dbCredentials["host"])
 		db.SSLMode = env.String("DB_SSL_MODE", "disable")
 
-		escapeStr := func(in string) string {
-			return strings.Replace(in, `'`, `\'`, -1)
-		}
-
 		db.Port, _ = strconv.Atoi(getDBCredentialsValue(dbCredentials["port"]))
 
 		// Note - Both isPostgresService and isMySQLService look at the credentials uri & tags
@@ -111,7 +107,7 @@ func findDatabaseConfig(vcapServices map[string][]VCAPService, db *DatabaseConfi
 					return false
 				}
 
-				db.SSLRootCertificate = escapeStr(tempFile.Name())
+				db.SSLRootCertificate = tempFile.Name()
 			}
 		} else if isMySQLService(service) {
 			db.DatabaseProvider = "mysql"
