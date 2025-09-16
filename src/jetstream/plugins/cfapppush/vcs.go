@@ -17,7 +17,7 @@ import (
 var vcsGit = &vcsCmd{
 	name:             "Git",
 	cmd:              "git",
-	access_token:     "",
+	accessToken:      "",
 	createCmd:        []string{"clone -c http.sslVerify={sslVerify} -b {branch} {repo} {dir} "},
 	resetToCommitCmd: []string{"reset --hard {commit}"},
 	checkoutCmd:      []string{"checkout refs/remotes/origin/{branch}"},
@@ -37,16 +37,16 @@ func GetVCS(opts ...vcsOptions) *vcsCmd {
 	return vcsGit
 }
 
-func withAccessToken(access_token string) vcsOptions {
+func withAccessToken(accessToken string) vcsOptions {
 	return func(vc *vcsCmd) {
-		vc.access_token = access_token
+		vc.accessToken = accessToken
 	}
 }
 
 type vcsCmd struct {
-	name         string
-	cmd          string // name of binary to invoke command
-	access_token string // optional, if emtpy do not use it
+	name        string
+	cmd         string // name of binary to invoke command
+	accessToken string // optional, if emtpy do not use it
 
 	createCmd        []string // commands to download a fresh copy of a repository
 	checkoutCmd      []string // commands to checkout a branch
@@ -60,8 +60,8 @@ func (vcs *vcsCmd) Create(skipSSL bool, dir string, repo string, branch string) 
 		return fmt.Errorf("could not execute vcs create: %w", err)
 	}
 
-	if len(vcs.access_token) > 0 {
-		repo_url.User = url.UserPassword("x-access-token", vcs.access_token)
+	if len(vcs.accessToken) > 0 {
+		repo_url.User = url.UserPassword("x-access-token", vcs.accessToken)
 	}
 
 	for _, cmd := range vcs.createCmd {
