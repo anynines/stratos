@@ -46,7 +46,7 @@ func withAccessToken(accessToken string) vcsOptions {
 type vcsCmd struct {
 	name        string
 	cmd         string // name of binary to invoke command
-	accessToken string // optional, if emtpy do not use it
+	accessToken string // optional, if empty do not use it
 
 	createCmd        []string // commands to download a fresh copy of a repository
 	checkoutCmd      []string // commands to checkout a branch
@@ -55,17 +55,18 @@ type vcsCmd struct {
 }
 
 func (vcs *vcsCmd) Create(skipSSL bool, dir string, repo string, branch string) error {
-	repo_url, err := url.Parse(repo)
+	repoUrl, err := url.Parse(repo)
+
 	if err != nil {
 		return fmt.Errorf("could not execute vcs create: %w", err)
 	}
 
 	if len(vcs.accessToken) > 0 {
-		repo_url.User = url.UserPassword("x-access-token", vcs.accessToken)
+		repoUrl.User = url.UserPassword("x-access-token", vcs.accessToken)
 	}
 
 	for _, cmd := range vcs.createCmd {
-		if err := vcs.run(".", cmd, "sslVerify", strconv.FormatBool(!skipSSL), "dir", dir, "repo", repo_url.String(), "branch", branch); err != nil {
+		if err := vcs.run(".", cmd, "sslVerify", strconv.FormatBool(!skipSSL), "dir", dir, "repo", repoUrl.String(), "branch", branch); err != nil {
 			return err
 		}
 	}

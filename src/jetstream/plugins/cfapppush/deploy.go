@@ -624,12 +624,10 @@ func cloneRepository(cloneDetails CloneDetails, clientWebSocket *websocket.Conn,
 		return "", err
 	}
 
-	var vcsGit *vcsCmd
+	vcsGit := GetVCS()
 
 	if len(cloneDetails.AccessToken) > 0 {
 		vcsGit = GetVCS(withAccessToken(cloneDetails.AccessToken))
-	} else {
-		vcsGit = GetVCS()
 	}
 
 	err := vcsGit.Create(cloneDetails.SkipSSL, tempDir, cloneDetails.Url, cloneDetails.Branch)
