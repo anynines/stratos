@@ -47,7 +47,6 @@ type GitSCMSourceInfo struct {
 	SCM          string `json:"scm"`
 	EndpointGUID string `json:"endpointGuid"` // credentials of which to use, e.g. of a private GitHub instance
 	Username     string `json:"username"`     // GitLab username has to be supplied by the frontend
-	AcccessToken string `json:"accessToken"`  // GitHub private repos/enterprise repos can supply a token through the frontend
 }
 
 // Structure used to provide metadata about the Git Url source
@@ -118,10 +117,9 @@ type Applications struct {
 }
 
 type CloneDetails struct {
-	Url         string
-	LoggerUrl   string
-	Branch      string
-	Commit      string
-	SkipSSL     bool
-	AccessToken string
+	Url       string
+	LoggerUrl string
+	Branch    string
+	Commit    string
+	SkipSSL   bool
 }
