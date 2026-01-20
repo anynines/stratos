@@ -124,10 +124,42 @@ export class SchemaFormComponent implements OnInit, OnDestroy, AfterContentInit 
       if (key !== '$schema') { obj[key] = schema[key]; }
       return obj;
     }, {});
+
     return Object.keys(filterSchema).length > 0 ? filterSchema : null;
   };
 
   onFormChange(formData) {
+    const isEmptyObject = (obj) =>
+      Object.values(obj).every(v => v === undefined || v === null || v === false || v === '');
+
+    const sanitizeEmptyBooleanProperties = (model, schema) => {
+      if (!schema?.properties) return;
+
+      Object.keys(schema.properties).forEach(key => {
+        const prop = schema.properties[key];
+
+        if (prop.type === 'array' && Array.isArray(model[key])) {
+          model[key] = model[key].filter(item => !isEmptyObject(item));
+        }
+
+        if (prop.type === 'object' && model[key]) {
+          sanitizeEmptyBooleanProperties(model[key], prop);
+        }
+      });
+    }
+
+    // Edge case with dynamic JSON Schema fields:
+    //
+    // When an array contains objects that have boolean fields, the json-schema-form libary automatically assigns
+    // a default value to the booleans (usually `false` for unchecked boxes).
+    //
+    // This can unintentionally create partial or incomplete configuration objects
+    // in the model, which may cause service creation errors.
+    //
+    // To prevent this, booleans inside array items should only be considered "set"
+    // if at least one other property in the same item has also a value.
+    sanitizeEmptyBooleanProperties(formData, this.schema)
+
     this.formData = formData;
     this.pDataChange.next(formData);
   }

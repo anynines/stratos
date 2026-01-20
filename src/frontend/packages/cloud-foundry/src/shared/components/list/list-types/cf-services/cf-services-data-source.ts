@@ -42,10 +42,10 @@ export class CfServicesDataSource extends ListDataSource<APIResource> {
             }]
           )
 
-          const filteredByLabel = filterByLabel(entities, paginationState)
-          const filteredByTagsAndLabel = filterByTags(filteredByLabel, paginationState)
+          const labels = filterByLabel(entities, paginationState)
+          const tags = filterByTags(entities, paginationState)
 
-          return filteredByTagsAndLabel
+          return Array.from(new Set([...labels, ...tags]))
         },
         (entities: APIResource[], paginationState: PaginationEntityState) => {
           const cfGuid = paginationState.clientPagination.filter.items.cf;
