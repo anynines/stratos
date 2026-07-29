@@ -57,20 +57,20 @@ export class GitHubSCM extends BaseSCM implements GitSCM {
   getRepository(httpClient: HttpClient, projectName: string): Observable<GitRepo> {
     return this.getAPI(this.options).pipe(
       switchMap(api => {
-        return httpClient.get<GitRepo>(`${api.url}/repos/${projectName}`, api.requestArgs)
+        return httpClient.get<GitRepo>(this.resolveUrl(api, `/repos/${projectName}`), api.requestArgs)
       })
     );
   }
 
   getBranch(httpClient: HttpClient, projectName: string, branchName: string): Observable<GitBranch> {
     return this.getAPI(this.options).pipe(
-      switchMap(api => httpClient.get<GitBranch>(`${api.url}/repos/${projectName}/branches/${branchName}`, api.requestArgs))
+      switchMap(api => httpClient.get<GitBranch>(this.resolveUrl(api, `/repos/${projectName}/branches/${branchName}`), api.requestArgs))
     );
   }
   getBranches(httpClient: HttpClient, projectName: string): Observable<GitBranch[]> {
     return this.getAPI(this.options).pipe(
       switchMap(api => {
-        const url = `${api.url}/repos/${projectName}/branches`;
+        const url = this.resolveUrl(api, `/repos/${projectName}/branches`);
         const config = new GithubFlattenerForArrayPaginationConfig<GitBranch>(httpClient, url, api.requestArgs);
         const firstRequest = config.fetch(...config.buildFetchParams(1));
         return flattenPagination(
@@ -92,7 +92,7 @@ export class GitHubSCM extends BaseSCM implements GitSCM {
     return this.getAPI(this.options).pipe(
       map(api => ({
         ...api,
-        url: `${api.url}/repos/${projectName}/commits/${commitSha}`,
+        url: this.resolveUrl(api, `/repos/${projectName}/commits/${commitSha}`),
       }))
     );
   }
@@ -100,10 +100,11 @@ export class GitHubSCM extends BaseSCM implements GitSCM {
   getCommits(httpClient: HttpClient, projectName: string, ref: string): Observable<GitCommit[]> {
     return this.getAPI(this.options).pipe(
       switchMap(api => httpClient.get<GitCommit[]>(
-        `${api.url}/repos/${projectName}/commits?sha=${ref}`, {
+        this.resolveUrl(api, `/repos/${projectName}/commits`), {
         ...api.requestArgs,
         params: {
           ...api.requestArgs.params,
+          sha: ref,
           [GITHUB_PER_PAGE_PARAM]: GITHUB_PER_PAGE_PARAM_VALUE.toString()
         }
       }))
@@ -119,10 +120,13 @@ export class GitHubSCM extends BaseSCM implements GitSCM {
     return this.getAPI(this.options).pipe(
       switchMap(api => {
         const prjParts = projectName.split('/');
-        let url = `${api.url}/search/repositories?q=${projectName}+in:name+fork:true`;
+        let query: string;
         if (prjParts.length > 1) {
-          url = `${api.url}/search/repositories?q=${prjParts[1]}+in:name+fork:true+user:${prjParts[0]}`;
+          query = `${prjParts[1]}+in:name+fork:true+user:${prjParts[0]}`;
+        } else {
+          query = `${projectName}+in:name+fork:true`;
         }
+        const url = this.resolveUrl(api, `/search/repositories?q=${query}`);
 
         const config = new GithubFlattenerPaginationConfig<GitRepo>(httpClient, url, api.requestArgs);
         const firstRequest = config.fetch(...config.buildFetchParams(1));

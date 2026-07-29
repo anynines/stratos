@@ -546,6 +546,85 @@ func (p *portalProxy) doRequest(cnsiRequest *api.CNSIRequest, done chan<- *api.C
 	}
 }
 
+func (p *portalProxy) ProxyUrlRequest(c echo.Context) error {
+	log.Debug("ProxyUrlRequest")
+
+	targetURL := c.Request().Header.Get("X-Cap-Target-Url")
+	if targetURL == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "x-cap-target-url header is required")
+	}
+
+	proxyURL, err := url.Parse(targetURL)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	// The frontend calls this route as /proxy/url/<path>, forward on the <path>
+	// (and query string) to the target URL supplied via the X-Cap-Target-Url header
+	// - this is required as the header only ever contains the base API URL of the
+	// target (e.g. the GitHub Enterprise host), not the full resource being requested.
+	if extraRawPath := c.Param("*"); extraRawPath != "" {
+		extraPath, unescapeErr := url.PathUnescape(extraRawPath)
+		if unescapeErr != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, unescapeErr.Error())
+		}
+		proxyURL.RawPath = path.Join(proxyURL.Path, extraRawPath)
+		proxyURL.Path = path.Join(proxyURL.Path, extraPath)
+	}
+	proxyURL.RawQuery = c.Request().URL.RawQuery
+
+	header := getEchoHeaders(c)
+	header.Del("Cookie")
+	header.Del(APIKeyHeader)
+	header.Del("X-Cap-Target-Url")
+
+	_, body, err := getRequestParts(c)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	var bodyReader io.Reader
+	if len(body) > 0 {
+		bodyReader = bytes.NewReader(body)
+	}
+
+	req, err := http.NewRequest(c.Request().Method, proxyURL.String(), bodyReader)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	// There is no registered CNSI/endpoint record for this request (the target host comes
+	// entirely from the X-Cap-Target-Url header), so skip the usual CNSI/token based auth
+	// flow and issue the request directly - forwarding on the original request's headers.
+	fwdCNSIStandardHeaders(&api.CNSIRequest{Header: header}, req)
+
+	client := p.GetHttpClientForRequest(req, false, "")
+	res, doErr := client.Do(req)
+	if doErr != nil {
+		log.Warnf("Passthrough response: URL: %s, Error: %s", proxyURL.String(), doErr.Error())
+		return echo.NewHTTPError(http.StatusBadGateway, doErr.Error())
+	}
+	defer res.Body.Close()
+
+	resBody, readErr := io.ReadAll(res.Body)
+	if readErr != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, readErr.Error())
+	}
+
+	if res.StatusCode >= 400 {
+		log.Warnf("Passthrough response: URL: %s, Status Code: %d, Status: %s", proxyURL.String(), res.StatusCode, res.Status)
+		log.Warn(string(resBody))
+	}
+
+	c.Response().WriteHeader(res.StatusCode)
+	_, writeErr := c.Response().Write(resBody)
+	if writeErr != nil {
+		log.Errorf("Failed to write proxied response %v", writeErr)
+	}
+
+	return nil
+}
+
 func (p *portalProxy) ProxySingleRequest(c echo.Context) error {
 	log.Debug("ProxySingleRequest")
 

@@ -997,6 +997,10 @@ func (p *portalProxy) registerRoutes(e *echo.Echo, needSetupMiddleware bool) {
 	// Proxy single request
 	stableAPIGroup.GET("/proxy/:uuid/*", p.ProxySingleRequest)
 
+	// Proxy arbitrary URL (for GitHub Enterprise without registered endpoint)
+	stableAPIGroup.Any("/proxy/url", p.ProxyUrlRequest)
+	stableAPIGroup.Any("/proxy/url/*", p.ProxyUrlRequest)
+
 	sessionAuthGroup := sessionGroup.Group("/auth")
 
 	// Connect to Endpoint (SSO)
