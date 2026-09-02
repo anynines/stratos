@@ -34,6 +34,7 @@ export class GithubCommitsListConfigServiceDeploy extends GithubCommitsListConfi
         return (appSource.type.id === 'github' || appSource.type.id === 'gitlab') ? {
           scm: appSource.type.id as GitSCMType,
           accessToken: appSource.gitDetails.accessToken,
+          customApiUrl: appSource.gitDetails.customApiUrl,
           projectName: appSource.gitDetails.projectName,
           sha: appSource.gitDetails.branch.name,
           endpointGuid: appSource.gitDetails.endpointGuid
@@ -43,6 +44,11 @@ export class GithubCommitsListConfigServiceDeploy extends GithubCommitsListConfi
       first()
     ).subscribe(fetchDetails => {
       const scm = scmService.getSCM(fetchDetails.scm, fetchDetails.endpointGuid, fetchDetails.accessToken);
+      const customApiUrl = (fetchDetails.customApiUrl || '').trim();
+      if (customApiUrl) {
+        (scm as any).setPublicApi(customApiUrl);
+        scm.endpointGuid = null;
+      }
       this.dataSource = new GithubCommitsDataSource(this.store, this, scm, fetchDetails.projectName, fetchDetails.sha);
       this.initialised.next(true);
 

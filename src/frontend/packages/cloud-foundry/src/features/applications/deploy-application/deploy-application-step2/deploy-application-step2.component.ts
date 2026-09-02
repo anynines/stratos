@@ -150,7 +150,8 @@ export class DeployApplicationStep2Component
           url: repo.entity.clone_url,
           accessToken: this.accessToken,
           commit: this.isRedeploy ? this.commitInfo.sha : undefined,
-          endpointGuid: this.sourceType.endpointGuid,
+          endpointGuid: this.scm && this.scm.endpointGuid ? this.scm.endpointGuid : null,
+          customApiUrl: this.scm ? this.scm.getPublicApi() : '',
         }, null));
       });
     } else if (this.sourceType.id === DEPLOY_TYPES_IDS.GIT_URL) {
@@ -355,11 +356,15 @@ export class DeployApplicationStep2Component
     this.suggestedRepos$ = this.sourceSelectionForm.valueChanges.pipe(
       tap(form => {
         const isValidUrl = (input: string) => { try { var url = new URL(input); return Boolean(url) } catch (e) { return false } }
-        
-        this.isInvalidGithubEnterpriseUrl = form.githubEnterpriseUrl && !isValidUrl(form.githubEnterpriseUrl)
-        
-        if (form.githubEnterpriseUrl && !this.isInvalidGithubEnterpriseUrl) {
-          (this.scm as unknown as BaseSCM).setPublicApi(form.githubEnterpriseUrl)
+
+        const customApiUrl = (form.githubEnterpriseUrl || '').trim();
+        this.isInvalidGithubEnterpriseUrl = !!customApiUrl && !isValidUrl(customApiUrl);
+
+        if (customApiUrl && !this.isInvalidGithubEnterpriseUrl) {
+          (this.scm as unknown as BaseSCM).setPublicApi(customApiUrl);
+          this.scm.endpointGuid = null;
+        } else {
+          this.scm.endpointGuid = this.sourceType.endpointGuid;
         }
 
         if (form.githubAccessToken) {
