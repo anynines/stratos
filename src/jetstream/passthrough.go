@@ -6,9 +6,12 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
+	"net/netip"
 	"net/url"
 	"path"
+	"regexp"
 	"strings"
 	"time"
 
@@ -24,7 +27,47 @@ const apiPrefix = "api."
 const (
 	longRunningTimeoutHeader = "x-cap-long-running"
 	noTokenHeader            = "x-cap-no-token"
+	maxProxyResponseSize     = 10 << 20
 )
+
+var sensitiveProxyHeaders = regexp.MustCompile(`(?i)^(authentication|proxy-authorization|cookie|set-cookie|x-api-key|x-cap-api-key|x-cap-target-url)$`)
+
+func isPrivateProxyHost(host string) bool {
+	if host == "localhost" || strings.HasSuffix(strings.ToLower(host), ".localhost") {
+		return true
+	}
+	addresses, err := net.LookupIP(host)
+	if err != nil {
+		return true
+	}
+	for _, address := range addresses {
+		if parsed, err := netip.ParseAddr(address.String()); err == nil && (parsed.IsPrivate() || parsed.IsLoopback() || parsed.IsLinkLocalUnicast() || parsed.IsLinkLocalMulticast() || parsed.IsUnspecified() || parsed.IsMulticast()) {
+			return true
+		}
+	}
+	return false
+}
+
+func (p *portalProxy) isRegisteredProxyTarget(target *url.URL) (bool, error) {
+	endpointStore, err := p.GetStoreFactory().EndpointStore()
+	if err != nil {
+		return false, err
+	}
+	endpoints, err := endpointStore.List(p.Config.EncryptionKeyInBytes)
+	if err != nil {
+		return false, err
+	}
+	for _, endpoint := range endpoints {
+		if endpoint.APIEndpoint == nil {
+			continue
+		}
+		registered := endpoint.APIEndpoint
+		if strings.EqualFold(registered.Scheme, target.Scheme) && strings.EqualFold(registered.Host, target.Host) {
+			return true, nil
+		}
+	}
+	return false, nil
+}
 
 // Timeout for long-running requests, after which we will return indicating request it still active
 // to prevent hitting the 2 minute browser timeout
@@ -558,6 +601,20 @@ func (p *portalProxy) ProxyUrlRequest(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
+	if (proxyURL.Scheme != "http" && proxyURL.Scheme != "https") || proxyURL.Hostname() == "" || proxyURL.User != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "target URL must be an HTTP(S) URL without credentials")
+	}
+	registered, lookupErr := p.isRegisteredProxyTarget(proxyURL)
+	if lookupErr != nil {
+		log.Errorf("Unable to validate proxied target %s: %v", proxyURL.Host, lookupErr)
+		return echo.NewHTTPError(http.StatusInternalServerError, "unable to validate target endpoint")
+	}
+	if !registered {
+		return echo.NewHTTPError(http.StatusBadRequest, "target endpoint is not registered")
+	}
+	if isPrivateProxyHost(proxyURL.Hostname()) {
+		return echo.NewHTTPError(http.StatusBadRequest, "target host is not allowed")
+	}
 
 	// The frontend calls this route as /proxy/url/<path>, forward on the <path>
 	// (and query string) to the target URL supplied via the X-Cap-Target-Url header
@@ -574,9 +631,11 @@ func (p *portalProxy) ProxyUrlRequest(c echo.Context) error {
 	proxyURL.RawQuery = c.Request().URL.RawQuery
 
 	header := getEchoHeaders(c)
-	header.Del("Cookie")
-	header.Del(APIKeyHeader)
-	header.Del("X-Cap-Target-Url")
+	for name := range header {
+		if sensitiveProxyHeaders.MatchString(name) {
+			header.Del(name)
+		}
+	}
 
 	_, body, err := getRequestParts(c)
 	if err != nil {
@@ -606,9 +665,12 @@ func (p *portalProxy) ProxyUrlRequest(c echo.Context) error {
 	}
 	defer res.Body.Close()
 
-	resBody, readErr := io.ReadAll(res.Body)
+	resBody, readErr := io.ReadAll(io.LimitReader(res.Body, maxProxyResponseSize+1))
 	if readErr != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, readErr.Error())
+	}
+	if len(resBody) > maxProxyResponseSize {
+		return echo.NewHTTPError(http.StatusBadGateway, "proxied response exceeds size limit")
 	}
 
 	if res.StatusCode >= 400 {
