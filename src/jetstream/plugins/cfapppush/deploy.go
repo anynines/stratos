@@ -701,7 +701,14 @@ func fetchManifest(repoPath string, stratosProject StratosProject, clientWebSock
 		return manifest, manifestPath, err
 	}
 
-	marshalledJSON, _ := json.Marshal(stratosProject)
+	// Source credentials are needed while cloning, but must never be persisted in
+	// the application environment as deployment metadata.
+	metadataProject := stratosProject
+	if source, ok := stratosProject.DeploySource.(GitSCMSourceInfo); ok {
+		source.AcccessToken = ""
+		metadataProject.DeploySource = source
+	}
+	marshalledJSON, _ := json.Marshal(metadataProject)
 	envVarMetaData := string(marshalledJSON)
 
 	// If we have metadata to indicate the source origin, add it to the manifest

@@ -39,7 +39,7 @@ export class GitLabSCM extends BaseSCM implements GitSCM {
 
     const obs$ = parts.length !== 2 ?
       observableOf(null) :
-      this.getAPI().pipe(switchMap(api => httpClient.get(`${api.url}/projects/${parts.join('%2F')}`, api.requestArgs)));
+      this.getAPI().pipe(switchMap(api => httpClient.get(this.resolveUrl(api, `/projects/${parts.join('%2F')}`), api.requestArgs)));
 
     return obs$.pipe(
       map((data: any) => {
@@ -56,7 +56,7 @@ export class GitLabSCM extends BaseSCM implements GitSCM {
   getBranch(httpClient: HttpClient, projectName: string, branchName: string): Observable<GitBranch> {
     const prjNameEncoded = encodeURIComponent(projectName);
     return this.getAPI().pipe(
-      switchMap(api => httpClient.get(`${api.url}/projects/${prjNameEncoded}/repository/branches/${branchName}`, api.requestArgs)),
+      switchMap(api => httpClient.get(this.resolveUrl(api, `/projects/${prjNameEncoded}/repository/branches/${branchName}`), api.requestArgs)),
       map((data: any) => {
         const nb = { ...data };
         nb.commit.sha = nb.commit.id;
@@ -69,7 +69,7 @@ export class GitLabSCM extends BaseSCM implements GitSCM {
     const prjNameEncoded = encodeURIComponent(projectName);
     return this.getAPI().pipe(
       switchMap(api => httpClient.get(
-        `${api.url}/projects/${prjNameEncoded}/repository/branches`, {
+        this.resolveUrl(api, `/projects/${prjNameEncoded}/repository/branches`), {
         ...api.requestArgs,
         params: {
           ...api.requestArgs.params,
@@ -101,7 +101,7 @@ export class GitLabSCM extends BaseSCM implements GitSCM {
         const prjNameEncoded = encodeURIComponent(projectName);
         return {
           ...api,
-          url: `${api.url}/projects/${prjNameEncoded}/repository/commits/${commitSha}`
+          url: this.resolveUrl(api, `/projects/${prjNameEncoded}/repository/commits/${commitSha}`)
         };
       })
     );
@@ -111,9 +111,10 @@ export class GitLabSCM extends BaseSCM implements GitSCM {
     const prjNameEncoded = encodeURIComponent(projectName);
     return this.getAPI().pipe(
       switchMap(api => httpClient.get(
-        `${api.url}/projects/${prjNameEncoded}/repository/commits?ref_name=${commitSha}`, {
+        this.resolveUrl(api, `/projects/${prjNameEncoded}/repository/commits`), {
         ...api.requestArgs,
         params: {
+          ref_name: commitSha,
           [GITLAB_PER_PAGE_PARAM]: GITLAB_PER_PAGE_PARAM_VALUE.toString()
         }
       })),
@@ -144,10 +145,10 @@ export class GitLabSCM extends BaseSCM implements GitSCM {
   private getMatchingUserGroupRepositories(httpClient: HttpClient, prjParts: string[]): Observable<GitRepo[]> {
     return this.getAPI().pipe(
       switchMap(api => combineLatest([
-        httpClient.get<[]>(`${api.url}/users/${prjParts[0]}/projects/?search=${prjParts[1]}`, api.requestArgs).pipe(
+        httpClient.get<[]>(this.resolveUrl(api, `/users/${prjParts[0]}/projects/?search=${prjParts[1]}`), api.requestArgs).pipe(
           catchError(() => of([]))
         ),
-        httpClient.get<[]>(`${api.url}/groups/${prjParts[0]}/projects?search=${prjParts[1]}`, api.requestArgs).pipe(
+        httpClient.get<[]>(this.resolveUrl(api, `/groups/${prjParts[0]}/projects?search=${prjParts[1]}`), api.requestArgs).pipe(
           catchError(() => of([]))
         ),
       ])),
@@ -157,7 +158,7 @@ export class GitLabSCM extends BaseSCM implements GitSCM {
 
   private getMatchingProjects(httpClient: HttpClient, exactProjectName: string): Observable<GitRepo[]> {
     return this.getAPI().pipe(
-      switchMap(api => httpClient.get(`${api.url}/projects?search=${exactProjectName}`, {
+      switchMap(api => httpClient.get(this.resolveUrl(api, `/projects?search=${exactProjectName}`), {
         ...api.requestArgs,
         params: {
           [GITLAB_PER_PAGE_PARAM]: GITLAB_PER_PAGE_PARAM_VALUE.toString()

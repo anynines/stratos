@@ -36,8 +36,8 @@ export const urlValidationExpression =
   '(?:(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)' +
   // domain name
   '(?:\\.(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)*' +
-  // TLD identifier
-  '(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))' +
+  // TLD identifier (optional for localhost/IP addresses)
+  '(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))?' +
   // TLD may end with dot
   '\\.?' +
   ')' +

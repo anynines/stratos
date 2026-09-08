@@ -153,7 +153,9 @@ func main() {
 
 	if isUpgrading {
 		log.Info("Upgrade in progress (lock file detected) ... waiting for lock file to be removed ...")
-		start(portalConfig, &portalProxy{env: envLookup}, false, true, envLookup)
+		upgradeProxy := &portalProxy{env: envLookup}
+		upgradeProxy.SetRefreshRoutineContext(context.WithCancel(context.Background()))
+		start(portalConfig, upgradeProxy, false, true, envLookup)
 	}
 	// Grab the Console Version from the executable
 	portalConfig.ConsoleVersion = appVersion
@@ -701,6 +703,7 @@ func newPortalProxy(pc api.PortalConfig, dcp *sql.DB, ss HttpSessionStore, sessi
 		AuthProviders:          make(map[string]api.AuthProvider),
 		env:                    env,
 	}
+	pp.SetRefreshRoutineContext(context.WithCancel(context.Background()))
 
 	// Initialize built-in auth providers
 
@@ -812,7 +815,7 @@ func start(config api.PortalConfig, p *portalProxy, needSetupMiddleware bool, is
 		go stopEchoWhenUpgraded(e, p.Env())
 	}
 
-	if p.Config.AutoRefreshCNSITokens {
+	if p.Config.AutoRefreshCNSITokens && p.refreshRoutines.context != nil {
 		if err := p.startCNSITokenRefreshRoutines(); err != nil {
 			return err
 		}
@@ -996,6 +999,10 @@ func (p *portalProxy) registerRoutes(e *echo.Echo, needSetupMiddleware bool) {
 
 	// Proxy single request
 	stableAPIGroup.GET("/proxy/:uuid/*", p.ProxySingleRequest)
+
+	// Proxy arbitrary URL (for GitHub Enterprise without registered endpoint)
+	stableAPIGroup.Any("/proxy/url", p.ProxyUrlRequest)
+	stableAPIGroup.Any("/proxy/url/*", p.ProxyUrlRequest)
 
 	sessionAuthGroup := sessionGroup.Group("/auth")
 

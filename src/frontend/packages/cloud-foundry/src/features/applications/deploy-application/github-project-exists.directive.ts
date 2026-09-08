@@ -1,39 +1,54 @@
-import { Directive, forwardRef, Input } from '@angular/core';
-import { AbstractControl, NG_ASYNC_VALIDATORS, Validator } from '@angular/forms';
-import { Store } from '@ngrx/store';
-import { GitSCMService, GitSCMType } from '@stratosui/git';
-import { Observable, of as observableOf } from 'rxjs';
-import { debounceTime, filter, first, map, tap } from 'rxjs/operators';
+import { Directive, forwardRef, Input } from "@angular/core";
+import {
+  AbstractControl,
+  NG_ASYNC_VALIDATORS,
+  Validator
+} from "@angular/forms";
+import { Store } from "@ngrx/store";
+import { GitSCMService, GitSCMType } from "@stratosui/git";
+import { Observable, of as observableOf } from "rxjs";
+import { debounceTime, filter, first, map, tap } from "rxjs/operators";
 
-import { CheckProjectExists } from '../../../../../cloud-foundry/src/actions/deploy-applications.actions';
-import { CFAppState } from '../../../../../cloud-foundry/src/cf-app-state';
-import { selectDeployAppState } from '../../../../../cloud-foundry/src/store/selectors/deploy-application.selector';
+import { CheckProjectExists } from "../../../../../cloud-foundry/src/actions/deploy-applications.actions";
+import { CFAppState } from "../../../../../cloud-foundry/src/cf-app-state";
+import { selectDeployAppState } from "../../../../../cloud-foundry/src/store/selectors/deploy-application.selector";
 
 interface GithubProjectExistsResponse {
   githubProjectDoesNotExist: boolean;
   githubProjectError: string;
 }
 
+interface GithubProjectExistsConfig {
+  scmType: GitSCMType;
+  endpointGuid: string;
+  accessToken: string;
+  customApiUrl?: string;
+}
+
 const GITHUB_PROJECT_EXISTS = {
-  provide: NG_ASYNC_VALIDATORS, useExisting: forwardRef(() => GithubProjectExistsDirective), multi: true
+  provide: NG_ASYNC_VALIDATORS,
+  useExisting: forwardRef(() => GithubProjectExistsDirective),
+  multi: true
 };
 
 @Directive({
-  selector: '[appGithubProjectExists][ngModel]',
+  selector: "[appGithubProjectExists][ngModel]",
   providers: [GITHUB_PROJECT_EXISTS]
 })
 export class GithubProjectExistsDirective implements Validator {
+  @Input() appGithubProjectExists: GithubProjectExistsConfig | string;
 
-  @Input() appGithubProjectExists: string;
+  private lastValue = "";
 
-  private lastValue = '';
-
-  constructor(private store: Store<CFAppState>, private scmService: GitSCMService) { }
+  constructor(
+    private store: Store<CFAppState>,
+    private scmService: GitSCMService
+  ) {}
 
   // Reduce API calls trying to validate until we have a valid name
   // Must be of the form USER/NAME - where NAME must be at least 2 charts in length
   private isValidProjectName(name: string) {
-    const parts = name.split('/');
+    const parts = name.split("/");
     return parts.length === 2 && parts[1].length > 2;
   }
 
@@ -41,41 +56,87 @@ export class GithubProjectExistsDirective implements Validator {
     return this.lastValue.length && this.lastValue.indexOf(name) === 0;
   }
 
-  private getTypeAndEndpointWithAuth(): [GitSCMType, string, string] {
-    const res = this.appGithubProjectExists.split(',');
-    if (res.length === 3) {
-      return [res[0] as GitSCMType, res[1], res[2]];
+  private getTypeAndEndpointWithAuth(): GithubProjectExistsConfig {
+    if (typeof this.appGithubProjectExists !== "string") {
+      return this.appGithubProjectExists;
     }
-    console.warn('appGithubProjectExists value should be `<scm type>,<endpoint guid>,<access_token>`');
+
+    const res = this.appGithubProjectExists.split(",");
+    if (res.length >= 3) {
+      return {
+        scmType: res[0] as GitSCMType,
+        endpointGuid: res[1],
+        accessToken: res[2],
+        customApiUrl: res[3] || ""
+      };
+    }
+
+    console.warn(
+      "appGithubProjectExists value should be an object or `<scm type>,<endpoint guid>,<access_token>,<custom_api_url>`"
+    );
     return null;
   }
 
-
   validate(c: AbstractControl): Observable<GithubProjectExistsResponse> {
     if (c.value) {
-      if (!this.isValidProjectName(c.value) || this.haveAlreadyChecked(c.value)) {
+      if (
+        !this.isValidProjectName(c.value) ||
+        this.haveAlreadyChecked(c.value)
+      ) {
         return observableOf({
           githubProjectDoesNotExist: true,
-          githubProjectError: ''
+          githubProjectError: ""
         }).pipe(first());
       }
       // We should check for a '/' char
       return this.store.select(selectDeployAppState).pipe(
         debounceTime(250),
         tap(createAppState => {
-          if (createAppState.projectExists && createAppState.projectExists.name !== c.value) {
-            this.store.dispatch(new CheckProjectExists(this.scmService.getSCM(...this.getTypeAndEndpointWithAuth()), c.value));
+          if (
+            createAppState.projectExists &&
+            createAppState.projectExists.name !== c.value
+          ) {
+            const config = this.getTypeAndEndpointWithAuth();
+            if (!config) {
+              return;
+            }
+
+            const scm = this.scmService.getSCM(
+              config.scmType,
+              config.endpointGuid,
+              config.accessToken
+            );
+            const customApiUrl = (config.customApiUrl || "").trim();
+            if (
+              customApiUrl &&
+              typeof (scm as any).setPublicApi === "function"
+            ) {
+              (scm as any).setPublicApi(customApiUrl);
+              (scm as any).endpointGuid = null;
+            } else {
+              (scm as any).endpointGuid = config.endpointGuid;
+            }
+
+            this.store.dispatch(new CheckProjectExists(scm, c.value));
           }
         }),
-        filter(createAppState =>
-          !createAppState.projectExists.checking &&
-          createAppState.projectExists.name === c.value
+        filter(
+          createAppState =>
+            !createAppState.projectExists.checking &&
+            createAppState.projectExists.name === c.value
         ),
-        map((createAppState): GithubProjectExistsResponse =>
-          createAppState.projectExists.exists ? null : {
-            githubProjectDoesNotExist: !createAppState.projectExists.exists,
-            githubProjectError: createAppState.projectExists.error ? createAppState.projectExists.data || '' : ''
-          }),
+        map(
+          (createAppState): GithubProjectExistsResponse =>
+            createAppState.projectExists.exists
+              ? null
+              : {
+                  githubProjectDoesNotExist: !createAppState.projectExists
+                    .exists,
+                  githubProjectError: createAppState.projectExists.error
+                    ? createAppState.projectExists.data || ""
+                    : ""
+                }
+        ),
         first()
       );
     } else {
@@ -83,5 +144,4 @@ export class GithubProjectExistsDirective implements Validator {
       return observableOf(null).pipe(first());
     }
   }
-
 }

@@ -31,11 +31,18 @@ type portalProxy struct {
 		wg      sync.WaitGroup
 		context context.Context
 		cancel  context.CancelFunc
+		mu      sync.Mutex
+		active  map[string]*tokenRefreshRoutine
 	}
 	StratosAuthService   api.StratosAuth
 	APIKeysRepository    apikeys.Repository
 	PluginRegisterRoutes map[string]func(echo.Context) error
 	StoreFactory         api.StoreFactory
+}
+
+type tokenRefreshRoutine struct {
+	cancel context.CancelFunc
+	ctx    context.Context
 }
 
 // HttpSessionStore - Interface for a store that can manage HTTP Sessions

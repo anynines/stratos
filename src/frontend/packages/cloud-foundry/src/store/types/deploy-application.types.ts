@@ -75,6 +75,7 @@ export interface GitAppDetails {
   commit?: string;
   branchName?: string;
   url?: string;
+  customApiUrl?: string;
 }
 
 export interface OverrideAppDetails {

@@ -9,6 +9,7 @@ import { stratosEntityCatalog } from '../../../../store/src/stratos-entity-catal
 
 const { proxyAPIVersion } = environment;
 const commonPrefix = `/api/${proxyAPIVersion}/proxy`;
+const defaultGitHubUrl = 'https://api.github.com';
 
 export interface GitApiRequest {
   url: string;
@@ -33,9 +34,24 @@ export abstract class BaseSCM {
     return this.getEndpoint(this.endpointGuid).pipe(
       map(endpoint => {
         if (!endpoint) {
-          // No endpoint, use the default or overwritten public api associated with this type
+          // No endpoint registered - proxy via backend to avoid CORS
+          // Only use direct URL for default GitHub.com (which has CORS headers)
+          const publicApi = this.getPublicApi();
+          if (publicApi !== defaultGitHubUrl) {
+            return {
+              url: `${commonPrefix}/url`,
+              requestArgs: {
+                ...options,
+                headers: {
+                  ...options.headers,
+                  'x-cap-no-token': 'true',
+                  'x-cap-target-url': publicApi
+                }
+              }
+            };
+          }
           return {
-            url: this.getPublicApi(),
+            url: publicApi,
             requestArgs: options
           };
         }
@@ -52,6 +68,10 @@ export abstract class BaseSCM {
       }),
       first()
     );
+  }
+
+  protected resolveUrl(api: GitApiRequest, path: string): string {
+    return `${api.url}${path}`;
   }
 
   protected getEndpoint(endpointGuid: string): Observable<EndpointModel> {
